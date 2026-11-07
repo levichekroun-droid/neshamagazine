@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NeshamaGazine Feedback</title>
+<meta name="description" content="Tell the NeshamaGazine team what you thought of the magazine.">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--navy:#12294a;--beige:#f5e4cc}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--beige);color:var(--navy);font:500 17px/1.5 "Figtree",system-ui,sans-serif;padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
+.top{max-width:640px;margin:0 auto;padding:28px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.top img{height:52px;width:auto;display:block}
+.top a{color:var(--navy);font-weight:700;font-size:.95rem}
+main{max-width:640px;margin:0 auto;padding:30px 0 70px}
+.kick{margin:0 0 10px;font:800 .78rem "Figtree",system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase}
+h1{margin:0 0 10px;font:800 clamp(2.1rem,8vw,3.2rem)/1.02 "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.025em;text-wrap:balance}
+.lead{margin:0 0 30px;max-width:46ch}
+form{border:2px solid var(--navy);padding:26px 24px 28px;display:grid;gap:24px}
+.q{display:grid;gap:8px;min-width:0}
+.q > span,.q legend{font:800 1.05rem "Figtree",system-ui,sans-serif;padding:0}
+.q small{font-weight:500;opacity:.75}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+select,input,textarea{width:100%;font:500 1rem "Figtree",system-ui,sans-serif;color:var(--navy);background:var(--beige);border:2px solid var(--navy);border-radius:0;padding:12px 14px}
+textarea{min-height:110px;resize:vertical}
+select:focus,input:focus,textarea:focus{outline:3px solid var(--navy);outline-offset:2px}
+::placeholder{color:var(--navy);opacity:.55}
+.stars{display:flex;gap:6px;margin-top:4px}
+.stars button{width:48px;height:48px;border:0;background:none;padding:0;cursor:pointer;color:var(--navy)}
+.stars svg{width:100%;height:100%}
+.stars path{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+.stars button.on path{fill:currentColor}
+.stars button:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.face{min-height:1.4em;font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.send{justify-self:start;border:2px solid var(--navy);background:var(--navy);color:var(--beige);font:800 1.1rem "Figtree",system-ui,sans-serif;padding:15px 30px;cursor:pointer}
+.send:hover{background:var(--beige);color:var(--navy)}
+.send:disabled{opacity:.6;cursor:wait}
+.msg{margin:0;font-weight:700;min-height:1.4em}
+.done{border:2px solid var(--navy);padding:34px 26px;text-align:center}
+.done h2{margin:0 0 10px;font:800 2.2rem/1.05 "Bricolage Grotesque",system-ui,sans-serif}
+.done p{margin:0 auto 22px;max-width:40ch}
+.done a{display:inline-block;background:var(--navy);color:var(--beige);text-decoration:none;font-weight:800;padding:14px 26px}
+.done[hidden],form[hidden]{display:none}
+.foot{max-width:640px;margin:0 auto;padding:0 0 30px;font-size:.85rem;opacity:.75}
+@media (max-width:520px){form{padding:20px 16px 22px}.two{grid-template-columns:1fr}.stars button{width:44px;height:44px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="../" aria-label="NeshamaGazine website"><img src="logo.png" alt="NeshamaGazine"></a>
+  <a href="../">Go to the website</a>
+</header>
+<main>
+  <p class="kick">Your feedback</p>
+  <h1>What did you think of NeshamaGazine?</h1>
+  <p class="lead">You just read our magazine. Tell us what you liked and what we should make better. The whole team reads every answer.</p>
+
+  <form id="fb" novalidate>
+    <label class="q"><span>Which issue did you read?</span>
+      <select id="issue">
+        <option value="Issue 13 Bereishis">Issue 13 Bereishis</option>
+        <option value="Issue 12 Rosh Hashana">Issue 12 Rosh Hashana</option>
+        <option value="Issue 10 Beha'alotcha">Issue 10 Beha'alotcha</option>
+        <option value="Issue 09 Shavuos">Issue 09 Shavuos</option>
+        <option value="Issue 08 Tazria Metzora">Issue 08 Tazria Metzora</option>
+        <option value="Parsha Food Season">Parsha Food Season</option>
+        <option value="Sukkos Edition">Sukkos Edition</option>
+        <option value="The Double Life of Eli Cohen">The Double Life of Eli Cohen</option>
+        <option value="Issue 5">Issue 5</option>
+        <option value="Escape to Shanghai">Escape to Shanghai</option>
+        <option value="Not sure">I'm not sure</option>
+      </select>
+    </label>
+
+    <fieldset class="q"><legend>How many stars do you give it?</legend>
+      <div class="stars" id="stars" role="radiogroup" aria-label="Stars"></div>
+      <p class="face" id="face" aria-live="polite"></p>
+    </fieldset>
+
+    <label class="q"><span>What was your favorite part?</span>
+      <textarea id="fav" maxlength="1000" placeholder="The spy story, the comic, the riddle…"></textarea></label>
+
+    <label class="q"><span>What should we make better?</span>
+      <textarea id="better" maxlength="1000" placeholder="Anything that was boring, confusing or too short"></textarea></label>
+
+    <label class="q"><span>What should we write about next? <small>(you can skip this)</small></span>
+      <input id="next" maxlength="200" placeholder="A hero, a story, a holiday…"></label>
+
+    <div class="two">
+      <label class="q"><span>First name <small>(you can skip this)</small></span>
+        <input id="name" maxlength="40" autocomplete="given-name"></label>
+      <label class="q"><span>Email <small>(only if you want an answer)</small></span>
+        <input id="email" type="email" maxlength="120" autocomplete="email"></label>
+    </div>
+
+    <label class="hp" aria-hidden="true">Leave this empty<input id="website" tabindex="-1" autocomplete="off"></label>
+
+    <button type="submit" class="send" id="send">Send my feedback</button>
+    <p class="msg" id="msg" role="status"></p>
+  </form>
+
+  <div class="done" id="done" hidden>
+    <h2>Thank you!</h2>
+    <p>Your feedback went straight to the NeshamaGazine team. Want to read more?</p>
+    <a href="../">Go to the website</a>
+  </div>
+</main>
+<p class="foot">NeshamaGazine &middot; Made by kids, for kids.</p>
+
+<script>
+(function(){
+  var KEY = 'AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', DB = 'https://firestore.googleapis.com/v1/projects/neshamagazine/databases/(default)/documents';
+  var W3 = '3ba7467a-1ddb-483c-a14f-6a2cafbb3d2f';
+  var $ = function(id){ return document.getElementById(id); };
+  var stars = 0, faces = ['', 'Not good', 'It was okay', 'Good', 'Really good', 'The best!'];
+  var star = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></svg>';
+  for (var i = 1; i <= 5; i++){ var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'radio'); b.setAttribute('aria-label', i + (i > 1 ? ' stars' : ' star')); b.dataset.n = i; b.innerHTML = star; $('stars').appendChild(b); }
+  function paint(n){ [].forEach.call($('stars').children, function(b){ var on = +b.dataset.n <= n; b.classList.toggle('on', on); b.setAttribute('aria-checked', +b.dataset.n === stars ? 'true' : 'false'); }); $('face').textContent = faces[n] || ''; }
+  $('stars').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; stars = +b.dataset.n; paint(stars); });
+  $('stars').addEventListener('mouseover', function(e){ var b = e.target.closest('button'); if (b) paint(+b.dataset.n); });
+  $('stars').addEventListener('mouseleave', function(){ paint(stars); });
+  // the issue from the QR code, like feedback/?issue=13
+  var q = new URLSearchParams(location.search).get('issue');
+  if (q){ [].some.call($('issue').options, function(o){ if (o.value.toLowerCase().indexOf(String(q).toLowerCase()) > -1){ $('issue').value = o.value; return true; } }); }
+
+  function clean(v, n){ return String(v || '').replace(/[<>]/g, '').trim().slice(0, n); }
+  $('fb').addEventListener('submit', function(e){
+    e.preventDefault();
+    var m = $('msg');
+    if ($('website').value) return;   // a robot filled the hidden box
+    var last = 0; try { last = +localStorage.getItem('ng_fb_last') || 0; } catch(x){}
+    if (Date.now() - last < 60000){ m.textContent = 'Thanks! Wait one minute before you send another one.'; return; }
+    var d = { issue: clean($('issue').value, 80), stars: stars, fav: clean($('fav').value, 1000), better: clean($('better').value, 1000), next: clean($('next').value, 200), name: clean($('name').value, 40), email: clean($('email').value, 120) };
+    if (!stars && !d.fav && !d.better && !d.next){ m.textContent = 'Pick some stars or write something first.'; return; }
+    if (d.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)){ m.textContent = 'That email does not look right.'; $('email').focus(); return; }
+    $('send').disabled = true; m.textContent = 'Sending…';
+    var fields = { at:{ timestampValue: new Date().toISOString() }, stars:{ integerValue: String(d.stars) }, phone:{ booleanValue: /Mobi|Android|iPhone/i.test(navigator.userAgent) } };
+    ['issue', 'fav', 'better', 'next', 'name', 'email'].forEach(function(k){ fields[k] = { stringValue: d[k] }; });
+    var saved = fetch(DB + '/feedback?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ fields: fields }) }).then(function(r){ return r.ok; }).catch(function(){ return false; });
+    var mailed = fetch('https://api.web3forms.com/submit', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+      body: JSON.stringify({ access_key: W3, from_name: 'NeshamaGazine', subject: 'Feedback: ' + d.issue + ' (' + d.stars + ' stars)', name: d.name || '(no name)', email: d.email || undefined,
+        issue: d.issue, stars: d.stars + ' of 5', favorite_part: d.fav, make_better: d.better, write_about_next: d.next }) })
+      .then(function(r){ return r.json().then(function(j){ return !!(j && (j.success === true || j.success === 'true')); }); }).catch(function(){ return false; });
+    Promise.all([saved, mailed]).then(function(r){
+      $('send').disabled = false;
+      if (r[0] || r[1]){ try { localStorage.setItem('ng_fb_last', String(Date.now())); } catch(x){} $('fb').hidden = true; $('done').hidden = false; window.scrollTo(0, 0); }
+      else m.textContent = 'That did not send. Check the internet and try again.';
+    });
+  });
+})();
+</script>
+</body>
+</html>
