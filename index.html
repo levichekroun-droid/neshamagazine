@@ -2491,18 +2491,23 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       function rowHoverY(){ return rows[rowIdx].getBoundingClientRect().top + 10 - GRAB - 40; }
       if (state === 'enter'){
         claw.classList.add('scanning');
-        y += (rowHoverY() - y) * Math.min(1, dt * 6);
-        if (Math.abs(rowHoverY() - y) < 4){ state = 'scan'; }
+        if (!step._en){ step._en = { y0: y, t0: now }; }
+        var ke = Math.min(1, (now - step._en.t0) / 800);
+        y = step._en.y0 + (rowHoverY() - step._en.y0) * ease(ke);
+        if (ke >= 1){ state = 'scan'; step._scan0 = now; }
       }
       if (state === 'toRow'){
-        y += (rowHoverY() - y) * Math.min(1, dt * 5);
-        if (Math.abs(rowHoverY() - y) < 4){ state = 'scan'; }
+        if (!step._ty){ step._ty = { y0: y, t0: now }; }
+        var kr = Math.min(1, (now - step._ty.t0) / 750);
+        y = step._ty.y0 + (rowHoverY() - step._ty.y0) * ease(kr);
+        if (kr >= 1){ step._ty = null; state = 'scan'; step._scan0 = now; }
       }
       if (state === 'scan'){
         y = rowHoverY();
         msg.textContent = ' The spy is scanning row ' + (rowIdx + 1) + '…';
         if (!step._beep || now - step._beep > 600){ step._beep = now; if (window.NG_SOUND) window.NG_SOUND.scanBeep(); }
-        x += dir * 520 * dt;
+        if (!step._scan0) step._scan0 = now;
+        x += dir * 520 * dt * Math.min(1, (now - step._scan0) / 350);   // speeds up gently instead of jumping
         // is the issue under the claw? check every row you can see, even covers that are half cut off
         var hit = null, hitRow = rowIdx, topLimit = headerBottom() + 30;
         function visW(r){ return Math.min(r.right, W) - Math.max(r.left, 0); }
