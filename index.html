@@ -1586,6 +1586,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     var editing = localStorage.getItem('ng_editing') === '1';
     data = JSON.parse((editing && localStorage.getItem('ng_ed_draft')) || localStorage.getItem('ng_edits') || 'null');
   } catch(e){}
+  if (data && data.v !== 2){ data = null; try { localStorage.removeItem('ng_ed_draft'); localStorage.removeItem('ng_edits'); localStorage.removeItem('ng_editing'); } catch(e){} }   // reset on Nov 7: old Edit Mode changes are cleared
   window.NG_EDIT_DATA = data || {};
   var all0 = document.getElementById('issue-list');
   function pieces(){
@@ -4996,7 +4997,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     }
     function googleFail(e){
       var c = (e && e.code) || '';
-      $('ngw-msg').textContent = /popup-closed|cancelled-popup/.test(c) ? '' : /unauthorized-domain|operation-not-supported/.test(c) ? 'Google sign-in only works on the real website, not on a file on your computer.' : /popup-blocked/.test(c) ? 'Your browser blocked the Google window. Press the button again.' : 'Google sign-in did not work. Try again, or use your email.';
+      $('ngw-msg').textContent = /popup-closed|cancelled-popup/.test(c) ? '' : /unauthorized-domain|operation-not-supported/.test(c) ? (location.protocol === 'file:' ? 'Google sign-in only works on the real website, not on a file on your computer.' : 'Google sign-in is not turned on for ' + location.hostname + ' yet. Add it in Firebase: Authentication, Settings, Authorized domains.') : /popup-blocked/.test(c) ? 'Your browser blocked the Google window. Press the button again.' : 'Google sign-in did not work. Try again, or use your email.';
     }
     // get Google ready as soon as the sign-in screen shows, so the button opens the Google window right away
     new MutationObserver(function(){ if (!$('ng-wall').hidden && /^https?:$/.test(location.protocol)) loadFB().catch(function(){}); }).observe($('ng-wall'), { attributes:true, attributeFilter:['hidden'] });
@@ -7807,7 +7808,7 @@ html.ed-dash-open body{overflow:hidden}
   function toast(t){ if (window.NG && NG.toast) NG.toast(t); }
   function esc(t){ return String(t == null ? '' : t).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
   function clone(o){ return JSON.parse(JSON.stringify(o || {})); }
-  function norm(d){ d = d || {}; d.pauses = d.pauses || {}; d.texts = d.texts || {}; d.issues = d.issues || []; d.videos = d.videos || []; return d; }
+  function norm(d){ d = d || {}; d.v = 2; d.pauses = d.pauses || {}; d.texts = d.texts || {}; d.issues = d.issues || []; d.videos = d.videos || []; return d; }
 
   var live = norm(clone(window.NG_EDIT_DATA)), draft = null, editing = ls('ng_editing') === '1';
   if (editing){ try { draft = norm(JSON.parse(ls('ng_ed_draft') || 'null') || clone(live)); } catch(e){ draft = norm(clone(live)); } }
@@ -7976,6 +7977,7 @@ html.ed-dash-open body{overflow:hidden}
     if (editing) return;
     readRemote().then(function(txt){
       if (txt == null) txt = '';
+      try { if (txt && JSON.parse(txt).v !== 2) txt = ''; } catch(e){ txt = ''; }   // old changes from before the reset don't count
       if (txt === lastRemote) return;
       lastRemote = txt; ls('ng_edits', txt || null);
       var mag = document.body.classList.contains('fbv-open') || ($('issue-view') && $('issue-view').classList.contains('open'));
