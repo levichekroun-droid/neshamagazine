@@ -3741,6 +3741,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   </details>
   <p class="op-cloud-ok" id="ow-cloud-ok" hidden> Connected <button type="button" class="ngx-link" id="ow-disconnect">disconnect</button></p>
 
+  <button type="button" id="pf-build" class="ed-start" onclick="var b=this.querySelector('span');window.NG_BUILD_PAGE_INDEX&amp;&amp;NG_BUILD_PAGE_INDEX(true,function(t){b.textContent=t})"><b>Update page search</b><span>Reads every page of every magazine so readers can search inside them. It also runs by itself.</span></button>
   <button type="button" id="vm-open" class="vm-open ed-start"><b>Neshama Radar</b><span>Who’s on the site, where they are, flagged pictures and logins.</span></button>
 
   <details class="op-sec op-keep"><summary> Next-issue checklist</summary>
@@ -5761,6 +5762,7 @@ window.NGFlipbook = function(host, pages, opts){
   // and quietly get the newest issue ready a few seconds after the page opens
   setTimeout(function(){ var c = navigator.connection; if (c && (c.saveData || /2g/.test(c.effectiveType || ''))) return; var f = document.querySelector('#issue-list .arch'); var id = f && idOf(f.getAttribute('data-link')); if (id && !busy() && !openId) getBytes(id).catch(function(){}); }, 6000);
   function openDrive(id){
+    window.NG_CUR_DRIVE = id;
     view.hidden = false; document.body.classList.add('fbv-open'); if (cur){ cur.destroy(); cur = null; }
     openId = id;
     var c = cache[id] = cache[id] || {};
@@ -5799,6 +5801,7 @@ window.NGFlipbook = function(host, pages, opts){
       task.onProgress = function(p){ if (c.onp) c.onp(p.loaded, p.total || c.size); };
       return task.promise;
     }).then(function(pdf){
+      (window.NG_PDFS = window.NG_PDFS || {})[id] = pdf;   // kept for "search this issue"
       if (c.pages) return;   // someone else is already building it
       // show the book right away, then fill each page in as soon as it's ready (no waiting for the whole magazine)
       var n = pdf.numPages, pages = c.early || [], si = 0, started = false;
@@ -5815,6 +5818,7 @@ window.NGFlipbook = function(host, pages, opts){
           if (!c.ratio || !started) c.ratio = wide ? v0.height / (v0.width / 2) : v0.height / v0.width;
           if (wide) pages.splice(si + 1, 0, WAIT);   // a wide page = left page + right page
           var mine = si; si += wide ? 2 : 1;
+          ((window.NG_PDFMAP = window.NG_PDFMAP || {})[id] = window.NG_PDFMAP[id] || {})[k] = mine;   // pdf page -> book page
           if (!started){ started = true; c.firstPage = true; var cv0 = coverOf(id); pages[0] = (cv0 && !wide) ? cv0 : WAIT;
             var r1 = wide ? v0.height / (v0.width / 2) : v0.height / v0.width;
             if (openId === id && !view.hidden && (!c.view || Math.abs(r1 - 1.3) > .04)){ c.ratio = r1; if (cur) cur.destroy(); cur = window.NGFlipbook(vhost, pages, { ratio: c.ratio }); c.view = cur; }
@@ -8691,5 +8695,203 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
 .op-sec:has(#ck-list){display:none!important}
 .rd-h4{margin:18px 0 8px;font:800 16px Figtree,sans-serif;color:#12294a}
 </style>
+
+<style id="ng-pagefind-css">
+.pf-bar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:8px;background:#12294a;color:#f5e4cc;border:2px solid #f5e4cc;border-radius:8px;padding:6px 8px;font:700 .9rem Figtree,system-ui,sans-serif;max-width:calc(100% - 20px)}
+.pf-bar input{background:#f5e4cc;color:#12294a;border:0;border-radius:4px;font:700 .95rem Figtree,system-ui,sans-serif;padding:7px 9px;min-width:0}
+.pf-bar .pf-n{width:58px;text-align:center}
+.pf-bar .pf-q{width:200px}
+.pf-bar button{border:0;border-radius:4px;background:#f5e4cc;color:#12294a;font:800 .9rem Figtree,system-ui,sans-serif;padding:7px 12px;cursor:pointer}
+.pf-bar .pf-of{white-space:nowrap;opacity:.85}
+.pf-sep{width:1px;align-self:stretch;background:rgba(245,228,204,.4)}
+.pf-res{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);z-index:7;width:min(520px,calc(100% - 20px));max-height:46vh;overflow:auto;background:#f5e4cc;color:#12294a;border:2px solid #12294a;border-radius:8px;padding:8px}
+.pf-res[hidden]{display:none}
+.pf-res p{margin:6px 8px;font:600 .9rem Figtree,system-ui,sans-serif}
+.pf-res button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid rgba(18,41,74,.2);background:none;color:#12294a;padding:9px 8px;cursor:pointer;font:500 .92rem/1.35 Figtree,system-ui,sans-serif}
+.pf-res button:last-child{border-bottom:0}
+.pf-res button b{font-weight:800;margin-right:6px}
+.pf-res mark,.fpr mark{background:#12294a;color:#f5e4cc;padding:0 2px}
+@media (max-width:640px){.pf-bar{bottom:10px;flex-wrap:wrap;justify-content:center}.pf-bar .pf-q{width:130px}.pf-sep{display:none}}
+.fpr{margin:10px 0 0;border:2px solid #12294a;border-radius:8px;background:#f5e4cc;padding:6px;max-height:300px;overflow:auto;text-align:left}
+.fpr[hidden]{display:none}
+.fpr h4{margin:6px 8px;font:800 .95rem Figtree,system-ui,sans-serif;color:#12294a}
+.fpr button{display:block;width:100%;text-align:left;border:0;border-top:1px solid rgba(18,41,74,.2);background:none;color:#12294a;padding:9px 8px;cursor:pointer;font:500 .92rem/1.35 Figtree,system-ui,sans-serif}
+.fpr button b{font-weight:800;margin-right:6px}
+</style>
+<script>
+/* Page search:
+   - inside an open magazine: "Page [5] Go" and "Search this issue"
+   - on the website search: "issue 13 page 5", or any word ("comic", "riddle") finds the pages it is on
+   The words of every page are saved in Firebase (site/sx_<file id>) by the owner's computer, so everyone can search them. */
+(function(){
+  var KEY = 'AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', DB = 'https://firestore.googleapis.com/v1/projects/neshamagazine/databases/(default)/documents';
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(x){ return String(x || '').replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
+  function norm(t){ return String(t || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9֐-׿]+/g, ' ').trim(); }
+  function issues(){ return [].slice.call(document.querySelectorAll('#issue-list .arch')).map(function(a){ var m = String(a.getAttribute('data-link') || '').match(/\/d\/([\w-]+)/); return { el:a, title: String(a.title || '').replace(/&#39;/g, "'"), link: a.getAttribute('data-link'), id: m ? m[1] : null, num: a.getAttribute('data-num') }; }).filter(function(x){ return x.id; }); }
+  function byId(id){ return issues().filter(function(x){ return x.id === id; })[0]; }
+  function snippet(text, words){
+    var low = text.toLowerCase(), at = -1; words.some(function(w){ at = low.indexOf(w); return at > -1; });
+    var a = Math.max(0, at - 50), sn = (a ? '…' : '') + text.slice(a, a + 130) + (a + 130 < text.length ? '…' : '');
+    var h = esc(sn); words.forEach(function(w){ if (w.length > 1) h = h.replace(new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig'), '<mark>$1</mark>'); }); return h;
+  }
+  // ---------- the current magazine ----------
+  var fv = null;
+  var orig = window.NGFlipbook;
+  window.NGFlipbook = function(host, pages, opts){
+    opts = opts || {};
+    if (host && host.id === 'flipview-host'){ var p0 = opts.onPage; opts.onPage = function(p, n, c){ if (p0) p0(p, n, c); cur.p = p; cur.n = n; ui(); }; }
+    var fb = orig.call(this, host, pages, opts);
+    if (host && host.id === 'flipview-host'){ fv = fb; cur.n = pages.length; ui(); setTimeout(wantGo, 50); }
+    return fb;
+  };
+  var cur = { p:0, n:0 };
+  function bar(){
+    var v = $('flipview'); if (!v) return null; var b = v.querySelector('.pf-bar'); if (b) return b;
+    b = document.createElement('form'); b.className = 'pf-bar'; b.setAttribute('novalidate', '');
+    b.innerHTML = '<span>Page</span><input class="pf-n" inputmode="numeric" aria-label="Page number"><span class="pf-of"></span><button type="submit" data-a="go">Go</button><i class="pf-sep"></i><input class="pf-q" placeholder="Search this issue" aria-label="Search this issue"><button type="button" data-a="find">Find</button>';
+    var r = document.createElement('div'); r.className = 'pf-res'; r.hidden = true;
+    v.appendChild(r); v.appendChild(b);
+    b.addEventListener('submit', function(e){ e.preventDefault(); var q = b.querySelector('.pf-q'); if (document.activeElement === q && q.value.trim()) return findHere(q.value); goPage(b.querySelector('.pf-n').value); });
+    b.querySelector('[data-a=find]').onclick = function(){ findHere(b.querySelector('.pf-q').value); };
+    b.querySelector('.pf-q').addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); findHere(this.value); } });
+    b.querySelector('.pf-n').addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); goPage(this.value); } });
+    ['keydown', 'keyup', 'keypress'].forEach(function(t){ b.addEventListener(t, function(e){ e.stopPropagation(); }); });   // typing here does not turn pages
+    r.addEventListener('click', function(e){ var x = e.target.closest('button[data-p]'); if (x){ go(+x.dataset.p); r.hidden = true; } });
+    return b;
+  }
+  function ui(){ var b = bar(); if (!b) return; var n = cur.n || 0; b.querySelector('.pf-of').textContent = n ? 'of ' + n : ''; var i = b.querySelector('.pf-n'); if (document.activeElement !== i) i.value = n ? String((cur.p || 0) + 1) : ''; }
+  function go(idx){ if (fv && fv.go) fv.go(idx); cur.p = idx; ui(); }
+  function goPage(v){ var n = parseInt(v, 10); if (!n || n < 1) return; go(Math.min(n, cur.n || n) - 1); }
+  // the words on each page of the open magazine (straight from the PDF, or from the saved index)
+  function pageTexts(id){
+    if (texts[id]) return Promise.resolve(texts[id]);
+    var pdf = window.NG_PDFS && NG_PDFS[id];
+    if (pdf) return extract(pdf).then(function(r){ texts[id] = r; return r; });
+    return loadIndex([id]).then(function(){ return texts[id] || null; });
+  }
+  var texts = {};
+  function extract(pdf){
+    var out = { pages: [], map: {} }, si = 0, k = 1;
+    return new Promise(function(done){
+      (function next(){ if (k > pdf.numPages){ done(out); return; }
+        var kk = k++;
+        pdf.getPage(kk).then(function(pg){ var v0 = pg.getViewport({ scale:1 }), wide = v0.width > v0.height * 1.2; out.map[kk] = si; si += wide ? 2 : 1;
+          return pg.getTextContent().then(function(tc){ out.pages[kk - 1] = tc.items.map(function(i){ return i.str; }).join(' ').replace(/\s+/g, ' ').trim().slice(0, 4000); }); })
+          .then(next, next); })();
+    });
+  }
+  function findIn(t, q){
+    var words = norm(q).split(' ').filter(Boolean); if (!words.length || !t || !t.pages) return { words: words, res: [] };
+    var res = [];
+    t.pages.forEach(function(txt, i){ var low = ' ' + norm(txt) + ' ', sc = 0; words.forEach(function(w){ if (low.indexOf(w) > -1) sc += low.indexOf(' ' + w) > -1 ? 2 : 1; });
+      if (sc >= words.length) res.push({ k: i + 1, idx: t.map[i + 1] != null ? t.map[i + 1] : i, sc: sc, txt: txt }); });
+    return { words: words, res: res.sort(function(a, b){ return b.sc - a.sc || a.k - b.k; }) };
+  }
+  function findHere(q){
+    var r = $('flipview').querySelector('.pf-res'), id = window.NG_CUR_DRIVE; if (!q.trim()) { r.hidden = true; return; }
+    r.hidden = false; r.innerHTML = '<p>Looking through every page…</p>';
+    pageTexts(id).then(function(t){
+      if (!t){ r.innerHTML = '<p>Page search for this magazine is not ready yet. It gets ready the next time the owner opens the website.</p>'; return; }
+      var f = findIn(t, q);
+      r.innerHTML = f.res.length ? '<p>Found on ' + f.res.length + ' page' + (f.res.length > 1 ? 's' : '') + ':</p>' + f.res.slice(0, 40).map(function(x){ return '<button type="button" data-p="' + x.idx + '"><b>Page ' + (x.idx + 1) + '</b>' + snippet(x.txt, f.words) + '</button>'; }).join('')
+        : '<p>No page has "' + esc(q) + '". Some pages are pictures only, so their words cannot be searched.</p>';
+    });
+  }
+  // open a magazine at a page, from the website search
+  var want = null;
+  function wantGo(){
+    if (!want || window.NG_CUR_DRIVE !== want.id || !fv) return;
+    var m = window.NG_PDFMAP && NG_PDFMAP[want.id], idx = want.idx != null ? want.idx : (m && m[want.k]);
+    if (idx == null){ if (Date.now() - want.t < 25000) setTimeout(wantGo, 400); return; }
+    if ((cur.n || 0) <= idx && Date.now() - want.t < 25000){ setTimeout(wantGo, 400); return; }
+    var w = want; want = null; setTimeout(function(){ go(idx); if (window.NG && NG.toast) NG.toast('Page ' + (idx + 1)); }, 300);
+  }
+  function openAt(it, idx){
+    var u = window.NG && NG.getUser && NG.getUser(), owner = window.NG_IS_OWNER && NG_IS_OWNER();
+    if (!u && !owner){ if (window.NG && NG.openAuth) NG.openAuth('signup'); return; }
+    want = { id: it.id, idx: idx, t: Date.now() };
+    if (!(window.NG_OPEN_ISSUE && NG_OPEN_ISSUE(it.link))) { want = null; return; }
+    setTimeout(wantGo, 300);
+  }
+  window.NG_OPEN_AT_PAGE = openAt;
+  (function wrap(){ var o = window.NG_OPEN_ISSUE; if (!o) return setTimeout(wrap, 400); if (o._pf) return;
+    var w = function(link){ var m = String(link || '').match(/\/d\/([\w-]+)/); if (m) window.NG_CUR_DRIVE = m[1]; var r = $('flipview') && $('flipview').querySelector('.pf-res'); if (r) r.hidden = true; return o.apply(this, arguments); };
+    w._pf = true; window.NG_OPEN_ISSUE = w; setTimeout(wrap, 3000); })();
+  // ---------- the saved index (for the website search) ----------
+  var indexP = null;
+  function loadIndex(ids){
+    var all = ids || issues().map(function(x){ return x.id; }), need = all.filter(function(id){ return !texts[id]; });
+    if (!need.length) return Promise.resolve();
+    return fetch(DB.replace(/\/documents$/, '/documents') + ':batchGet?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ documents: need.map(function(id){ return 'projects/neshamagazine/databases/(default)/documents/site/sx_' + id; }) }) })
+      .then(function(r){ return r.ok ? r.json() : []; }).then(function(arr){ (arr || []).forEach(function(x){ var d = x.found; if (!d || !d.fields || !d.fields.data) return; try { var j = JSON.parse(d.fields.data.stringValue); var id = d.name.split('/sx_')[1]; texts[id] = j; } catch(e){} }); })
+      .catch(function(){});
+  }
+  function siteIndex(){ return indexP || (indexP = loadIndex()); }
+  // the website search: "issue 13 page 5", "page 5 shanghai", or words on a page
+  var q = $('finder-q'), msg = $('finder-msg');
+  if (q){
+    q.addEventListener('focus', siteIndex, { once:true });
+    var box = document.createElement('div'); box.className = 'fpr'; box.hidden = true; var fr = $('finder-chips'); if (fr) fr.parentNode.insertBefore(box, fr.nextSibling);
+    box.addEventListener('click', function(e){ var x = e.target.closest('button[data-id]'); if (!x) return; var it = byId(x.dataset.id); if (it) openAt(it, +x.dataset.p); });
+    function pageAsk(text){ var m = norm(text).match(/(?:^|\s)(?:page|pg|p)\s*(\d{1,3})(?:\s|$)/) || norm(text).match(/(?:^|\s)(\d{1,3})\s*(?:page|pg)(?:\s|$)/); return m ? +m[1] : 0; }
+    function findIssue(rest){
+      var w = norm(rest).replace(/\b(issue|of|the|in|page|pg)\b/g, ' ').split(' ').filter(Boolean); if (!w.length) return null;
+      var best = null, bs = 0; issues().forEach(function(it){ var hay = ' ' + norm(it.title + ' ' + (it.el.getAttribute('data-keys') || '')) + ' ', sc = 0;
+        w.forEach(function(x){ if (/^\d+$/.test(x)){ if (it.num && +x === +it.num) sc += 5; else if (new RegExp(' 0*' + x + ' ').test(hay)) sc += 3; } else if (hay.indexOf(' ' + x) > -1) sc += 2; });
+        if (sc > bs){ bs = sc; best = it; } }); return best;
+    }
+    function run(e){
+      var text = q.value; box.hidden = true; box.innerHTML = '';
+      var pg = pageAsk(text);
+      if (pg){
+        var rest = /(page|pg|p)\s*\d+/i.test(text) ? text.replace(/(page|pg|p)\s*\d+/i, ' ') : text.replace(/\d+\s*(page|pg)/i, ' '), it = findIssue(rest);
+        if (it){ if (e){ e.preventDefault(); e.stopImmediatePropagation(); } msg.textContent = 'Opening ' + it.title + ' at page ' + pg + '…'; openAt(it, pg - 1); return; }
+      }
+      // words on the pages: show where they are (the claw still grabs a matching issue)
+      if (norm(text).length < 3) return;
+      siteIndex().then(function(){
+        var rows = []; issues().forEach(function(it){ var f = findIn(texts[it.id], text); (f.res || []).slice(0, 6).forEach(function(x){ rows.push({ it: it, x: x, w: f.words }); }); });
+        if (!rows.length) return;
+        rows.sort(function(a, b){ return b.x.sc - a.x.sc; });
+        box.innerHTML = '<h4>Found on ' + rows.length + ' page' + (rows.length > 1 ? 's' : '') + ' inside the magazines</h4>' + rows.slice(0, 30).map(function(r){ return '<button type="button" data-id="' + r.it.id + '" data-p="' + r.x.idx + '"><b>' + esc(r.it.title) + ', page ' + (r.x.idx + 1) + '</b>' + snippet(r.x.txt, r.w) + '</button>'; }).join('');
+        box.hidden = false;
+        setTimeout(function(){ if (/^No issue found/.test(msg.textContent)) msg.textContent = 'No issue is called that, but it is inside these pages:'; }, 60);
+      });
+    }
+    q.addEventListener('keydown', function(e){ if (e.key === 'Enter') run(e); }, true);
+    var gb = $('finder-go'); if (gb) gb.addEventListener('click', run, true);
+  }
+  // ---------- the owner's computer saves the words of every page (new and changed magazines only) ----------
+  function ls(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pdfLib(){
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    var V = '3.11.174', bases = ['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + V + '/', 'https://cdn.jsdelivr.net/npm/pdfjs-dist@' + V + '/build/'];
+    function add(src){ return new Promise(function(ok, no){ var t = document.createElement('script'); t.src = src; t.onload = ok; t.onerror = no; document.head.appendChild(t); }); }
+    function at(n){ if (n >= bases.length) return Promise.reject(new Error('no pdf.js')); return add(bases[n] + 'pdf.min.js').then(function(){ window.pdfjsLib.GlobalWorkerOptions.workerSrc = bases[n] + 'pdf.worker.min.js'; return window.pdfjsLib; }, function(){ return at(n + 1); }); }
+    return at(0);
+  }
+  function token(){ var rt = ls('ng_fb_rt'); if (!rt) return Promise.reject(new Error('no'));
+    return fetch('https://securetoken.googleapis.com/v1/token?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body:'grant_type=refresh_token&refresh_token=' + encodeURIComponent(rt) }).then(function(r){ return r.json(); }).then(function(j){ if (!j.id_token) throw new Error('no'); return j.id_token; }); }
+  var building = false;
+  window.NG_BUILD_PAGE_INDEX = function(all, say){
+    if (building) return Promise.resolve(); building = true; say = say || function(){};
+    var list = issues(), done = 0;
+    return loadIndex().then(pdfLib).then(function(lib){
+      return list.reduce(function(p, it){ return p.then(function(){
+        return fetch('https://www.googleapis.com/drive/v3/files/' + it.id + '?fields=modifiedTime&key=' + KEY).then(function(r){ return r.ok ? r.json() : {}; }).catch(function(){ return {}; }).then(function(meta){
+          var t = texts[it.id]; if (!all && t && t.mt && t.mt === meta.modifiedTime){ done++; return; }
+          say('Reading the pages of ' + it.title + ' (' + (done + 1) + ' of ' + list.length + ')…');
+          var pdfP = window.NG_PDFS && NG_PDFS[it.id] ? Promise.resolve(NG_PDFS[it.id]) : lib.getDocument({ url: 'https://www.googleapis.com/drive/v3/files/' + it.id + '?alt=media&key=' + KEY, disableAutoFetch: true, disableStream: true, rangeChunkSize: 262144, verbosity: 0 }).promise;
+          return pdfP.then(extract).then(function(r){ r.mt = meta.modifiedTime || ''; r.title = it.title; texts[it.id] = r;
+            return token().then(function(tk){ return fetch(DB + '/site/sx_' + it.id + '?key=' + KEY, { method:'PATCH', headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + tk }, body: JSON.stringify({ fields:{ data:{ stringValue: JSON.stringify(r) }, at:{ timestampValue: new Date().toISOString() } } }) }); }); })
+            .then(function(){ done++; }, function(){ done++; });
+        }); }); }, Promise.resolve());
+    }).then(function(){ building = false; say('Page search is up to date for all ' + list.length + ' magazines.'); }, function(){ building = false; say('Could not read the magazines right now.'); });
+  };
+  // runs by itself on the owner's computer, a little after the site opens
+  setTimeout(function(){ if (window.NG_IS_OWNER && NG_IS_OWNER() && ls('ng_fb_rt') && /^https?:$/.test(location.protocol)) NG_BUILD_PAGE_INDEX(false); }, 15000);
+})();
+</script>
 </body>
 </html>
