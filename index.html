@@ -9069,7 +9069,7 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
     '<circle cx="42" cy="161" r="5" fill="#12294a"/><circle cx="58" cy="161" r="5" fill="none" stroke="#12294a" stroke-width="3"/>' +
     '<rect x="72" y="156" width="12" height="10" rx="2" fill="#12294a"/>' +
    '</svg>';
-  fin.insertBefore(r, fin.firstChild); fin.classList.add('has-robo');
+  fin.insertBefore(r, fin.firstChild); r.style.display = 'none';   // the search box looks like before; Robo only shows up in the corner when he drives the claw
   var pilot = r.cloneNode(true); pilot.id = 'robo-pilot'; pilot.classList.add('robo-pilot'); pilot.removeAttribute('aria-label'); pilot.setAttribute('aria-hidden', 'true'); pilot.tabIndex = -1;
   [].forEach.call(pilot.querySelectorAll('[id]'), function(x){ x.removeAttribute('id'); }); document.body.appendChild(pilot);
   function all(sel){ return [].slice.call(document.querySelectorAll('#robo ' + sel + ', #robo-pilot ' + sel)); }
