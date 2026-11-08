@@ -127,7 +127,9 @@ select:focus,input:focus,textarea:focus{outline:3px solid var(--navy);outline-of
   $('stars').addEventListener('mouseover', function(e){ var b = e.target.closest('button'); if (b) paint(+b.dataset.n); });
   $('stars').addEventListener('mouseleave', function(){ paint(stars); });
   // the issue from the QR code, like feedback/?issue=13
-  var q = new URLSearchParams(location.search).get('issue');
+  var params = new URLSearchParams(location.search), q = params.get('issue'), fromQR = params.get('src') === 'qr';
+  try { if (fromQR && !sessionStorage.getItem('ng_qr_counted_fb')){ sessionStorage.setItem('ng_qr_counted_fb', '1');
+    fetch(DB + '/qr_scans?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ fields:{ page:{ stringValue:'feedback' }, at:{ timestampValue: new Date().toISOString() }, phone:{ booleanValue: /Mobi|Android|iPhone/i.test(navigator.userAgent) } } }) }).catch(function(){}); } } catch(x){}
   if (q){ [].some.call($('issue').options, function(o){ if (o.value.toLowerCase().indexOf(String(q).toLowerCase()) > -1){ $('issue').value = o.value; return true; } }); }
 
   function clean(v, n){ return String(v || '').replace(/[<>]/g, '').trim().slice(0, n); }
@@ -141,11 +143,11 @@ select:focus,input:focus,textarea:focus{outline:3px solid var(--navy);outline-of
     if (!stars && !d.fav && !d.better && !d.next){ m.textContent = 'Pick some stars or write something first.'; return; }
     if (d.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)){ m.textContent = 'That email does not look right.'; $('email').focus(); return; }
     $('send').disabled = true; m.textContent = 'Sending…';
-    var fields = { at:{ timestampValue: new Date().toISOString() }, stars:{ integerValue: String(d.stars) }, phone:{ booleanValue: /Mobi|Android|iPhone/i.test(navigator.userAgent) } };
+    var fields = { at:{ timestampValue: new Date().toISOString() }, stars:{ integerValue: String(d.stars) }, phone:{ booleanValue: /Mobi|Android|iPhone/i.test(navigator.userAgent) }, src:{ stringValue: fromQR ? 'qr' : 'link' } };
     ['issue', 'fav', 'better', 'next', 'name', 'email'].forEach(function(k){ fields[k] = { stringValue: d[k] }; });
     var saved = fetch(DB + '/feedback?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ fields: fields }) }).then(function(r){ return r.ok; }).catch(function(){ return false; });
     var mailed = fetch('https://api.web3forms.com/submit', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-      body: JSON.stringify({ access_key: W3, from_name: 'NeshamaGazine', subject: 'Feedback: ' + d.issue + ' (' + d.stars + ' stars)', name: d.name || '(no name)', email: d.email || undefined,
+      body: JSON.stringify({ access_key: W3, from_name: 'NeshamaGazine', subject: 'Feedback' + (fromQR ? ' (QR code)' : '') + ': ' + d.issue + ' (' + d.stars + ' stars)', name: d.name || '(no name)', email: d.email || undefined,
         issue: d.issue, stars: d.stars + ' of 5', favorite_part: d.fav, make_better: d.better, write_about_next: d.next }) })
       .then(function(r){ return r.json().then(function(j){ return !!(j && (j.success === true || j.success === 'true')); }); }).catch(function(){ return false; });
     Promise.all([saved, mailed]).then(function(r){

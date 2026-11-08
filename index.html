@@ -5117,6 +5117,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     <button type="button" data-v="dev">Phones vs computers</button>
     <button type="button" data-v="alert">Alerts</button>
     <button type="button" data-v="fb">Feedback</button>
+    <button type="button" data-v="qr">QR codes</button>
     <span class="vm-sp"></span>
     <button type="button" class="vm-small" id="vm-test"> Test visitor</button>
     <button type="button" class="vm-small" id="vm-refresh">Refresh</button>
@@ -5133,6 +5134,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   <section class="vm-view" id="vm-read" hidden><div class="rd-pad"><h3>Most read</h3><p class="rd-tip">How many times each issue was opened (counting starts now).</p><div id="rd-read"></div></div></section>
   <section class="vm-view" id="vm-new" hidden><div class="rd-pad"><h3>Sign-ups</h3><p class="rd-tip">New readers in the last 7 days.</p><div id="rd-new"></div></div></section>
   <section class="vm-view" id="vm-dev" hidden><div class="rd-pad"><h3>Phones vs computers</h3><p class="rd-tip">What readers used this month.</p><div id="rd-dev"></div></div></section>
+  <section class="vm-view" id="vm-qr" hidden><div class="rd-pad"><h3>QR codes</h3><p class="rd-tip">How many people scanned the QR codes in the printed magazine, and how many of them became readers.</p><div id="rd-qr"></div></div></section>
   <section class="vm-view" id="vm-fb" hidden><div class="rd-pad"><h3>Feedback</h3><p class="rd-tip">What readers wrote on the feedback page (the QR code in the printed magazine). Newest first.</p><div id="rd-fb"></div></div></section>
   <section class="vm-view" id="vm-alert" hidden><div class="rd-pad"><h3>Alerts</h3><p class="rd-tip">Every screenshot, recording or print try, newest first.</p><div id="rd-alert"></div></div></section>
   <section class="vm-view" id="vm-where" hidden>
@@ -8468,6 +8470,10 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   // first visit on this device = the day they signed up (for "Sign-ups")
   setTimeout(function(){ var u = me(); if (!u || !u.email || owner()) return; var k = 'ng_fs_' + pkey(u.email); try { if (localStorage.getItem(k)) return; localStorage.setItem(k, '1'); } catch(e){ return; }
     commit({ firstSeen:{ timestampValue: new Date().toISOString() } }, ['firstSeen']); }, 4000);
+  // readers who came from the QR code in the printed magazine
+  setTimeout(function(){ var u = me(); if (!u || !u.email || owner()) return; var src = ''; try { src = localStorage.getItem('ng_src') || ''; } catch(e){}
+    if (src !== 'qr') return; var k = 'ng_srcsent_' + pkey(u.email); try { if (localStorage.getItem(k)) return; localStorage.setItem(k, '1'); } catch(e){ return; }
+    commit({ src:{ stringValue:'qr' }, srcAt:{ timestampValue: new Date().toISOString() } }, ['src', 'srcAt']); }, 5000);
   // count an issue opening (for "Most read")
   var lastOpen = '', lastT = 0;
   function countOpen(title){ if (!title) return; var k = slug(title); if (k === lastOpen && Date.now() - lastT < 5000) return; lastOpen = k; lastT = Date.now();
@@ -8510,18 +8516,37 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   }
   var prev = window.NG_RADAR_TAB;
   window.NG_RADAR_TAB = function(v, fromLoad){ if (prev) prev(v, fromLoad);
-    if (v === 'read') drawRead(); if (v === 'new') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); };
+    if (v === 'read') drawRead(); if (v === 'new') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'qr' && !fromLoad) drawQR(); };
+  function drawQR(){
+    var el = $('rd-qr'); el.innerHTML = '<p class="rd-tip">Loading\u2026</p>';
+    var readers = people().filter(function(p){ return p.f && p.f.src && p.f.src.stringValue === 'qr'; });
+    token().then(function(t){ return fetch(DB + '/qr_scans?pageSize=1000&key=' + KEY, { headers:{ Authorization:'Bearer ' + t }, cache:'no-store' }); })
+      .then(function(r){ return r.json().then(function(j){ if (!r.ok){ var m = (j.error && j.error.message) || ''; throw new Error(/PERMISSION/i.test(m) ? 'PERM' : 'Could not load the scans.'); } return j; }); })
+      .then(function(j){ return (j.documents || []).map(function(d){ var f = d.fields || {}; return { page: f.page ? f.page.stringValue : 'site', t: f.at ? new Date(f.at.timestampValue).getTime() : 0, phone: !!(f.phone && f.phone.booleanValue) }; }); })
+      .catch(function(e){ return e.message === 'PERM' ? null : []; })
+      .then(function(scans){
+        var html = '';
+        if (scans){
+          var wk = Date.now() - 7 * 864e5, site = scans.filter(function(x){ return x.page === 'site'; }), fb = scans.filter(function(x){ return x.page === 'feedback'; });
+          html += '<div class="rd-big"><div><b>' + site.length + '</b><span>website QR scans</span></div><div><b>' + fb.length + '</b><span>feedback QR scans</span></div><div><b>' + scans.filter(function(x){ return x.t > wk; }).length + '</b><span>scans this week</span></div><div><b>' + readers.length + '</b><span>became readers</span></div></div>';
+          var days = {}; scans.forEach(function(x){ if (!x.t) return; var d = new Date(x.t).toLocaleDateString(undefined, { month:'short', day:'numeric' }); days[d] = (days[d] || 0) + 1; });
+          var host = document.createElement('div'); bars(host, Object.keys(days).map(function(k){ return [k, days[k]]; }).slice(-14)); html += '<h4 class="rd-h4">Scans by day</h4>' + host.innerHTML;
+        } else html += '<div class="rd-big"><div><b>' + readers.length + '</b><span>readers came from the QR code</span></div></div><p class="rd-tip">To also count scans from people who did not sign up, Firebase needs one more rule. Ask Claude for it.</p>';
+        html += '<h4 class="rd-h4">Readers who came from the QR code</h4>' + (readers.length ? readers.map(function(p){ return '<div class="rd-logrow"><span><b>' + esc(p.name || (p.email || '').split('@')[0]) + '</b><br><small>' + esc(p.email || '') + '</small></span><small>' + (p.f.srcAt ? ago(new Date(p.f.srcAt.timestampValue).getTime()) : '') + '</small></div>'; }).join('') : '<p class="rd-tip">Nobody yet.</p>');
+        el.innerHTML = html;
+      });
+  }
   function drawFeedback(){
     var el = $('rd-fb'); el.innerHTML = '<p class="rd-tip">Loading\u2026</p>';
     token().then(function(t){ return fetch(DB + '/feedback?pageSize=300&key=' + KEY, { headers:{ Authorization:'Bearer ' + t }, cache:'no-store' }); })
       .then(function(r){ return r.json().then(function(j){ if (!r.ok){ var m = (j.error && j.error.message) || ''; throw new Error(/PERMISSION/i.test(m) ? 'Firebase does not let the Radar read feedback yet. Ask Claude for the one Firestore rule to add.' : 'Could not load feedback.'); } return j; }); })
       .then(function(j){
         var rows = (j.documents || []).map(function(d){ var f = d.fields || {}, S = function(k){ return f[k] ? (f[k].stringValue || f[k].integerValue || '') : ''; };
-          return { issue: S('issue'), st: +S('stars') || 0, fav: S('fav'), better: S('better'), next: S('next'), name: S('name'), email: S('email'), t: f.at ? new Date(f.at.timestampValue).getTime() : 0 }; }).sort(function(a, b){ return b.t - a.t; });
+          return { qr: S('src') === 'qr', issue: S('issue'), st: +S('stars') || 0, fav: S('fav'), better: S('better'), next: S('next'), name: S('name'), email: S('email'), t: f.at ? new Date(f.at.timestampValue).getTime() : 0 }; }).sort(function(a, b){ return b.t - a.t; });
         if (!rows.length){ el.innerHTML = '<p class="rd-tip">No feedback yet.</p>'; return; }
         var avg = rows.filter(function(x){ return x.st; }), a = avg.length ? (avg.reduce(function(s2, x){ return s2 + x.st; }, 0) / avg.length).toFixed(1) : '\u2013';
         el.innerHTML = '<div class="rd-big"><div><b>' + rows.length + '</b><span>answers</span></div><div><b>' + a + '</b><span>stars on average</span></div></div>' + rows.map(function(x){
-          return '<div class="rd-fbrow"><p><b>' + esc(x.issue || 'No issue picked') + '</b> &middot; ' + (x.st ? x.st + ' of 5 stars' : 'no stars') + ' &middot; <small>' + (x.t ? ago(x.t) : '') + '</small></p>' +
+          return '<div class="rd-fbrow"><p><b>' + esc(x.issue || 'No issue picked') + '</b> &middot; ' + (x.st ? x.st + ' of 5 stars' : 'no stars') + (x.qr ? ' &middot; from the QR code' : '') + ' &middot; <small>' + (x.t ? ago(x.t) : '') + '</small></p>' +
             (x.fav ? '<p><b>Favorite part:</b> ' + esc(x.fav) + '</p>' : '') + (x.better ? '<p><b>Make better:</b> ' + esc(x.better) + '</p>' : '') + (x.next ? '<p><b>Write about next:</b> ' + esc(x.next) + '</p>' : '') +
             '<p><small>' + esc(x.name || 'No name') + (x.email ? ' &middot; ' + esc(x.email) : '') + '</small></p></div>'; }).join('');
       }).catch(function(e){ el.innerHTML = '<p class="rd-tip">' + esc(e.message) + '</p>'; });
@@ -8641,5 +8666,30 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
 })();
 </script>
 <style id="rd-fb-css">.rd-fbrow{border:2px solid #12294a;border-radius:8px;padding:12px 16px;margin:0 0 10px;color:#12294a}.rd-fbrow p{margin:0 0 6px;line-height:1.45}.rd-fbrow p:last-child{margin:0}</style>
+
+<script>
+/* the next-issue checklist is gone from the Owner Panel */
+(function(){ var l = document.getElementById('ck-list'), d = l && l.closest('details'); if (d) d.style.setProperty('display', 'none', 'important'); })();
+/* QR codes in the printed magazine open ?src=qr: remember it, count the scan once, then clean the address */
+(function(){
+  try {
+    var q = new URLSearchParams(location.search); if (q.get('src') !== 'qr') return;
+    localStorage.setItem('ng_src', 'qr');
+    if (!sessionStorage.getItem('ng_qr_counted')){ sessionStorage.setItem('ng_qr_counted', '1');
+      fetch('https://firestore.googleapis.com/v1/projects/neshamagazine/databases/(default)/documents/qr_scans?key=AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', { method:'POST', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ fields:{ page:{ stringValue:'site' }, at:{ timestampValue: new Date().toISOString() }, phone:{ booleanValue: /Mobi|Android|iPhone/i.test(navigator.userAgent) } } }) }).catch(function(){}); }
+    q.delete('src'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash);
+  } catch(e){}
+})();
+</script>
+<style id="ng-footer-d">
+/* footer: option D, one color, the website's own font */
+.nf4 .nf4-word{color:#f5e4cc!important;-webkit-text-stroke:0!important;font:800 min(11vw,9.6rem)/1 "Bricolage Grotesque",system-ui,sans-serif!important;letter-spacing:-.045em!important}
+.nf4-nl label{font:700 .8rem "Figtree",system-ui,sans-serif!important;letter-spacing:.14em!important}
+@media (max-width:600px){.nf4 .nf4-word{font-size:10vw!important}}
+/* the next-issue checklist is gone from the Owner Panel */
+.op-sec:has(#ck-list){display:none!important}
+.rd-h4{margin:18px 0 8px;font:800 16px Figtree,sans-serif;color:#12294a}
+</style>
 </body>
 </html>
