@@ -2371,7 +2371,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   <div class="claw-cable"></div>
   <span class="claw-costume" id="claw-costume"></span>
   <div class="claw-head"><span class="claw-stripe"></span><span class="claw-light"></span><span class="claw-name">ROBO 2.5</span></div>
-  <div class="claw-finger l"></div><div class="claw-finger r"></div>
+  <div class="claw-finger bl"></div><div class="claw-finger br"></div><div class="claw-finger l"></div><div class="claw-finger r"></div>
   <div class="claw-beam"></div>
   
 </div>
@@ -2462,7 +2462,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     var grabY = 0, lift = 170, swing = null, startT = performance.now(), last = startT;
     claw.getAnimations().forEach(function(a){ a.cancel(); });
     claw.style.opacity = '1'; claw.classList.remove('closed','locked','scanning'); claw.classList.add('show');
-    var CS = 1.3, GRAB = 150;   // the claw is drawn a bit bigger, and its finger tips close on the top of the box
+    var CS = 1.3, GRAB = 150, CS0 = 1.3, CSg = 1.3, GRABg = 150;   // the claw grows to fit the box, so its prongs close on the box's sides   // the claw is drawn a bit bigger, and its finger tips close on the top of the box
     function place(){ claw.style.left = '0px'; claw.style.transform = 'translate3d(' + (x - 75).toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + CS + ')'; }
     function easeOut(k){ return 1 - Math.pow(1 - k, 3); }
     var dropT0 = 0, dx0 = 0, dy0 = 0;
@@ -2543,9 +2543,11 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       }
       if (state === 'under' && now - t0 > 350){
         var sample = rows[0].querySelector('.arch'), sr = sample.getBoundingClientRect();
-        rc = { left: x - sr.width / 2, top: y + 18, width: sr.width, height: sr.height };
+        CSg = Math.max(1.1, Math.min(2.7, sr.width / 118)); GRABg = 114.8 * CSg - .2 * sr.height; CS = CSg;   // grows to fit the box while it is out of sight, then grips its sides
+        var bh2 = Math.max(16, GRABg / CSg - 36 - 3) + 'px'; [].forEach.call(claw.querySelectorAll('.claw-finger.bl,.claw-finger.br'), function(f){ f.style.setProperty('height', bh2, 'important'); });
+        rc = { left: x - sr.width / 2, top: y + GRABg, width: sr.width, height: sr.height };
         ghost = src.cloneNode(true); ghost.classList.add('ghost');
-        ghost.style.cssText = 'position:fixed;left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;margin:0;z-index:1165;transform:none;box-sizing:border-box';
+        ghost.style.cssText = 'position:fixed;left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;margin:0;z-index:1165;transform:none;box-sizing:border-box;transition:none;animation:none';
         document.body.appendChild(ghost);
         ghost._dx = 0; grabY = y; lift = y - H * 0.28; state = 'lift'; t0 = now;
         msg.textContent = 'Got it! ';
@@ -2557,9 +2559,11 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
         var rr = target.getBoundingClientRect();
         if (Math.min(rr.right, W) - Math.max(rr.left, 0) < 12){ state = 'scan'; claw.classList.remove('locked'); dropT0 = 0; }
         else {
-          if (!dropT0){ dropT0 = now; dx0 = x; dy0 = y; }
-          var gx = rr.left + rr.width / 2; grabY = rr.top - GRAB;
-          var kd = Math.min(1, (now - dropT0) / 900);
+          if (!dropT0){ dropT0 = now; dx0 = x; dy0 = y; CS0 = CS;
+            CSg = Math.max(1.1, Math.min(2.7, rr.width / 118)); GRABg = 114.8 * CSg - .2 * rr.height;
+            var bh = Math.max(16, GRABg / CSg - 36 - 3) + 'px'; [].forEach.call(claw.querySelectorAll('.claw-finger.bl,.claw-finger.br'), function(f){ f.style.setProperty('height', bh, 'important'); }); }
+          var gx = rr.left + rr.width / 2; grabY = rr.top - GRABg;
+          var kd = Math.min(1, (now - dropT0) / 900); CS = CS0 + (CSg - CS0) * ease(kd);
           x = dx0 + (gx - dx0) * easeOut(Math.min(1, kd * 1.25));
           y = dy0 + (grabY - dy0) * ease(kd);
           if (kd >= 1){ x = gx; y = grabY; dropT0 = 0; state = 'close'; t0 = now; claw.classList.add('closed'); claw.classList.remove('scanning','locked'); if (window.NG_SOUND) window.NG_SOUND.clamp(); }
@@ -2567,11 +2571,11 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       }
       if (state === 'close'){
         var rq = target.getBoundingClientRect();
-        x = rq.left + rq.width / 2; y = rq.top - GRAB;
+        x = rq.left + rq.width / 2; y = rq.top - GRABg; CS = CSg;
         if (now - t0 > 380){
           rc = target.getBoundingClientRect();
           ghost = target.cloneNode(true); ghost.classList.add('ghost');
-          ghost.style.cssText = 'position:fixed;left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;margin:0;z-index:1165;transform:none;box-sizing:border-box';
+          ghost.style.cssText = 'position:fixed;left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;margin:0;z-index:1165;transform:none;box-sizing:border-box;transition:none;animation:none';
           document.body.appendChild(ghost);
           target.style.visibility = 'hidden'; hiddenEl = target;
           grabY = y; state = 'lift'; t0 = now; ghost._dx = x - (rc.left + rc.width / 2);
@@ -2604,14 +2608,14 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
         var k2 = Math.min(1, (now - t0) / 900), e2 = ease(k2), sc2 = 1 + (swing.sc - 1) * e2;
         var gy = -lift + (swing.dy + lift) * e2;
         x = swing.x0 + swing.dx * e2;
-        ghost.style.transform = 'translate(' + (swing.gx + swing.dx * e2) + 'px,' + gy + 'px) scale(' + sc2 + ') rotate(' + (-3 * (1 - e2)) + 'deg)';
-        y = rc.top + gy - (sc2 - 1) * rc.height / 2 - GRAB - 20 * (sc2 - 1);
+        ghost.style.transformOrigin = '50% 0'; ghost.style.transform = 'translate(' + (swing.gx + swing.dx * e2) + 'px,' + gy + 'px) scale(' + sc2 + ') rotate(' + (-3 * (1 - e2) + 4 * Math.sin(e2 * Math.PI * 2.2) * (1 - e2)) + 'deg)';
+        CS = CSg * sc2; y = rc.top + gy - GRABg * sc2;   // the box hangs from the top, so the claw stays on it while it grows
         if (k2 >= 1){
           place(); claw.classList.remove('closed');
           openView(src, ghost);
           var y1 = y, t1 = performance.now();
           (function away(n){ var kk = Math.min(1, (n - t1) / 700); y = y1 - (y1 + 260) * ease(kk); place(); claw.style.opacity = String(1 - kk * .6);
-            if (kk < 1) requestAnimationFrame(away); else { claw.classList.remove('show'); claw.style.opacity = ''; } })(t1);
+            if (kk < 1) requestAnimationFrame(away); else { claw.classList.remove('show'); claw.style.opacity = ''; CS = 1.3; [].forEach.call(claw.querySelectorAll('.claw-finger'), function(f){ f.style.removeProperty('height'); }); } })(t1);
           return;
         }
       }
@@ -5497,7 +5501,10 @@ window.NGFlipbook = function(host, pages, opts){
   document.addEventListener('keydown', host.__keys);
   window.addEventListener('resize', layout);
   layout();
-  return { go: function(p){ if (busy) return; spread = single ? Math.max(0, Math.min(p, n - 1)) : Math.max(0, Math.min(Math.floor((p + 1) / 2), maxSpread())); rustle(); show(); }, refresh: function(){ n = pages.length; if (!busy && host.contains(book)) show(); }, destroy: function(){ document.removeEventListener('keydown', host.__keys); window.removeEventListener('resize', layout); host.innerHTML = ''; } };
+  function glow(p){ var side = single ? R : (p % 2 === 1 ? L : R); if (!side) return; var g = document.createElement('i'); g.className = 'nfb-glow'; side.appendChild(g); setTimeout(function(){ g.remove(); }, 2600); }
+  return { turnTo: function(p){ if (busy) return; var to = single ? Math.max(0, Math.min(p, n - 1)) : Math.max(0, Math.min(Math.floor((p + 1) / 2), maxSpread()));
+      if (to === spread){ glow(p); return; } var dir = to > spread ? 1 : -1; spread = to - dir; show(); turn(dir); setTimeout(function(){ glow(p); }, 700); },
+    go: function(p){ if (busy) return; spread = single ? Math.max(0, Math.min(p, n - 1)) : Math.max(0, Math.min(Math.floor((p + 1) / 2), maxSpread())); rustle(); show(); }, refresh: function(){ n = pages.length; if (!busy && host.contains(book)) show(); }, destroy: function(){ document.removeEventListener('keydown', host.__keys); window.removeEventListener('resize', layout); host.innerHTML = ''; } };
 };
 </script>
 <style id="fb-viewer-css">
@@ -8760,8 +8767,8 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
     r.addEventListener('click', function(e){ var x = e.target.closest('button[data-p]'); if (x){ go(+x.dataset.p); r.hidden = true; } });
     return b;
   }
-  function ui(){ var b = bar(); if (!b) return; var n = cur.n || 0; b.querySelector('.pf-of').textContent = n ? 'of ' + n : ''; var i = b.querySelector('.pf-n'); if (document.activeElement !== i) i.value = n ? String((cur.p || 0) + 1) : ''; }
-  function go(idx){ if (fv && fv.go) fv.go(idx); cur.p = idx; ui(); }
+  function ui(){ var b = bar(); if (!b) return; srcLabel(); var n = cur.n || 0; b.querySelector('.pf-of').textContent = n ? 'of ' + n : ''; var i = b.querySelector('.pf-n'); if (document.activeElement !== i) i.value = n ? String((cur.p || 0) + 1) : ''; }
+  function go(idx){ if (fv && fv.turnTo) fv.turnTo(idx); else if (fv && fv.go) fv.go(idx); cur.p = idx; ui(); }
   function goPage(v){ var n = parseInt(v, 10); if (!n || n < 1) return; go(Math.min(n, cur.n || n) - 1); }
   // the words on each page of the open magazine (straight from the PDF, or from the saved index)
   function pageTexts(id){
@@ -8830,8 +8837,9 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
     return out;
   }
   function cover(it){ var im = it.el.querySelector('img'); return im ? im.src : ''; }
+  var last = null;
   function render(res, big){
-    var h = '';
+    last = res; var h = '';
     if (res.jump) h += '<button type="button" class="sr-jump" data-id="' + res.jump.it.id + '" data-p="' + res.jump.idx + '"><img alt="" src="' + cover(res.jump.it) + '"><span><b>Open ' + esc(res.jump.it.title) + '</b>at page ' + (res.jump.idx + 1) + '</span></button>';
     if (res.issues.length){
       h += '<h4 class="sr-h">Issues <small>' + res.issues.length + '</small></h4><div class="sr-issues">' + res.issues.slice(0, big ? 12 : 6).map(function(x){
@@ -8840,6 +8848,7 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
     if (res.groups.length){
       var many = res.groups.length > 2;
       h += '<h4 class="sr-h">Pages <small>' + res.pages + ' page' + (res.pages > 1 ? 's' : '') + ' in ' + res.groups.length + ' issue' + (res.groups.length > 1 ? 's' : '') + '</small></h4>';
+      if (res.pages > 1) h += '<button type="button" class="sr-coll">Open all ' + res.pages + ' pages as one flipbook</button>';
       h += res.groups.map(function(g){
         var show = many ? 3 : 12;
         return '<div class="sr-group"><div class="sr-gh"><img alt="" src="' + cover(g.it) + '"><b>' + esc(g.it.title) + '</b><small>' + g.hits.length + ' page' + (g.hits.length > 1 ? 's' : '') + '</small></div>' +
@@ -8852,6 +8861,7 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
   function wire(box){
     box.addEventListener('click', function(e){
       var m = e.target.closest('.sr-more'); if (m){ [].forEach.call(m.parentNode.querySelectorAll('.sr-page[hidden]'), function(x){ x.hidden = false; }); m.remove(); return; }
+      if (e.target.closest('.sr-coll')){ if (window.NG_SEARCH_CLOSE) NG_SEARCH_CLOSE(); openCollection(box._res || last); return; }
       var x = e.target.closest('button[data-id]'); if (!x) return; var it = byId(x.dataset.id); if (!it) return;
       if (window.NG_SEARCH_CLOSE) NG_SEARCH_CLOSE(); openAt(it, +x.dataset.p);
     });
@@ -8859,6 +8869,10 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
   window.NG_SEARCH = { all: searchAll, render: render, wire: wire, ready: function(){ return siteIndex(); } };
   function findHere(q){
     var r = $('flipview').querySelector('.pf-res'), id = window.NG_CUR_DRIVE; if (!q.trim()) { r.hidden = true; return; }
+    if (coll){ var fake = { title: 'coll', pages: coll.items.map(function(x){ return x.txt; }), map: {} }; coll.items.forEach(function(x, i){ fake.map[i + 1] = i; });
+      var fc = findIn(fake, q, 'coll:' + coll.q); r.hidden = false;
+      r.innerHTML = fc.res.length ? '<p>Found on ' + fc.res.length + ' page' + (fc.res.length > 1 ? 's' : '') + ':</p>' + fc.res.slice(0, 40).map(function(x){ var it = coll.items[x.idx]; return '<button type="button" data-p="' + x.idx + '"><b>Page ' + (x.idx + 1) + '</b>' + esc(it.it.title) + ', page ' + (it.idx + 1) + ': ' + snippet(x.txt, fc.words) + '</button>'; }).join('') : '<p>No page here has "' + esc(q) + '".</p>';
+      return; }
     r.hidden = false; r.innerHTML = '<p>Looking through every page…</p>';
     pageTexts(id).then(function(t){
       if (!t){ r.innerHTML = '<p>Page search for this magazine is not ready yet. It gets ready the next time the owner opens the website.</p>'; return; }
@@ -8884,6 +8898,29 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
     setTimeout(wantGo, 300);
   }
   window.NG_OPEN_AT_PAGE = openAt;
+  var coll = null, ecache = {};
+  function embedded(it){ if (ecache[it.id]) return ecache[it.id]; var f = it.el.getAttribute('data-flip'), el = f && document.getElementById('fbd-' + f.replace(/^flipbook-|\.html$/g, '')); if (!el) return null; try { return ecache[it.id] = JSON.parse(el.textContent); } catch(e){ return null; } }
+  function srcLabel(){
+    var v = $('flipview'); if (!v) return; var l = v.querySelector('.pf-src');
+    if (!coll){ if (l) l.remove(); return; }
+    if (!l){ l = document.createElement('div'); l.className = 'pf-src'; v.appendChild(l); }
+    var a = coll.items[cur.p || 0]; l.innerHTML = '<b>' + esc(coll.title) + '</b><span>' + coll.items.length + ' pages</span>' + (a ? '<em>This page: ' + esc(a.it.title) + ', page ' + (a.idx + 1) + '</em>' : '');
+  }
+  function openCollection(res){
+    var u = window.NG && NG.getUser && NG.getUser(), owner = window.NG_IS_OWNER && NG_IS_OWNER();
+    if (!u && !owner){ if (window.NG && NG.openAuth) NG.openAuth('signup'); return; }
+    var items = [], ratio = 1.28, missing = 0;
+    res.groups.slice().reverse().forEach(function(g){ var d = embedded(g.it); g.hits.forEach(function(x){ var src = d && d.pages[x.idx]; if (src){ items.push({ src: src, it: g.it, idx: x.idx, txt: x.txt }); ratio = d.ratio || ratio; } else missing++; }); });
+    if (!items.length){ if (window.NG && NG.toast) NG.toast('These pages can only be opened one at a time.'); return; }
+    var v = $('flipview'), host = $('flipview-host'); if (!v.hidden) $('flipview-close').click();
+    coll = { items: items, q: res.q, title: res.q.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) };
+    window.NG_CUR_DRIVE = null; v.hidden = false; document.body.classList.add('fbv-open');
+    fv = window.NGFlipbook(host, items.map(function(x){ return x.src; }), { ratio: ratio });
+    cur.p = 0; cur.n = items.length; ui();
+    if (missing && window.NG && NG.toast) NG.toast(missing + ' more page' + (missing > 1 ? 's' : '') + ' can be opened from the search one at a time.');
+  }
+  window.NG_OPEN_COLLECTION = openCollection;
+  document.addEventListener('click', function(e){ if (e.target.closest && e.target.closest('#flipview-close') && coll){ coll = null; if (fv && fv.destroy) try { fv.destroy(); } catch(x){} srcLabel(); } }, true);
   (function wrap(){ var o = window.NG_OPEN_ISSUE; if (!o) return setTimeout(wrap, 400); if (o._pf) return;
     var w = function(link){ var m = String(link || '').match(/\/d\/([\w-]+)/); if (m) window.NG_CUR_DRIVE = m[1]; var r = $('flipview') && $('flipview').querySelector('.pf-res'); if (r) r.hidden = true; return o.apply(this, arguments); };
     w._pf = true; window.NG_OPEN_ISSUE = w; setTimeout(wrap, 3000); })();
@@ -9101,5 +9138,31 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
 })();
 </script>
 
+
+<style id="ng-search3-css">
+.sr-coll{display:block;width:100%;margin:0 0 10px;border:0;border-radius:8px;background:#12294a;color:#f5e4cc;font:800 1rem Figtree,system-ui,sans-serif;padding:12px 14px;cursor:pointer;text-align:center}
+.ngs .sr-coll{background:#f5e4cc;color:#12294a}
+.pf-src{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:6;display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 10px;max-width:calc(100% - 240px);background:#12294a;color:#f5e4cc;border:2px solid #f5e4cc;border-radius:8px;padding:6px 14px;font:600 .9rem Figtree,system-ui,sans-serif;text-align:center}
+.pf-src b{font:800 1rem "Bricolage Grotesque",Figtree,system-ui,sans-serif}
+.pf-src em{font-style:normal;flex-basis:100%}
+@media (max-width:640px){.pf-src{max-width:calc(100% - 20px);top:60px}}
+.nfb-glow{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:2px;box-shadow:inset 0 0 0 5px #12294a,inset 0 0 0 9px #f5e4cc;animation:nfbGlow 2.6s ease-out forwards}
+@keyframes nfbGlow{0%,60%{opacity:1}15%,45%{opacity:.35}100%{opacity:0}}
+/* claw machine claw: four prongs with hooks; they close on the sides of the box */
+.claw .claw-finger{transition:transform .4s cubic-bezier(.4,0,.2,1)!important}
+.claw .claw-finger.l,.claw .claw-finger.r{height:80px!important}
+.claw .claw-finger.l{transform:rotate(30deg)!important}
+.claw .claw-finger.r{transform:rotate(-30deg)!important}
+.claw.closed .claw-finger.l{transform:rotate(10deg)!important}
+.claw.closed .claw-finger.r{transform:rotate(-10deg)!important}
+.claw-finger:after{content:"";position:absolute;bottom:-5px;width:16px;height:10px;background:inherit;border:inherit;border-radius:3px 3px 8px 8px}
+.claw-finger.l:after,.claw-finger.bl:after{left:6px;transform:rotate(42deg);transform-origin:0 0}
+.claw-finger.r:after,.claw-finger.br:after{right:6px;transform:rotate(-42deg);transform-origin:100% 0}
+.claw .claw-finger.bl,.claw .claw-finger.br{z-index:-1;height:60px;filter:brightness(.7)}
+.claw .claw-finger.bl{left:36px;transform:rotate(18deg)!important}
+.claw .claw-finger.br{right:36px;left:auto;transform:rotate(-18deg)!important}
+.claw.closed .claw-finger.bl{transform:rotate(5deg)!important}
+.claw.closed .claw-finger.br{transform:rotate(-5deg)!important}
+</style>
 </body>
 </html>
