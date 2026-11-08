@@ -1594,7 +1594,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     var newest = all.filter(function(x){ var o = +x.getAttribute('data-opens') || 0; return !o || o <= now; })[0] || all[0];
     all.forEach(function(x){ var b = x.querySelector('.arch-badge'); if (b && x !== newest) b.remove(); });
     if (newest && !newest.querySelector('.arch-badge')){ var bd = document.createElement('span'); bd.className = 'arch-badge gold'; bd.textContent = 'This week\u2019s'; newest.insertBefore(bd, newest.firstChild); }
-    [].forEach.call(document.querySelectorAll('#issue-list .arch'), function(x){ if (!x.querySelector('.bx-top')) x.insertAdjacentHTML('beforeend', '<i class="bx-hole"></i><i class="bx-top"></i><i class="bx-side"></i>'); }); }
+    [].forEach.call(document.querySelectorAll('#issue-list .arch'), function(x){ if (!x.querySelector('.bx-top')) x.insertAdjacentHTML('beforeend', '<i class="bx-hole"></i><i class="bx-top"></i><i class="bx-loop"></i><i class="bx-side"></i>'); }); }
   if (!data || !data.issues){ pieces(); return; }
   var list = document.getElementById('issue-list'); if (!list || !data || !data.issues) return;
   var now = Date.now();
@@ -2373,6 +2373,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   <div class="claw-head"><span class="claw-stripe"></span><span class="claw-light"></span><span class="claw-name">ROBO 2.5</span></div>
   <div class="claw-finger bl"></div><div class="claw-finger br"></div><div class="claw-finger l"></div><div class="claw-finger r"></div>
   <div class="claw-beam"></div>
+  <svg class="ghook" viewBox="0 0 150 112" aria-hidden="true"><path class="gh-back" d="M75 70 C75 84 70 92 62 98 M75 70 C75 84 80 92 88 98" stroke="#5b6678" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="75" cy="9" r="7" fill="none" stroke="#12294a" stroke-width="7"/><circle cx="75" cy="9" r="7" fill="none" stroke="#c3cad4" stroke-width="3.5"/><rect x="69" y="15" width="12" height="60" rx="4" fill="#c3cad4" stroke="#12294a" stroke-width="3"/><path d="M75 66 C56 68 40 78 34 98 C32 106 40 108 44 101" stroke="#12294a" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M75 66 C94 68 110 78 116 98 C118 106 110 108 106 101" stroke="#12294a" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M75 66 C56 68 40 78 34 98 C32 106 40 108 44 101" stroke="#c3cad4" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M75 66 C94 68 110 78 116 98 C118 106 110 108 106 101" stroke="#c3cad4" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M75 70 L75 96 C75 104 82 104 84 99" stroke="#12294a" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M75 70 L75 96 C75 104 82 104 84 99" stroke="#c3cad4" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="75" cy="68" r="9" fill="#c3cad4" stroke="#12294a" stroke-width="3"/></svg>
   
 </div>
 </div>
@@ -2465,6 +2466,8 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     var CS = 1.3, GRAB = 150, CS0 = 1.3, CSg = 1.3, GRABg = 150;   // the claw grows to fit the box, so its prongs close on the box's sides   // the claw is drawn a bit bigger, and its finger tips close on the top of the box
     function place(){ claw.style.left = '0px'; claw.style.transform = 'translate3d(' + (x - 75).toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + CS + ')'; }
     function easeOut(k){ return 1 - Math.pow(1 - k, 3); }
+    function hookTilt(d){ var h = claw.querySelector('.ghook'); if (h) h.style.transform = 'rotate(' + d.toFixed(2) + 'deg)'; }
+    hookTilt(0);
     var dropT0 = 0, dx0 = 0, dy0 = 0;
     function headerBottom(){ var h = document.querySelector('header'); return h ? h.getBoundingClientRect().bottom : 0; }
     function candidates(){
@@ -2543,11 +2546,11 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       }
       if (state === 'under' && now - t0 > 350){
         var sample = rows[0].querySelector('.arch'), sr = sample.getBoundingClientRect();
-        CSg = Math.max(1.1, Math.min(2.7, sr.width / 118)); GRABg = 114.8 * CSg - .2 * sr.height; CS = CSg;   // grows to fit the box while it is out of sight, then grips its sides
+        CSg = 1.3; GRABg = 100 * CSg + 66; CS = CSg;   // grows to fit the box while it is out of sight, then grips its sides
         var bh2 = Math.max(16, GRABg / CSg - 36 - 3) + 'px'; [].forEach.call(claw.querySelectorAll('.claw-finger.bl,.claw-finger.br'), function(f){ f.style.setProperty('height', bh2, 'important'); });
         rc = { left: x - sr.width / 2, top: y + GRABg, width: sr.width, height: sr.height };
         ghost = src.cloneNode(true); ghost.classList.add('ghost');
-        ghost.style.cssText = 'position:fixed;left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;margin:0;z-index:1165;transform:none;box-sizing:border-box;transition:none;animation:none';
+        ghost.style.cssText = 'position:fixed;left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;margin:0;z-index:1165;transform:none;transform-origin:50% 0;box-sizing:border-box;transition:none;animation:none';
         document.body.appendChild(ghost);
         ghost._dx = 0; grabY = y; lift = y - H * 0.28; state = 'lift'; t0 = now;
         msg.textContent = 'Got it! ';
@@ -2560,7 +2563,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
         if (Math.min(rr.right, W) - Math.max(rr.left, 0) < 12){ state = 'scan'; claw.classList.remove('locked'); dropT0 = 0; }
         else {
           if (!dropT0){ dropT0 = now; dx0 = x; dy0 = y; CS0 = CS;
-            CSg = Math.max(1.1, Math.min(2.7, rr.width / 118)); GRABg = 114.8 * CSg - .2 * rr.height;
+            CSg = 1.3; GRABg = 100 * CSg + 66;   // grappling hook: its tines catch the top edge of the box
             var bh = Math.max(16, GRABg / CSg - 36 - 3) + 'px'; [].forEach.call(claw.querySelectorAll('.claw-finger.bl,.claw-finger.br'), function(f){ f.style.setProperty('height', bh, 'important'); }); }
           var gx = rr.left + rr.width / 2; grabY = rr.top - GRABg;
           var kd = Math.min(1, (now - dropT0) / 900); CS = CS0 + (CSg - CS0) * ease(kd);
@@ -2575,7 +2578,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
         if (now - t0 > 380){
           rc = target.getBoundingClientRect();
           ghost = target.cloneNode(true); ghost.classList.add('ghost');
-          ghost.style.cssText = 'position:fixed;left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;margin:0;z-index:1165;transform:none;box-sizing:border-box;transition:none;animation:none';
+          ghost.style.cssText = 'position:fixed;left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;margin:0;z-index:1165;transform:none;transform-origin:50% 0;box-sizing:border-box;transition:none;animation:none';
           document.body.appendChild(ghost);
           target.style.visibility = 'hidden'; hiddenEl = target;
           grabY = y; state = 'lift'; t0 = now; ghost._dx = x - (rc.left + rc.width / 2);
@@ -2586,7 +2589,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       if (state === 'lift'){
         var k = Math.min(1, (now - t0) / (lift > 300 ? 950 : 800)), e = ease(k);
         y = grabY - lift * e;
-        ghost.style.transform = 'translate(' + ((ghost._dx || 0) * e) + 'px,' + (-lift * e) + 'px) rotate(' + (-3 * e) + 'deg)';
+        var rotL = -3 * e + 5 * Math.sin(e * Math.PI * 1.6) * (1 - e * .6); ghost.style.transform = 'translate(' + ((ghost._dx || 0) * e) + 'px,' + (-lift * e) + 'px) rotate(' + rotL + 'deg)'; hookTilt(rotL);
         if (decoy && !swapped && k > .45){
           swapped = true;   //  as it lifts, it turns into the issue you searched for
           var im = ghost.querySelector('img'); im.src = src.querySelector('img').src;
@@ -2608,8 +2611,8 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
         var k2 = Math.min(1, (now - t0) / 900), e2 = ease(k2), sc2 = 1 + (swing.sc - 1) * e2;
         var gy = -lift + (swing.dy + lift) * e2;
         x = swing.x0 + swing.dx * e2;
-        ghost.style.transformOrigin = '50% 0'; ghost.style.transform = 'translate(' + (swing.gx + swing.dx * e2) + 'px,' + gy + 'px) scale(' + sc2 + ') rotate(' + (-3 * (1 - e2) + 4 * Math.sin(e2 * Math.PI * 2.2) * (1 - e2)) + 'deg)';
-        CS = CSg * sc2; y = rc.top + gy - GRABg * sc2;   // the box hangs from the top, so the claw stays on it while it grows
+        var rotS = -3 * (1 - e2) + 4 * Math.sin(e2 * Math.PI * 2.2) * (1 - e2); ghost.style.transformOrigin = '50% 0'; ghost.style.transform = 'translate(' + (swing.gx + swing.dx * e2) + 'px,' + gy + 'px) scale(' + sc2 + ') rotate(' + rotS + 'deg)'; hookTilt(rotS);
+        CS = CSg * sc2; y = rc.top + gy - GRABg * sc2;   // stays hooked on the box while it grows   // the box hangs from the top, so the claw stays on it while it grows
         if (k2 >= 1){
           place(); claw.classList.remove('closed');
           openView(src, ghost);
@@ -8756,11 +8759,12 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
   function bar(){
     var v = $('flipview'); if (!v) return null; var b = v.querySelector('.pf-bar'); if (b) return b;
     b = document.createElement('form'); b.className = 'pf-bar'; b.setAttribute('novalidate', '');
-    b.innerHTML = '<span>Page</span><input class="pf-n" inputmode="numeric" aria-label="Page number"><span class="pf-of"></span><button type="submit" data-a="go">Go</button><i class="pf-sep"></i><input class="pf-q" placeholder="Search this issue" aria-label="Search this issue"><button type="button" data-a="find">Find</button>';
+    b.innerHTML = (window.NG_IS_OWNER && NG_IS_OWNER() ? '<button type="button" data-a="tag">Tag pages</button><i class="pf-sep"></i>' : '') + '<span>Page</span><input class="pf-n" inputmode="numeric" aria-label="Page number"><span class="pf-of"></span><button type="submit" data-a="go">Go</button><i class="pf-sep"></i><input class="pf-q" placeholder="Search this issue" aria-label="Search this issue"><button type="button" data-a="find">Find</button>';
     var r = document.createElement('div'); r.className = 'pf-res'; r.hidden = true;
     v.appendChild(r); v.appendChild(b);
     b.addEventListener('submit', function(e){ e.preventDefault(); var q = b.querySelector('.pf-q'); if (document.activeElement === q && q.value.trim()) return findHere(q.value); goPage(b.querySelector('.pf-n').value); });
     b.querySelector('[data-a=find]').onclick = function(){ findHere(b.querySelector('.pf-q').value); };
+    var tg = b.querySelector('[data-a=tag]'); if (tg) tg.onclick = function(){ tagPanel(); };
     b.querySelector('.pf-q').addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); findHere(this.value); } });
     b.querySelector('.pf-n').addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); goPage(this.value); } });
     ['keydown', 'keyup', 'keypress'].forEach(function(t){ b.addEventListener(t, function(e){ e.stopPropagation(); }); });   // typing here does not turn pages
@@ -8831,6 +8835,8 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
       var f = findIn(texts[it.id], text, it.id);
       if (f.res.length){ out.groups.push({ it: it, hits: f.res.sort(function(a, b){ return a.idx - b.idx; }), words: f.words, order: order }); out.pages += f.res.length; }
     });
+    out.topics = Object.keys(tags.topics || {}).map(function(name){ return { name: name, sc: score(doc(name), words, false) }; }).filter(function(t){ return t.sc && (tags.topics[t.name] || []).length; })
+      .map(function(t){ var pg = topicPages(t.name); return { name: t.name, pages: pg, issues: pg.reduce(function(a, x){ if (a.indexOf(x.it.id) < 0) a.push(x.it.id); return a; }, []).length }; });
     out.words = hiWords(words);
     out.issues.sort(function(a, b){ return a.order - b.order; });
     out.groups.sort(function(a, b){ return a.order - b.order; });
@@ -8840,6 +8846,7 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
   var last = null;
   function render(res, big){
     last = res; var h = '';
+    (res.topics || []).forEach(function(t, i){ h += '<button type="button" class="sr-topic" data-topic="' + esc(t.name) + '"><b>' + esc(t.name) + '</b><span>' + t.pages.length + ' page' + (t.pages.length > 1 ? 's' : '') + ' from ' + t.issues + ' issue' + (t.issues > 1 ? 's' : '') + '</span><em>Open as one flipbook</em></button>'; });
     if (res.jump) h += '<button type="button" class="sr-jump" data-id="' + res.jump.it.id + '" data-p="' + res.jump.idx + '"><img alt="" src="' + cover(res.jump.it) + '"><span><b>Open ' + esc(res.jump.it.title) + '</b>at page ' + (res.jump.idx + 1) + '</span></button>';
     if (res.issues.length){
       h += '<h4 class="sr-h">Issues <small>' + res.issues.length + '</small></h4><div class="sr-issues">' + res.issues.slice(0, big ? 12 : 6).map(function(x){
@@ -8861,6 +8868,7 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
   function wire(box){
     box.addEventListener('click', function(e){
       var m = e.target.closest('.sr-more'); if (m){ [].forEach.call(m.parentNode.querySelectorAll('.sr-page[hidden]'), function(x){ x.hidden = false; }); m.remove(); return; }
+      var tp = e.target.closest('.sr-topic'); if (tp){ if (window.NG_SEARCH_CLOSE) NG_SEARCH_CLOSE(); var nm = tp.getAttribute('data-topic'); openCollection({ q: nm, list: topicPages(nm) }); return; }
       if (e.target.closest('.sr-coll')){ if (window.NG_SEARCH_CLOSE) NG_SEARCH_CLOSE(); openCollection(box._res || last); return; }
       var x = e.target.closest('button[data-id]'); if (!x) return; var it = byId(x.dataset.id); if (!it) return;
       if (window.NG_SEARCH_CLOSE) NG_SEARCH_CLOSE(); openAt(it, +x.dataset.p);
@@ -8898,6 +8906,28 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
     setTimeout(wantGo, 300);
   }
   window.NG_OPEN_AT_PAGE = openAt;
+  function tagPanel(){
+    var v = $('flipview'), r = v.querySelector('.pf-res'), id = window.NG_CUR_DRIVE, it = id && byId(id);
+    if (!it){ r.hidden = false; r.innerHTML = '<p>Open one issue to tag its pages.</p>'; return; }
+    siteIndex().then(function(){
+      var names = Object.keys(tags.topics), mine = [];
+      names.forEach(function(n){ (tags.topics[n] || []).forEach(function(x, k){ if (x.id === id) mine.push({ n: n, k: k, x: x }); }); });
+      var p = (cur.p || 0) + 1;
+      r.hidden = false;
+      r.innerHTML = '<p>Tag pages of ' + esc(it.title) + ' so search finds exactly them (for example every page of the Hunt for Mengele comic).</p>' +
+        '<div class="pf-tag"><input class="pt-name" list="pt-list" placeholder="Topic, like Hunt for Mengele"><datalist id="pt-list">' + names.map(function(n){ return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
+        '<label>From page <input class="pt-a" inputmode="numeric" value="' + p + '"></label><label>to <input class="pt-b" inputmode="numeric" value="' + p + '"></label><button type="button" class="pt-save">Save</button></div>' +
+        (mine.length ? '<p>Already tagged in this issue:</p>' + mine.map(function(m){ return '<div class="pt-row"><span><b>' + esc(m.n) + '</b> pages ' + m.x.from + (m.x.to !== m.x.from ? ' to ' + m.x.to : '') + '</span><button type="button" class="pt-del" data-n="' + esc(m.n) + '" data-k="' + m.k + '">Remove</button></div>'; }).join('') : '');
+      r.querySelector('.pt-save').onclick = function(){
+        var n = r.querySelector('.pt-name').value.trim(), a = parseInt(r.querySelector('.pt-a').value, 10), z = parseInt(r.querySelector('.pt-b').value, 10);
+        if (!n || !a || !z){ return; } if (z < a){ var t2 = a; a = z; z = t2; }
+        (tags.topics[n] = tags.topics[n] || []).push({ id: id, from: a, to: z });
+        this.textContent = 'Saving\u2026'; saveTags().then(tagPanel, function(){ r.insertAdjacentHTML('beforeend', '<p>Could not save. Connect Firebase in the Owner Panel first.</p>'); });
+      };
+      [].forEach.call(r.querySelectorAll('.pt-del'), function(bt){ bt.onclick = function(){ var n = bt.dataset.n; tags.topics[n].splice(+bt.dataset.k, 1); if (!tags.topics[n].length) delete tags.topics[n]; saveTags().then(tagPanel); }; });
+      ['keydown', 'keyup', 'keypress'].forEach(function(t){ r.addEventListener(t, function(e){ e.stopPropagation(); }); });
+    });
+  }
   var coll = null, ecache = {};
   function embedded(it){ if (ecache[it.id]) return ecache[it.id]; var f = it.el.getAttribute('data-flip'), el = f && document.getElementById('fbd-' + f.replace(/^flipbook-|\.html$/g, '')); if (!el) return null; try { return ecache[it.id] = JSON.parse(el.textContent); } catch(e){ return null; } }
   function srcLabel(){
@@ -8910,10 +8940,11 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
     var u = window.NG && NG.getUser && NG.getUser(), owner = window.NG_IS_OWNER && NG_IS_OWNER();
     if (!u && !owner){ if (window.NG && NG.openAuth) NG.openAuth('signup'); return; }
     var items = [], ratio = 1.28, missing = 0;
-    res.groups.slice().reverse().forEach(function(g){ var d = embedded(g.it); g.hits.forEach(function(x){ var src = d && d.pages[x.idx]; if (src){ items.push({ src: src, it: g.it, idx: x.idx, txt: x.txt }); ratio = d.ratio || ratio; } else missing++; }); });
+    var list = res.list || []; if (!res.list) res.groups.slice().reverse().forEach(function(g){ g.hits.forEach(function(x){ list.push({ it: g.it, idx: x.idx, txt: x.txt }); }); });
+    list.forEach(function(x){ var d = embedded(x.it), src = d && d.pages[x.idx]; if (src){ items.push({ src: src, it: x.it, idx: x.idx, txt: x.txt }); ratio = d.ratio || ratio; } else missing++; });
     if (!items.length){ if (window.NG && NG.toast) NG.toast('These pages can only be opened one at a time.'); return; }
     var v = $('flipview'), host = $('flipview-host'); if (!v.hidden) $('flipview-close').click();
-    coll = { items: items, q: res.q, title: res.q.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) };
+    coll = { items: items, q: res.q, title: res.list ? res.q : res.q.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) };
     window.NG_CUR_DRIVE = null; v.hidden = false; document.body.classList.add('fbv-open');
     fv = window.NGFlipbook(host, items.map(function(x){ return x.src; }), { ratio: ratio });
     cur.p = 0; cur.n = items.length; ui();
@@ -8933,7 +8964,11 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
       .then(function(r){ return r.ok ? r.json() : []; }).then(function(arr){ (arr || []).forEach(function(x){ var d = x.found; if (!d || !d.fields || !d.fields.data) return; try { var j = JSON.parse(d.fields.data.stringValue); var id = d.name.split('/sx_')[1]; texts[id] = j; } catch(e){} }); })
       .catch(function(){});
   }
-  function siteIndex(){ return indexP || (indexP = loadIndex()); }
+  var tags = { topics: {} };
+  function loadTags(){ return fetch(DB + '/site/tags?key=' + KEY, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ if (d && d.fields && d.fields.data) try { tags = JSON.parse(d.fields.data.stringValue); tags.topics = tags.topics || {}; } catch(e){} }).catch(function(){}); }
+  function saveTags(){ return token().then(function(tk){ return fetch(DB + '/site/tags?key=' + KEY, { method:'PATCH', headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + tk }, body: JSON.stringify({ fields:{ data:{ stringValue: JSON.stringify(tags) } } }) }); }).then(function(r){ if (!r.ok) throw new Error('save'); }); }
+  function siteIndex(){ return indexP || (indexP = Promise.all([loadIndex(), loadTags()])); }
+  function topicPages(name){ var list = []; issues().slice().reverse().forEach(function(it){ (tags.topics[name] || []).forEach(function(r){ if (r.id !== it.id) return; for (var p = r.from; p <= r.to; p++) list.push({ it: it, idx: p - 1, txt: (texts[it.id] && texts[it.id].pages && texts[it.id].pages[p - 1]) || '' }); }); }); return list; }
   function pageAsk(text){ var m = norm(text).match(/(?:^|\s)(?:page|pg|p)\s*(\d{1,3})(?:\s|$)/) || norm(text).match(/(?:^|\s)(\d{1,3})\s*(?:page|pg)(?:\s|$)/); return m ? +m[1] : 0; }
   function findIssue(rest){
     var w = norm(rest).replace(/\b(issue|of|the|in|page|pg)\b/g, ' ').split(' ').filter(Boolean); if (!w.length) return null;
@@ -9163,6 +9198,39 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
 .claw .claw-finger.br{right:36px;left:auto;transform:rotate(-18deg)!important}
 .claw.closed .claw-finger.bl{transform:rotate(5deg)!important}
 .claw.closed .claw-finger.br{transform:rotate(-5deg)!important}
+</style>
+
+<style id="ng-ghook-css">
+/* grappling hook instead of claw fingers */
+.claw .claw-head,.claw .claw-finger,.claw .claw-costume{display:none!important}
+.claw .ghook{position:absolute;left:0;top:0;width:150px;height:112px;overflow:visible;transform-origin:75px 9px;z-index:2}
+.claw .claw-cable{margin-bottom:-6px!important;width:6px!important;margin-left:-3px!important;background:repeating-linear-gradient(160deg,#d9c3a0 0 5px,#9c8461 5px 8px)!important;border:1px solid #12294a;border-radius:3px}
+.claw.closed .ghook{animation:ghCatch .35s ease-out}
+@keyframes ghCatch{30%{transform:translateY(6px) rotate(-4deg)}65%{transform:translateY(-2px) rotate(2deg)}}
+</style>
+
+<style id="ng-string-css">
+/* every box has a string handle tied on top; the grappling hook catches it */
+.tape .arch .bx-loop,.arch.ghost .bx-loop{position:absolute;left:50%;top:-66px;width:58%;height:52px;margin-left:-29%;z-index:3;pointer-events:none;border:4px solid #b08d5a;border-bottom:0;border-radius:50% 50% 0 0/100% 100% 0 0;box-sizing:border-box;
+  background:none;filter:drop-shadow(0 1px 0 #6e5534)}
+.tape .arch .bx-loop:before,.tape .arch .bx-loop:after,.arch.ghost .bx-loop:before,.arch.ghost .bx-loop:after{content:"";position:absolute;bottom:-14px;width:10px;height:10px;border-radius:50%;background:#b08d5a;box-shadow:inset 0 -2px 0 #6e5534}
+.bx-loop:before{left:-7px}.bx-loop:after{right:-7px}
+.arch.ghost.ub-rip .bx-loop,.arch.ghost.ub-open .bx-loop{opacity:0;transition:opacity .2s}
+.tape .track{overflow:visible}
+</style>
+
+<style id="ng-tags-css">
+.sr-topic{display:grid;grid-template-columns:1fr auto;gap:2px 12px;width:100%;text-align:left;margin:6px 0 10px;border:0;border-radius:8px;background:#12294a;color:#f5e4cc;padding:12px 14px;cursor:pointer;font:500 .95rem Figtree,system-ui,sans-serif}
+.sr-topic b{font:800 1.15rem "Bricolage Grotesque",Figtree,system-ui,sans-serif}
+.sr-topic span{grid-column:1;opacity:.85}
+.sr-topic em{grid-column:2;grid-row:1/3;align-self:center;font-style:normal;font-weight:800;background:#f5e4cc;color:#12294a;border-radius:6px;padding:8px 12px}
+.ngs .sr-topic{background:#f5e4cc;color:#12294a}.ngs .sr-topic em{background:#12294a;color:#f5e4cc}
+.pf-tag{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 8px}
+.pf-tag input{border:2px solid #12294a;border-radius:4px;padding:6px 8px;font:600 .92rem Figtree,system-ui,sans-serif;background:#f5e4cc;color:#12294a}
+.pf-tag .pt-name{flex:1 1 200px}.pf-tag .pt-a,.pf-tag .pt-b{width:56px}
+.pf-tag label{font:700 .9rem Figtree,system-ui,sans-serif;display:flex;gap:6px;align-items:center}
+.pf-res .pt-save,.pf-res .pt-del{display:inline-block;width:auto;border:0;border-radius:4px;background:#12294a;color:#f5e4cc;font:800 .9rem Figtree,system-ui,sans-serif;padding:7px 12px}
+.pt-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 8px;font:500 .92rem Figtree,system-ui,sans-serif}
 </style>
 </body>
 </html>
