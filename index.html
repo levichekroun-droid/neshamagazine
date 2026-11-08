@@ -8781,19 +8781,88 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
           .then(next, next); })();
     });
   }
-  function findIn(t, q){
-    var words = norm(q).split(' ').filter(Boolean); if (!words.length || !t || !t.pages) return { words: words, res: [] };
-    var res = [];
-    t.pages.forEach(function(txt, i){ var low = ' ' + norm(txt) + ' ', sc = 0; words.forEach(function(w){ if (low.indexOf(w) > -1) sc += low.indexOf(' ' + w) > -1 ? 2 : 1; });
-      if (sc >= words.length) res.push({ k: i + 1, idx: t.map[i + 1] != null ? t.map[i + 1] : i, sc: sc, txt: txt }); });
-    return { words: words, res: res.sort(function(a, b){ return b.sc - a.sc || a.k - b.k; }) };
+  // ---- the search engine: endings (comics = comic), related words (hunt = Mengele), small typos ----
+  var SYN = { comic:['comics','strip','cartoon'], riddle:['riddles','puzzle','teaser'], joke:['jokes','funny','laugh'], recipe:['recipes','cake','cook','cooking','food','bake','baking'],
+    spy:['spies','agent','mossad','secret'], torah:['parsha','parasha','parshah'], hunt:['mengele','hunting','hunter'], mengele:['hunt'], story:['stories'], game:['games','puzzle'],
+    illusion:['illusions','optical'], fact:['facts','know'], pic:['pics','pictures','photos','wacky'], news:['ng news'], din:['halacha','law'], escape:['escaping'], quiz:['quizzes','trivia'] };
+  var STOP = { the:1, a:1, an:1, of:1, in:1, on:1, and:1, for:1, to:1, is:1, with:1, about:1, me:1, show:1, find:1, all:1, my:1, i:1, want:1, page:1, pages:1, pg:1, issue:1, issues:1 };
+  function stem(w){ if (w.length > 4 && /ies$/.test(w)) return w.slice(0, -3) + 'y'; if (w.length > 5 && /ing$/.test(w)) return w.slice(0, -3); if (w.length > 4 && /(ch|sh|x|ss)es$/.test(w)) return w.slice(0, -2); if (w.length > 3 && /s$/.test(w) && !/ss$/.test(w)) return w.slice(0, -1); return w; }
+  function toks(t){ return norm(t).split(' ').filter(Boolean).map(stem); }
+  function near(a, b){ if (a.length === b.length){ var d = []; for (var q = 0; q < a.length; q++) if (a[q] !== b[q]) d.push(q); if (d.length === 2 && d[1] === d[0] + 1 && a[d[0]] === b[d[1]] && a[d[1]] === b[d[0]]) return true; } if (Math.abs(a.length - b.length) > 1) return false; var i = 0, j = 0, e = 0; while (i < a.length && j < b.length){ if (a[i] === b[j]){ i++; j++; continue; } if (++e > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } } return e + (a.length - i) + (b.length - j) <= 1; }
+  function parse(q){
+    return norm(q).split(' ').filter(function(w){ return w && !STOP[w] && !/^\d+$/.test(w); }).map(function(w){
+      var s = stem(w), alts = [{ t: toks(w), sc: 3 }];
+      (SYN[s] || SYN[w] || []).forEach(function(x){ alts.push({ t: toks(x), sc: 2 }); });
+      return { w: w, alts: alts }; });
   }
+  function doc(text){ var t = toks(text); return { list: t, set: new Set(t) }; }
+  function tokHit(d, a){ if (d.set.has(a)) return 1; if (a.length >= 3){ for (var i = 0; i < d.list.length; i++){ var x = d.list[i]; if (x.length > a.length && x.indexOf(a) === 0) return .7; } }
+    if (a.length >= 5){ for (var k = 0; k < d.list.length; k++){ var y = d.list[k]; if (near(y, a) || (y.length >= 4 && a.length - y.length <= 3 && a.indexOf(y) === 0)) return .5; } } return 0; }
+  function wordScore(d, q){ var best = 0; q.alts.forEach(function(al){ var s = 1; al.t.forEach(function(a){ s = Math.min(s, tokHit(d, a)); }); if (s) best = Math.max(best, s * al.sc); }); return best; }
+  function score(d, words, any){ var tot = 0, hit = 0; words.forEach(function(q){ var s = wordScore(d, q); if (s){ hit++; tot += s; } }); return (any ? hit : hit === words.length) && hit ? tot : 0; }
+  var dcache = {};
+  function pageDoc(id, i, txt){ var k = id + ':' + i; return dcache[k] || (dcache[k] = doc(txt)); }
+  function findIn(t, q, id){
+    var words = parse(q); if (!words.length || !t || !t.pages) return { words: [], res: [] };
+    function pass(any){ var res = []; t.pages.forEach(function(txt, i){ if (!txt) return; var sc = score(pageDoc(id || t.title, i, txt), words, any); if (sc) res.push({ k: i + 1, idx: t.map[i + 1] != null ? t.map[i + 1] : i, sc: sc, txt: txt }); }); return res; }
+    var res = pass(false); if (!res.length && words.length > 1) res = pass(true);
+    return { words: hiWords(words), res: res.sort(function(a, b){ return b.sc - a.sc || a.k - b.k; }) };
+  }
+  function hiWords(words){ var out = []; words.forEach(function(q){ q.alts.forEach(function(al){ al.t.forEach(function(x){ if (x.length > 2) out.push(x); }); }); }); return out; }
+  // everything that matches: a page jump, issues (titles and what is inside), and pages (grouped by issue)
+  function searchAll(text){
+    var out = { q: text, jump: null, issues: [], groups: [], pages: 0 };
+    var pg = pageAsk(text);
+    if (pg){ var rest = /(page|pg|p)\s*\d+/i.test(text) ? text.replace(/(page|pg|p)\s*\d+/i, ' ') : text.replace(/\d+\s*(page|pg)/i, ' '), it0 = findIssue(rest); if (it0) out.jump = { it: it0, idx: pg - 1 }; }
+    var words = parse(text);
+    if (!words.length) return out;
+    issues().forEach(function(it, order){
+      var el = it.el, contents = String(el.getAttribute('data-contents') || '').split('|').filter(Boolean);
+      var sc = score(doc(it.title + ' ' + (el.getAttribute('data-keys') || '') + ' ' + (el.getAttribute('data-short') || '')), words, false);
+      var lines = contents.filter(function(c){ return score(doc(c), words, false); });
+      if (sc || lines.length) out.issues.push({ it: it, sc: sc + lines.length * 2, lines: lines, order: order });
+      var f = findIn(texts[it.id], text, it.id);
+      if (f.res.length){ out.groups.push({ it: it, hits: f.res.sort(function(a, b){ return a.idx - b.idx; }), words: f.words, order: order }); out.pages += f.res.length; }
+    });
+    out.words = hiWords(words);
+    out.issues.sort(function(a, b){ return a.order - b.order; });
+    out.groups.sort(function(a, b){ return a.order - b.order; });
+    return out;
+  }
+  function cover(it){ var im = it.el.querySelector('img'); return im ? im.src : ''; }
+  function render(res, big){
+    var h = '';
+    if (res.jump) h += '<button type="button" class="sr-jump" data-id="' + res.jump.it.id + '" data-p="' + res.jump.idx + '"><img alt="" src="' + cover(res.jump.it) + '"><span><b>Open ' + esc(res.jump.it.title) + '</b>at page ' + (res.jump.idx + 1) + '</span></button>';
+    if (res.issues.length){
+      h += '<h4 class="sr-h">Issues <small>' + res.issues.length + '</small></h4><div class="sr-issues">' + res.issues.slice(0, big ? 12 : 6).map(function(x){
+        return '<button type="button" class="sr-issue" data-id="' + x.it.id + '" data-p="0"><img alt="" src="' + cover(x.it) + '"><span><b>' + esc(x.it.title) + '</b>' + x.lines.slice(0, 2).map(function(l){ return '<small>' + snippet(l, res.words) + '</small>'; }).join('') + '</span></button>'; }).join('') + '</div>';
+    }
+    if (res.groups.length){
+      var many = res.groups.length > 2;
+      h += '<h4 class="sr-h">Pages <small>' + res.pages + ' page' + (res.pages > 1 ? 's' : '') + ' in ' + res.groups.length + ' issue' + (res.groups.length > 1 ? 's' : '') + '</small></h4>';
+      h += res.groups.map(function(g){
+        var show = many ? 3 : 12;
+        return '<div class="sr-group"><div class="sr-gh"><img alt="" src="' + cover(g.it) + '"><b>' + esc(g.it.title) + '</b><small>' + g.hits.length + ' page' + (g.hits.length > 1 ? 's' : '') + '</small></div>' +
+          g.hits.map(function(x, i){ return '<button type="button" class="sr-page"' + (i >= show ? ' hidden' : '') + ' data-id="' + g.it.id + '" data-p="' + x.idx + '"><b>Page ' + (x.idx + 1) + '</b>' + snippet(x.txt, res.words) + '</button>'; }).join('') +
+          (g.hits.length > show ? '<button type="button" class="sr-more">Show all ' + g.hits.length + ' pages</button>' : '') + '</div>'; }).join('');
+    }
+    if (!h) h = '<p class="sr-none">Nothing found for "' + esc(res.q) + '". Try another word, like comic, riddle or hunt.</p>';
+    return h;
+  }
+  function wire(box){
+    box.addEventListener('click', function(e){
+      var m = e.target.closest('.sr-more'); if (m){ [].forEach.call(m.parentNode.querySelectorAll('.sr-page[hidden]'), function(x){ x.hidden = false; }); m.remove(); return; }
+      var x = e.target.closest('button[data-id]'); if (!x) return; var it = byId(x.dataset.id); if (!it) return;
+      if (window.NG_SEARCH_CLOSE) NG_SEARCH_CLOSE(); openAt(it, +x.dataset.p);
+    });
+  }
+  window.NG_SEARCH = { all: searchAll, render: render, wire: wire, ready: function(){ return siteIndex(); } };
   function findHere(q){
     var r = $('flipview').querySelector('.pf-res'), id = window.NG_CUR_DRIVE; if (!q.trim()) { r.hidden = true; return; }
     r.hidden = false; r.innerHTML = '<p>Looking through every page…</p>';
     pageTexts(id).then(function(t){
       if (!t){ r.innerHTML = '<p>Page search for this magazine is not ready yet. It gets ready the next time the owner opens the website.</p>'; return; }
-      var f = findIn(t, q);
+      var f = findIn(t, q, id);
       r.innerHTML = f.res.length ? '<p>Found on ' + f.res.length + ' page' + (f.res.length > 1 ? 's' : '') + ':</p>' + f.res.slice(0, 40).map(function(x){ return '<button type="button" data-p="' + x.idx + '"><b>Page ' + (x.idx + 1) + '</b>' + snippet(x.txt, f.words) + '</button>'; }).join('')
         : '<p>No page has "' + esc(q) + '". Some pages are pictures only, so their words cannot be searched.</p>';
     });
@@ -8828,33 +8897,27 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
       .catch(function(){});
   }
   function siteIndex(){ return indexP || (indexP = loadIndex()); }
+  function pageAsk(text){ var m = norm(text).match(/(?:^|\s)(?:page|pg|p)\s*(\d{1,3})(?:\s|$)/) || norm(text).match(/(?:^|\s)(\d{1,3})\s*(?:page|pg)(?:\s|$)/); return m ? +m[1] : 0; }
+  function findIssue(rest){
+    var w = norm(rest).replace(/\b(issue|of|the|in|page|pg)\b/g, ' ').split(' ').filter(Boolean); if (!w.length) return null;
+    var best = null, bs = 0; issues().forEach(function(it){ var hay = ' ' + norm(it.title + ' ' + (it.el.getAttribute('data-keys') || '')) + ' ', sc = 0;
+      w.forEach(function(x){ if (/^\d+$/.test(x)){ if (it.num && +x === +it.num) sc += 5; else if (new RegExp(' 0*' + x + ' ').test(hay)) sc += 3; } else if (hay.indexOf(' ' + x) > -1) sc += 2; });
+      if (sc > bs){ bs = sc; best = it; } }); return best;
+  }
   // the website search: "issue 13 page 5", "page 5 shanghai", or words on a page
   var q = $('finder-q'), msg = $('finder-msg');
   if (q){
     q.addEventListener('focus', siteIndex, { once:true });
     var box = document.createElement('div'); box.className = 'fpr'; box.hidden = true; var fr = $('finder-chips'); if (fr) fr.parentNode.insertBefore(box, fr.nextSibling);
-    box.addEventListener('click', function(e){ var x = e.target.closest('button[data-id]'); if (!x) return; var it = byId(x.dataset.id); if (it) openAt(it, +x.dataset.p); });
-    function pageAsk(text){ var m = norm(text).match(/(?:^|\s)(?:page|pg|p)\s*(\d{1,3})(?:\s|$)/) || norm(text).match(/(?:^|\s)(\d{1,3})\s*(?:page|pg)(?:\s|$)/); return m ? +m[1] : 0; }
-    function findIssue(rest){
-      var w = norm(rest).replace(/\b(issue|of|the|in|page|pg)\b/g, ' ').split(' ').filter(Boolean); if (!w.length) return null;
-      var best = null, bs = 0; issues().forEach(function(it){ var hay = ' ' + norm(it.title + ' ' + (it.el.getAttribute('data-keys') || '')) + ' ', sc = 0;
-        w.forEach(function(x){ if (/^\d+$/.test(x)){ if (it.num && +x === +it.num) sc += 5; else if (new RegExp(' 0*' + x + ' ').test(hay)) sc += 3; } else if (hay.indexOf(' ' + x) > -1) sc += 2; });
-        if (sc > bs){ bs = sc; best = it; } }); return best;
-    }
+    wire(box);
     function run(e){
       var text = q.value; box.hidden = true; box.innerHTML = '';
       var pg = pageAsk(text);
-      if (pg){
-        var rest = /(page|pg|p)\s*\d+/i.test(text) ? text.replace(/(page|pg|p)\s*\d+/i, ' ') : text.replace(/\d+\s*(page|pg)/i, ' '), it = findIssue(rest);
-        if (it){ if (e){ e.preventDefault(); e.stopImmediatePropagation(); } msg.textContent = 'Opening ' + it.title + ' at page ' + pg + '…'; openAt(it, pg - 1); return; }
-      }
-      // words on the pages: show where they are (the claw still grabs a matching issue)
+      if (pg){ var r0 = searchAll(text); if (r0.jump){ if (e){ e.preventDefault(); e.stopImmediatePropagation(); } msg.textContent = 'Opening ' + r0.jump.it.title + ' at page ' + pg + '\u2026'; openAt(r0.jump.it, r0.jump.idx); return; } }
       if (norm(text).length < 3) return;
       siteIndex().then(function(){
-        var rows = []; issues().forEach(function(it){ var f = findIn(texts[it.id], text); (f.res || []).slice(0, 6).forEach(function(x){ rows.push({ it: it, x: x, w: f.words }); }); });
-        if (!rows.length) return;
-        rows.sort(function(a, b){ return b.x.sc - a.x.sc; });
-        box.innerHTML = '<h4>Found on ' + rows.length + ' page' + (rows.length > 1 ? 's' : '') + ' inside the magazines</h4>' + rows.slice(0, 30).map(function(r){ return '<button type="button" data-id="' + r.it.id + '" data-p="' + r.x.idx + '"><b>' + esc(r.it.title) + ', page ' + (r.x.idx + 1) + '</b>' + snippet(r.x.txt, r.w) + '</button>'; }).join('');
+        var r = searchAll(text); if (!r.groups.length && !(r.issues.length > 1)) return;
+        box.innerHTML = '<h4 class="sr-top">Found ' + (r.pages ? r.pages + ' page' + (r.pages > 1 ? 's' : '') + ' inside ' + r.groups.length + ' issue' + (r.groups.length > 1 ? 's' : '') : r.issues.length + ' issues') + '</h4>' + render(r, false);
         box.hidden = false;
         setTimeout(function(){ if (/^No issue found/.test(msg.textContent)) msg.textContent = 'No issue is called that, but it is inside these pages:'; }, 60);
       });
@@ -8892,6 +8955,151 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
   // runs by itself on the owner's computer, a little after the site opens
   setTimeout(function(){ if (window.NG_IS_OWNER && NG_IS_OWNER() && ls('ng_fb_rt') && /^https?:$/.test(location.protocol)) NG_BUILD_PAGE_INDEX(false); }, 15000);
 })();
+</script><style id="ng-search2-css">
+/* search results (home search box and the big search) */
+.sr-top{margin:6px 8px 4px;font:800 1rem Figtree,system-ui,sans-serif;color:#12294a}
+.sr-h{display:flex;align-items:baseline;gap:8px;margin:14px 4px 8px;font:800 .8rem Figtree,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:inherit}
+.sr-h small{letter-spacing:0;text-transform:none;font-weight:600;opacity:.75;font-size:.9rem}
+.sr-jump{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:2px solid currentColor;border-radius:8px;background:none;color:inherit;padding:10px 14px;cursor:pointer;font:500 1rem Figtree,system-ui,sans-serif;margin:6px 0}
+.sr-jump img{width:44px;height:58px;object-fit:cover;border-radius:2px}
+.sr-jump b{display:block;font-weight:800;font-size:1.1rem}
+.sr-issues{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.sr-issue{display:flex;gap:12px;align-items:flex-start;text-align:left;border:2px solid currentColor;border-radius:8px;background:none;color:inherit;padding:8px;cursor:pointer;font:500 .92rem/1.35 Figtree,system-ui,sans-serif;min-width:0}
+.sr-issue img{width:46px;height:60px;object-fit:cover;border-radius:2px;flex:0 0 auto}
+.sr-issue span{min-width:0}.sr-issue b{display:block;font-weight:800}.sr-issue small{display:block;font-size:.85rem;opacity:.9;margin-top:2px}
+.sr-group{border:2px solid currentColor;border-radius:8px;margin:0 0 10px;overflow:hidden}
+.sr-gh{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid currentColor}
+.sr-gh img{width:30px;height:40px;object-fit:cover;border-radius:2px}
+.sr-gh b{font:800 1rem Figtree,system-ui,sans-serif}.sr-gh small{margin-left:auto;opacity:.8;font-weight:600}
+.sr-page{display:block;width:100%;text-align:left;border:0;border-top:1px solid rgba(127,127,127,.35);background:none;color:inherit;padding:9px 12px;cursor:pointer;font:500 .92rem/1.4 Figtree,system-ui,sans-serif}
+.sr-page:first-of-type{border-top:0}
+.sr-page[hidden]{display:none}
+.sr-page b{font-weight:800;margin-right:8px}
+.sr-more{display:block;width:100%;border:0;border-top:1px solid rgba(127,127,127,.35);background:none;color:inherit;padding:9px 12px;font:800 .9rem Figtree,system-ui,sans-serif;cursor:pointer;text-decoration:underline}
+.sr-none{margin:14px 4px;font-weight:600}
+.fpr{color:#12294a}
+.fpr .sr-group,.fpr .sr-issue,.fpr .sr-jump{border-color:#12294a}
+.fpr{max-height:420px!important;padding:10px!important}
+.ngs .sr-page mark,.ngs .sr-issue mark{background:#f5e4cc;color:#12294a}
+/* the search button in the top menu and the big search */
+.nav-search{display:inline-flex;align-items:center;justify-content:center;border:0;background:none;color:inherit;padding:6px;margin-left:4px;cursor:pointer;border-radius:6px;vertical-align:middle}
+.nav-search svg{width:22px;height:22px}
+.ngs{position:fixed;inset:0;z-index:2500;background:#12294a;color:#f5e4cc;overflow-y:auto;padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.ngs[hidden]{display:none}
+.ngs-in{max-width:880px;margin:0 auto;padding-top:28px}
+.ngs-top{display:flex;align-items:center;gap:10px;border-bottom:3px solid #f5e4cc;padding-bottom:10px}
+.ngs-top svg{width:30px;height:30px;flex:0 0 auto}
+.ngs-top input{flex:1;min-width:0;background:none;border:0;color:#f5e4cc;font:700 clamp(1.3rem,4vw,2rem) "Bricolage Grotesque",Figtree,system-ui,sans-serif;padding:8px 0;outline:0}
+.ngs-top input::placeholder{color:rgba(245,228,204,.55)}
+.ngs-x{border:2px solid #f5e4cc;background:none;color:#f5e4cc;font:800 .95rem Figtree,system-ui,sans-serif;padding:8px 14px;border-radius:6px;cursor:pointer}
+.ngs-chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 6px}
+.ngs-chips button{border:2px solid #f5e4cc;background:none;color:#f5e4cc;border-radius:999px;padding:6px 14px;font:700 .92rem Figtree,system-ui,sans-serif;cursor:pointer}
+.ngs-chips button:hover{background:#f5e4cc;color:#12294a}
+.ngs-tip{margin:6px 0 0;opacity:.8;font-size:.95rem}
+/* Robo, who drives the claw */
+.finder.has-robo{display:flex;align-items:flex-end;gap:22px}
+.finder.has-robo .finder-box{flex:1;min-width:0}
+.robo{position:relative;flex:0 0 150px;height:178px;cursor:pointer;border:0;background:none;padding:0}
+.robo svg{width:150px;height:178px;display:block;overflow:visible}
+.robo-say{position:absolute;left:96px;top:-34px;z-index:2;background:#12294a;color:#f5e4cc;font:700 .85rem/1.25 Figtree,system-ui,sans-serif;padding:8px 12px;border-radius:12px;white-space:nowrap;pointer-events:none;transition:opacity .25s}
+.robo-say:after{content:"";position:absolute;left:14px;bottom:-8px;border:8px solid transparent;border-top-color:#12294a;border-bottom:0}
+.robo .rb-eye{transform-box:fill-box;transform-origin:center;animation:rbBlink 4.5s infinite}
+@keyframes rbBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.robo .rb-body{animation:rbBob 3.2s ease-in-out infinite}
+@keyframes rbBob{50%{transform:translateY(2px)}}
+.robo .rb-flame{transform-box:fill-box;transform-origin:50% 100%;animation:rbFlick 1.6s ease-in-out infinite}
+@keyframes rbFlick{50%{transform:scale(1.08,.94) rotate(2deg)}}
+.robo.driving .rb-pupils{transform:translate(0,4px)}
+.robo .rb-pupils{transition:transform .3s}
+.robo-pilot{position:fixed!important;right:max(18px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:1400;transform:translateY(130%);transition:transform .45s cubic-bezier(.3,1.3,.5,1);pointer-events:none}
+.robo-pilot.on{transform:none}
+.robo-pilot .robo-say{left:auto;right:84px}
+.robo-pilot .robo-say:after{left:auto;right:14px}
+@media (max-width:900px){.finder.has-robo{display:block}#robo{display:none}.robo-pilot{transform:translateY(130%) scale(.7);transform-origin:100% 100%}.robo-pilot.on{transform:scale(.7)}}
+@media (prefers-reduced-motion:reduce){.robo *{animation:none!important}}
+</style>
+<script>
+/* the search button in the top menu opens the big search, and Robo drives the claw */
+(function(){
+  var S = window.NG_SEARCH; if (!S) return;
+  var $ = function(id){ return document.getElementById(id); };
+  var glass = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>';
+  // the big search
+  var o = document.createElement('div'); o.id = 'ngs'; o.className = 'ngs'; o.hidden = true; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Search');
+  o.innerHTML = '<div class="ngs-in"><div class="ngs-top">' + glass + '<input id="ngs-q" type="search" autocomplete="off" placeholder="Search a word, an issue, or a page"><button type="button" class="ngs-x" id="ngs-x">Close</button></div>' +
+    '<div class="ngs-chips">' + ['Comics', 'Riddles', 'Hunt for Mengele', 'Recipes', 'Spy', 'Issue 13 page 5'].map(function(c){ return '<button type="button">' + c + '</button>'; }).join('') + '</div>' +
+    '<p class="ngs-tip">Tip: type an issue and a page, like "issue 12 page 8", and press Enter.</p><div id="ngs-res"></div></div>';
+  document.body.appendChild(o); S.wire($('ngs-res'));
+  var t = null;
+  function run(now){ clearTimeout(t); t = setTimeout(function(){ var v = $('ngs-q').value.trim(); if (!v){ $('ngs-res').innerHTML = ''; return; } S.ready().then(function(){ if ($('ngs-q').value.trim() === v) $('ngs-res').innerHTML = S.render(S.all(v), true); }); }, now ? 0 : 200); }
+  $('ngs-q').addEventListener('input', function(){ run(); });
+  $('ngs-q').addEventListener('keydown', function(e){ e.stopPropagation(); if (e.key === 'Enter'){ var r = S.all(this.value); if (r.jump){ var b = $('ngs-res'); b.innerHTML = S.render(r, true); var j = b.querySelector('.sr-jump'); if (j) j.click(); } else run(true); } if (e.key === 'Escape') close(); });
+  o.querySelector('.ngs-chips').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; $('ngs-q').value = b.textContent; run(true); $('ngs-q').focus(); });
+  function open(){ if (document.documentElement.classList.contains('ng-soon-lock')) return; o.hidden = false; document.body.style.overflow = 'hidden'; S.ready(); setTimeout(function(){ $('ngs-q').focus(); $('ngs-q').select(); }, 30); }
+  function close(){ o.hidden = true; document.body.style.overflow = ''; }
+  window.NG_SEARCH_OPEN = open; window.NG_SEARCH_CLOSE = close;
+  $('ngs-x').onclick = close;
+  document.addEventListener('keydown', function(e){ if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '') && o.hidden){ e.preventDefault(); open(); } else if (e.key === 'Escape' && !o.hidden) close(); });
+  var nav = document.querySelector('header nav');
+  if (nav){ var b = document.createElement('button'); b.type = 'button'; b.className = 'nav-search'; b.id = 'nav-search'; b.setAttribute('aria-label', 'Search'); b.title = 'Search (press /)'; b.innerHTML = glass; b.onclick = open; nav.appendChild(b); }
+
+  // Robo: stands next to the search box with a control stick and drives the claw
+  var fin = $('finder'); if (!fin) return;
+  var flame = 'M1 -17 C4 -10 10 -6 10 2 C10 9 5 13 0 13 C-6 13 -10 9 -10 2 C-10 -4 -6 -7 -4 -11 C-3 -6 -1 -4 1 -4 C0 -9 -1 -13 1 -17 Z', inner = 'M0 -2 C3 2 4 5 3 8 C2 10 -2 10 -3 8 C-4 5 -2 2 0 -2 Z';
+  var r = document.createElement('button'); r.type = 'button'; r.className = 'robo'; r.id = 'robo'; r.setAttribute('aria-label', 'Robo: tap to search');
+  r.innerHTML = '<span class="robo-say" id="robo-say">Hi! Tap me to search any page.</span>' +
+   '<svg viewBox="0 0 150 178" aria-hidden="true">' +
+    '<g class="rb-body">' +
+     '<line x1="75" y1="22" x2="75" y2="8" stroke="#12294a" stroke-width="4" stroke-linecap="round"/>' +
+     '<g transform="translate(75 6) scale(.42)"><path class="rb-flame" d="' + flame + '" fill="#12294a"/></g>' +
+     '<rect x="30" y="20" width="90" height="66" rx="26" fill="#12294a"/>' +
+     '<rect x="22" y="44" width="10" height="20" rx="4" fill="#12294a"/><rect x="118" y="44" width="10" height="20" rx="4" fill="#12294a"/>' +
+     '<rect x="42" y="32" width="66" height="40" rx="16" fill="#f5e4cc"/>' +
+     '<g class="rb-pupils"><ellipse class="rb-eye" cx="62" cy="49" rx="6" ry="8" fill="#12294a"/><ellipse class="rb-eye" cx="88" cy="49" rx="6" ry="8" fill="#12294a"/></g>' +
+     '<path d="M64 62 Q75 69 86 62" stroke="#12294a" stroke-width="3.5" fill="none" stroke-linecap="round"/>' +
+     '<rect x="66" y="86" width="18" height="8" fill="#12294a"/>' +
+     '<rect x="36" y="92" width="78" height="62" rx="20" fill="#12294a"/>' +
+     '<circle cx="75" cy="116" r="15" fill="#f5e4cc"/>' +
+     '<g transform="translate(75 117) scale(.78)"><g class="rb-flame"><path d="' + flame + '" fill="#12294a"/><path d="' + inner + '" fill="#f5e4cc"/></g></g>' +
+     '<line id="rb-arm-l" x1="40" y1="104" x2="60" y2="134" stroke="#12294a" stroke-width="11" stroke-linecap="round"/>' +
+     '<line class="rb-arm-r" x1="110" y1="104" x2="96" y2="132" stroke="#12294a" stroke-width="11" stroke-linecap="round"/>' +
+    '</g>' +
+    '<g class="rb-stick"><line x1="96" y1="150" x2="96" y2="128" stroke="#12294a" stroke-width="5" stroke-linecap="round"/><circle cx="96" cy="126" r="8" fill="#f5e4cc" stroke="#12294a" stroke-width="3"/></g>' +
+    '<rect x="18" y="146" width="114" height="30" rx="7" fill="#f5e4cc" stroke="#12294a" stroke-width="3.5"/>' +
+    '<circle cx="42" cy="161" r="5" fill="#12294a"/><circle cx="58" cy="161" r="5" fill="none" stroke="#12294a" stroke-width="3"/>' +
+    '<rect x="72" y="156" width="12" height="10" rx="2" fill="#12294a"/>' +
+   '</svg>';
+  fin.insertBefore(r, fin.firstChild); fin.classList.add('has-robo');
+  var pilot = r.cloneNode(true); pilot.id = 'robo-pilot'; pilot.classList.add('robo-pilot'); pilot.removeAttribute('aria-label'); pilot.setAttribute('aria-hidden', 'true'); pilot.tabIndex = -1;
+  [].forEach.call(pilot.querySelectorAll('[id]'), function(x){ x.removeAttribute('id'); }); document.body.appendChild(pilot);
+  function all(sel){ return [].slice.call(document.querySelectorAll('#robo ' + sel + ', #robo-pilot ' + sel)); }
+  r.onclick = open;
+  var claw = $('claw'), says = all('.robo-say'), sticks = all('.rb-stick'), arms = all('.rb-arm-r');
+  var lastX = null, tilt = 0, sayT = null, driving = false;
+  function speak(t, ms){ says.forEach(function(x){ x.textContent = t; }); clearTimeout(sayT); if (ms) sayT = setTimeout(function(){ says.forEach(function(x){ x.textContent = 'Hi! Tap me to search any page.'; }); }, ms); }
+  function loop(){
+    var m = claw && /translate3d\(([-\d.]+)px,\s*([-\d.]+)px/.exec(claw.style.transform || '');
+    var x = m ? +m[1] : null, y = m ? +m[2] : null;
+    var moving = x != null && lastX != null && (Math.abs(x - lastX) > .3 || Math.abs(y - (loop.y || 0)) > .3);
+    var want = 0;
+    if (moving){ var dx = x - lastX, dy = y - (loop.y || 0); want = Math.max(-22, Math.min(22, dx * 2.2)); if (Math.abs(dy) > Math.abs(dx)) want = dy > 0 ? 6 : -6; }
+    if (moving && !driving){ driving = true; r.classList.add('driving'); pilot.classList.add('driving', 'on'); speak('Looking for it…'); }
+    if (moving) loop.still = 0; else loop.still = (loop.still || 0) + 1;
+    if (driving && loop.still > 90){ driving = false; r.classList.remove('driving'); pilot.classList.remove('driving', 'on'); }
+    tilt += (want - tilt) * .25;
+    var a = tilt * Math.PI / 180;
+    sticks.forEach(function(st){ st.setAttribute('transform', 'rotate(' + tilt.toFixed(1) + ' 96 150)'); });
+    arms.forEach(function(ar){ ar.setAttribute('x2', (96 + Math.sin(a) * 24).toFixed(1)); ar.setAttribute('y2', (150 - Math.cos(a) * 24).toFixed(1)); });
+    lastX = x; loop.y = y;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  // what Robo says when the claw gets something
+  var ov = window.NG_UNBOX_EL;
+  if (ov) window.NG_UNBOX_EL = function(){ speak('Got it! Here you go.', 3500); return ov.apply(this, arguments); };
+  var fq = $('finder-q'); if (fq) fq.addEventListener('keydown', function(e){ if (e.key === 'Enter' && fq.value.trim()) speak('On it!', 0); });
+})();
 </script>
+
 </body>
 </html>
