@@ -5135,6 +5135,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     <button type="button" data-v="new">Sign-ups</button>
     <button type="button" data-v="dev">Phones vs computers</button>
     <button type="button" data-v="alert">Alerts</button>
+    <button type="button" data-v="ban">Block</button>
     <button type="button" data-v="fb">Feedback</button>
     <button type="button" data-v="qr">QR codes</button>
     <span class="vm-sp"></span>
@@ -5155,6 +5156,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   <section class="vm-view" id="vm-dev" hidden><div class="rd-pad"><h3>Phones vs computers</h3><p class="rd-tip">What readers used this month.</p><div id="rd-dev"></div></div></section>
   <section class="vm-view" id="vm-qr" hidden><div class="rd-pad"><h3>QR codes</h3><p class="rd-tip">How many people scanned the QR codes in the printed magazine, and how many of them became readers.</p><div id="rd-qr"></div></div></section>
   <section class="vm-view" id="vm-fb" hidden><div class="rd-pad"><h3>Feedback</h3><p class="rd-tip">What readers wrote on the feedback page (the QR code in the printed magazine). Newest first.</p><div id="rd-fb"></div></div></section>
+  <section class="vm-view" id="vm-ban" hidden><div class="rd-pad"><h3>Block someone</h3><p class="rd-tip">A blocked reader hears a siren, the gate rolls down and they see "You are blocked". It happens within 15 seconds, even if they are reading right now.</p><form id="rd-banf" class="rd-banf" novalidate><input id="rd-bane" type="search" placeholder="Type a name or an email" autocomplete="off"><button type="submit">Block this email</button></form><div id="rd-banpick"></div><h4 class="rd-h4">Blocked now</h4><div id="rd-banlist"></div></div></section>
   <section class="vm-view" id="vm-alert" hidden><div class="rd-pad"><h3>Alerts</h3><p class="rd-tip">Every screenshot, recording or print try, newest first.</p><div id="rd-alert"></div></div></section>
   <section class="vm-view" id="vm-where" hidden>
     <div class="vm-globe" id="vm-globe"></div>
@@ -6223,7 +6225,7 @@ document.getElementById('cp').addEventListener('click',function(){
     return fetch(DOCS + '/blocks/' + pkey(em) + '?key=' + KEY, { cache:'no-store' }).then(function(r){
       if (r.status === 404) return { missing:true };
       if (!r.ok) throw new Error('no');
-      return r.json().then(function(j){ var f = j.fields || {}; return { strikes: +((f.strikes && f.strikes.integerValue) || 0), until: f.until ? +(f.until.integerValue || f.until.doubleValue || 0) : 0 }; });
+      return r.json().then(function(j){ var f = j.fields || {}; return { banned: !!(f.banned && f.banned.booleanValue), strikes: +((f.strikes && f.strikes.integerValue) || 0), until: f.until ? +(f.until.integerValue || f.until.doubleValue || 0) : 0 }; });
     });
   }
   function save(em, rec){
@@ -6290,6 +6292,7 @@ document.getElementById('cp').addEventListener('click',function(){
     var who = email() || 'Unknown reader', strikeN = Math.max(1, Math.min(4, r.strikes || 1));
     var html = (ownerTest ? '<p class="jb-test">TEST RUN &middot; click anywhere to end</p>' : '') + '<p class="jb-dept">NeshamaGazine Police Dept.</p><p class="jb">' + esc(who) + '</p><p class="jb">Charge: ' + esc(r.what || 'screenshot') + '</p>' +
       (short ? '<p class="sx-count" id="sx-left">' + fmt(r.until - Date.now()) + '</p>'
+        : r.banned ? '<p class="sx-count">Blocked</p><p class="sx-big">You are blocked from NeshamaGazine.</p>'
         : forever ? '<p class="sx-count">Forever</p><p class="sx-big">You cannot come back to NeshamaGazine.</p>'
         : '<p class="sx-count">' + (r.strikes >= 3 ? '1 Month' : '1 Week') + '</p><p class="sx-big">You can come back on ' + esc(when(r.until)) + '</p>') +
       '';
@@ -6352,7 +6355,8 @@ document.getElementById('cp').addEventListener('click',function(){
   var checked = null;
   function check(){
     var em = email();
-    if (owner()){ if (ownBlock) return; if (root.classList.contains('ng-blocked') || gateState !== 'up'){ $('sx-modal').hidden = true; root.classList.remove('ng-blocked'); gateUp(); } return; }
+    if (owner()){ if (banned) unban(); if (ownBlock) return; if (root.classList.contains('ng-blocked') || gateState !== 'up'){ $('sx-modal').hidden = true; root.classList.remove('ng-blocked'); gateUp(); } return; }
+    if (banned) return;
     var r = blockedRec(); if (r) showBlock(r); else if (root.classList.contains('ng-blocked')){ $('sx-modal').hidden = true; root.classList.remove('ng-blocked'); gateUp(); }
     if (!em || checked === em) return; checked = em;
     remote(em).then(function(x){
@@ -6362,6 +6366,12 @@ document.getElementById('cp').addEventListener('click',function(){
       var b = blockedRec(); if (b) showBlock(b);
     }).catch(function(){});
   }
+  // blocked by the owner from Neshama Radar: checked every 15 seconds
+  var banned = false;
+  function ban(){ if (banned) return; banned = true; root.classList.add('ng-banned'); try { siren(10); } catch(e){} showBlock({ until: -1, strikes: 4, what: 'blocked by the owner', banned: true }, false, true); }
+  function unban(){ if (!banned) return; banned = false; root.classList.remove('ng-banned'); seqT.forEach(clearTimeout); seqUntil = 0; try { stopSiren(); } catch(e){} $('sx-modal').hidden = true; root.classList.remove('ng-blocked', 'ng-black'); gateUp(); }
+  function banPoll(){ var em = email(); if (!em || owner()){ if (banned) unban(); return; } remote(em).then(function(x){ if (x.banned) ban(); else if (banned) unban(); }).catch(function(){}); }
+  setTimeout(banPoll, 1500); setInterval(banPoll, 15000); document.addEventListener('ng:login', banPoll);
   check(); setInterval(check, 3000);
   document.addEventListener('ng:owner', check);
 
@@ -6388,7 +6398,9 @@ document.getElementById('cp').addEventListener('click',function(){
 
   // ---------- leaving the window blurs everything ----------
   function away(on){ root.classList.toggle('ng-away', on); }
-  window.addEventListener('blur', function(){ setTimeout(function(){ var a = document.activeElement; if (a && a.tagName === 'IFRAME') return; if (!document.hasFocus()) away(true); }, 30); });
+  window.addEventListener('blur', function(){ var a = document.activeElement; if (!(a && a.tagName === 'IFRAME')) away(true); setTimeout(function(){ var b = document.activeElement; if (b && b.tagName === 'IFRAME' && document.hasFocus()) away(false); }, 60); });
+  document.addEventListener('mouseleave', function(e){ if (!e.relatedTarget && e.clientY >= innerHeight - 2 && !owner()) away(true); });
+  document.addEventListener('mouseenter', function(){ if (document.hasFocus()) away(false); });
   window.addEventListener('focus', function(){ away(false); if (Date.now() >= blackEnd && !root.classList.contains('ng-soft')) root.classList.remove('ng-black'); });
   document.addEventListener('visibilitychange', function(){ if (document.hidden) away(true); else if (document.hasFocus()) away(false); });
   document.addEventListener('pointerdown', function(){ if (document.hasFocus()) away(false); }, true);
@@ -8542,7 +8554,32 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   }
   var prev = window.NG_RADAR_TAB;
   window.NG_RADAR_TAB = function(v, fromLoad){ if (prev) prev(v, fromLoad);
-    if (v === 'read') drawRead(); if (v === 'new') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'qr' && !fromLoad) drawQR(); };
+    if (v === 'read') drawRead(); if (v === 'new') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'qr' && !fromLoad) drawQR(); if (v === 'ban' && !fromLoad) drawBan(); };
+  function banWrite(em, name, on){
+    return token().then(function(t){
+      if (!on) return fetch(DB + '/blocks/' + pkey(em) + '?key=' + KEY, { method:'DELETE', headers:{ Authorization:'Bearer ' + t } });
+      var f = { email:{ stringValue: em }, name:{ stringValue: name || '' }, banned:{ booleanValue: true }, what:{ stringValue: 'blocked by the owner' }, last:{ timestampValue: new Date().toISOString() } };
+      return fetch(DB + '/blocks/' + pkey(em) + '?updateMask.fieldPaths=email&updateMask.fieldPaths=name&updateMask.fieldPaths=banned&updateMask.fieldPaths=what&updateMask.fieldPaths=last&key=' + KEY, { method:'PATCH', headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + t }, body: JSON.stringify({ fields: f }) });
+    }).then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); });
+  }
+  function drawBan(){
+    var list = $('rd-banlist'), pick = $('rd-banpick'), inp = $('rd-bane');
+    list.innerHTML = '<p class="rd-tip">Loading\u2026</p>';
+    token().then(function(t){ return fetch(DB + '/blocks?pageSize=300&key=' + KEY, { headers:{ Authorization:'Bearer ' + t }, cache:'no-store' }); }).then(function(r){ return r.json(); }).then(function(j){
+      var rows = (j.documents || []).map(function(d){ var f = d.fields || {}; return { em: f.email ? f.email.stringValue : '', nm: f.name ? f.name.stringValue : '', on: !!(f.banned && f.banned.booleanValue) }; }).filter(function(x){ return x.on && x.em; });
+      list.innerHTML = rows.length ? rows.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.nm || x.em.split('@')[0]) + '</b><br><small>' + esc(x.em) + '</small></span><button type="button" class="rd-unban" data-em="' + esc(x.em) + '">Unblock</button></div>'; }).join('') : '<p class="rd-tip">Nobody is blocked.</p>';
+    }).catch(function(e){ list.innerHTML = '<p class="rd-tip">' + esc(e.message) + '</p>'; });
+    function suggest(){
+      var q = (inp.value || '').trim().toLowerCase(); if (!q){ pick.innerHTML = ''; return; }
+      var ps = people().filter(function(p){ return ((p.name || '') + ' ' + (p.email || '')).toLowerCase().indexOf(q) > -1; }).slice(0, 8);
+      pick.innerHTML = ps.map(function(p){ return '<div class="rd-logrow"><span><b>' + esc(p.name || (p.email || '').split('@')[0]) + '</b><br><small>' + esc(p.email || '') + '</small></span><button type="button" class="rd-ban" data-em="' + esc(p.email || '') + '" data-nm="' + esc(p.name || '') + '">Block</button></div>'; }).join('');
+    }
+    inp.oninput = suggest;
+    $('rd-banf').onsubmit = function(e){ e.preventDefault(); var em = (inp.value || '').trim().toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ pick.innerHTML = '<p class="rd-tip">Type the full email, or pick a person from the list.</p>'; return; } go(em, '', true); };
+    function go(em, nm, on){ if (/^levichekroun@ulyop\.com$/i.test(em)){ pick.innerHTML = '<p class="rd-tip">You cannot block the owner.</p>'; return; }
+      banWrite(em, nm, on).then(function(){ inp.value = ''; pick.innerHTML = '<p class="rd-tip">' + (on ? esc(em) + ' is blocked.' : esc(em) + ' can read again.') + '</p>'; drawBan(); }).catch(function(e){ pick.innerHTML = '<p class="rd-tip">' + esc(e.message) + '</p>'; }); }
+    $('vm-ban').onclick = function(e){ var b = e.target.closest('.rd-ban, .rd-unban'); if (!b) return; go(b.getAttribute('data-em'), b.getAttribute('data-nm') || '', b.classList.contains('rd-ban')); };
+  }
   function drawQR(){
     var el = $('rd-qr'); el.innerHTML = '<p class="rd-tip">Loading\u2026</p>';
     var readers = people().filter(function(p){ return p.f && p.f.src && p.f.src.stringValue === 'qr'; });
@@ -9279,6 +9316,20 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
 .sr-feature em{font-style:normal;align-self:flex-start;font-weight:800;border-radius:6px;padding:9px 14px;background:#12294a;color:#f5e4cc}
 .ngs .sr-feature em{background:#f5e4cc;color:#12294a}
 @media (max-width:520px){.sr-feature img{width:104px;flex-basis:104px}.sr-feature b{font-size:1.25rem}}
+</style>
+
+<style id="rd-ban-css">
+.rd-banf{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.rd-banf input{flex:1 1 240px;min-width:0;border:2px solid #12294a;border-radius:6px;padding:9px 12px;font:600 1rem Figtree,system-ui,sans-serif;background:#f5e4cc;color:#12294a}
+.rd-banf button,.rd-ban,.rd-unban{border:0;border-radius:6px;background:#12294a;color:#f5e4cc;font:800 .92rem Figtree,system-ui,sans-serif;padding:9px 14px;cursor:pointer}
+.rd-unban{background:#f5e4cc;color:#12294a;border:2px solid #12294a}
+</style>
+
+<style id="ng-away-dark">
+/* the moment the reader leaves the page (to the taskbar, the Snipping Tool or another app) the page goes fully dark, so a screenshot gets nothing */
+html.ng-away body>*:not(#ng-sec){filter:none!important;visibility:hidden!important}
+html.ng-away #ng-sec .sx-away{background:#000!important;transition:none!important}
+html.ng-away,html.ng-away body{background:#000!important}
 </style>
 </body>
 </html>
