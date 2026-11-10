@@ -9600,7 +9600,7 @@ html.ng-ch .tape{padding-top:70px!important}
   var music = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M9 17.5a3 3 0 1 1-2-2.83V5l12-2v11.5a3 3 0 1 1-2-2.83V6.3L9 7.6z"/></svg>';
   band.innerHTML = '<p class="ch-kick">Happy Chanukah</p><h2>Night ' + N + ' of Chanukah</h2>' + m +
     '<p class="ch-sub">' + (N === 8 ? 'All eight candles are lit tonight!' : 'A new candle lights up by itself every night. Tonight ' + N + (N > 1 ? ' candles are' : ' candle is') + ' lit.') + '</p>' +
-    '<div class="ch-btns"><button type="button" id="ch-play">' + music + '<span>Play Chanukah music</span></button><button type="button" id="ch-next" hidden>Next song</button><button type="button" id="ch-snowb">Snow: on</button></div><p class="ch-now" id="ch-now"></p>';
+    '<div class="ch-btns"><button type="button" id="ch-play">' + music + '<span>Play Chanukah music</span></button><button type="button" id="ch-snowb">Snow: on</button></div>';
   var fin = $('finder'); if (fin) fin.parentNode.insertBefore(band, fin); else document.body.appendChild(band);
   function lightUp(){
     var order = ['chs']; for (var i = 8 - N; i < 8; i++) order.push('chc' + i);
@@ -9710,13 +9710,11 @@ html.ng-ch .tape{padding-top:70px!important}
     var a = actx(); if (!a) return; if (!master){ master = a.createGain(); master.gain.value = .45; master.connect(a.destination); }
     timers.forEach(clearTimeout); timers = []; songI = i % SONGS.length; var S = SONGS[songI], beat = 60 / S.bpm, t = a.currentTime + .1, total = 0;
     S.notes.forEach(function(n){ note(hz(n[0]), t + total, n[1] * beat * .92); total += n[1] * beat; });
-    $('ch-now').textContent = 'Now playing: ' + S.name + ' (' + (songI + 1) + ' of ' + SONGS.length + ')';
     timers.push(setTimeout(function(){ if (playing) playSong(songI + 1); }, (total + 1.2) * 1000));
   }
-  function stop(){ playing = false; timers.forEach(clearTimeout); timers = []; if (master){ var m0 = master; m0.gain.setTargetAtTime(0, ac.currentTime, .05); setTimeout(function(){ try { m0.disconnect(); } catch(e){} }, 400); master = null; } $('ch-now').textContent = ''; }
-  function playUI(){ var b = $('ch-play'); b.querySelector('span').textContent = playing ? 'Stop the music' : 'Play Chanukah music'; b.classList.toggle('on', playing); $('ch-next').hidden = !playing; }
+  function stop(){ playing = false; timers.forEach(clearTimeout); timers = []; if (master){ var m0 = master; m0.gain.setTargetAtTime(0, ac.currentTime, .05); setTimeout(function(){ try { m0.disconnect(); } catch(e){} }, 400); master = null; } }
+  function playUI(){ var b = $('ch-play'); b.querySelector('span').textContent = playing ? 'Stop the music' : 'Play Chanukah music'; b.classList.toggle('on', playing); }
   $('ch-play').onclick = function(){ if (playing) stop(); else { playing = true; playSong(songI); } playUI(); };
-  $('ch-next').onclick = function(){ if (!playing) return; if (master){ var m0 = master; m0.gain.setTargetAtTime(0, ac.currentTime, .03); setTimeout(function(){ try { m0.disconnect(); } catch(e){} }, 300); master = null; } playSong(songI + 1); };
   window.NG_CH_TEST = { grab: grab, drop: drop, card: showCard };
 })();
 </script>
