@@ -24,12 +24,12 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 @keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
 .unit small{font:800 .72rem Figtree,sans-serif;letter-spacing:.24em;text-transform:uppercase;opacity:.8}
 .colon{font:800 3rem/84px "Bricolage Grotesque",sans-serif;opacity:.6}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:8px}
+.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;margin-top:8px}
 .card{border:2px solid var(--b);border-radius:14px;padding:22px;position:relative;overflow:hidden}
 .card h2{margin:0 0 4px;font:800 1.6rem/1.1 "Bricolage Grotesque",sans-serif}
 .card p.sub{margin:0 0 16px;opacity:.85}
 /* sneak peek: the next cover, hidden under tiles you unlock */
-.peek{display:flex;gap:20px;align-items:center}
+.peek{display:flex;flex-direction:column;gap:18px;align-items:center}.clues{width:100%}
 .cov{position:relative;flex:0 0 210px;height:264px;transform:rotate(-3deg);border:4px solid var(--b);border-radius:3px;overflow:hidden;background:var(--n2)}
 .cov img{width:100%;height:100%;object-fit:cover;display:block}
 .tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr)}
@@ -61,6 +61,21 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 .left{font-weight:700;opacity:.85}
 .won{border:2px dashed var(--b);border-radius:10px;padding:10px 12px;font-size:.95rem;display:none}
 .won.on{display:block}
+
+.cm-wrap{position:relative;border:4px solid var(--b);border-radius:14px;overflow:hidden;background:#0d1f3a}
+#cm{display:block;width:100%;height:auto;touch-action:none}
+.cm-msg{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);background:var(--b);color:var(--n);font:800 1.25rem "Bricolage Grotesque",sans-serif;padding:10px 18px;border-radius:10px;pointer-events:none;transition:opacity .3s;white-space:nowrap;text-align:center}
+.cm-msg.off{opacity:0}
+.cm-msg small{display:block;font:700 .85rem Figtree,sans-serif}
+.cm-ctrl{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:10px;margin-top:12px}
+.cm-b{border:0;border-radius:12px;background:var(--b);color:var(--n);font:800 1.4rem Figtree,sans-serif;padding:14px 0;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;box-shadow:0 5px 0 #b9a07c;transform:translateY(0);transition:transform .06s,box-shadow .06s}
+.cm-b:active,.cm-b.on{transform:translateY(4px);box-shadow:0 1px 0 #b9a07c}
+.cm-b.drop{font-size:1.15rem;letter-spacing:.12em}
+.cm-b:disabled{opacity:.45}
+.cm-info{display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-weight:800}
+.cm-info i{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--b);margin-left:5px;vertical-align:-1px}
+.cm-info i.used{background:none;border:2px solid var(--b)}
+.cm-tip{margin:6px 0 0;font-size:.85rem;opacity:.7}
 .bottom{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;margin-top:22px}
 .riddle q{display:block;font:700 1.25rem/1.35 "Bricolage Grotesque",sans-serif;quotes:none;margin:0 0 12px}
 .riddle .ans{display:none;margin-top:10px;font-weight:800}
@@ -73,17 +88,19 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 @media (max-width:860px){.grid,.bottom{grid-template-columns:1fr}.clock{gap:8px;flex-wrap:nowrap}.digits{gap:3px}.d{width:34px;height:50px;font-size:1.8rem;border-radius:6px}.colon{display:none}.unit small{font-size:.6rem;letter-spacing:.12em}.peek,.game{flex-direction:column;align-items:center}.cov{flex-basis:auto;width:190px;height:240px}.machine{flex-basis:auto;width:100%;max-width:300px}.side{width:100%}}
 </style></head><body><div class="wrap">
 <div class="top"><img src="logo.png" alt="NeshamaGazine"><span class="waiting"><b id="w">312</b> readers are waiting</span></div>
-<div class="hero"><p class="kick">Coming soon</p><h1>Issue 14 opens in</h1>
+<div class="hero"><p class="kick">Coming for Chanukah</p><h1>Issue 14 opens in</h1>
 <div class="clock" id="clock"></div></div>
 <div class="grid">
-  <section class="card"><h2>Sneak peek</h2><p class="sub">The new cover is hiding. Every few hours a piece opens up.</p>
-    <div class="peek"><div class="cov"><i class="tape"></i><img src="cover.jpg" alt=""><div class="tiles" id="tiles"></div><span class="stamp">TOP SECRET</span></div>
-    <ul class="clues"><li><b>1</b><span>A spy story that starts in a train station.</span></li><li><b>2</b><span>Someone hides a message in a loaf of bread.</span></li><li class="lock"><b>3</b><span data-in="5 hours">Clue 3</span></li><li class="lock"><b>4</b><span data-in="1 day">Clue 4</span></li></ul></div>
+  <section class="card"><h2>Claw Machine</h2><p class="sub">Move the claw, drop it on a box and carry it to the WIN hole. Every box opens a piece of the secret cover. Gold boxes open two.</p>
+    <div class="cm-wrap"><canvas id="cm" width="560" height="380" aria-label="Claw machine game"></canvas>
+      <div class="cm-msg" id="cmmsg">Press Start</div></div>
+    <div class="cm-ctrl"><button class="cm-b" id="bl" aria-label="Move left">&#9664;</button><button class="cm-b drop" id="bd">DROP</button><button class="cm-b" id="br" aria-label="Move right">&#9654;</button></div>
+    <div class="cm-info"><span id="tries"></span><span>Pieces found <b id="pc">2</b> / 12</span></div>
+    <p class="cm-tip">On a computer: arrow keys to move, space to drop.</p>
   </section>
-  <section class="card"><h2>Grab a peek</h2><p class="sub">Play the claw. Every box you win opens one more piece of the secret cover.</p>
-    <div class="game"><div class="machine" id="m"><i class="rail"></i><div class="mclaw" id="mc"><div class="rope" id="rope"></div><div class="head"></div><i class="f l"></i><i class="f r"></i></div>
-      <div class="prize" style="left:22px"><span>?</span></div><div class="prize" style="left:98px"><span>?</span></div><div class="prize" style="left:174px"><span>?</span></div></div>
-    <div class="side"><button class="btn" id="go">Drop the claw</button><p class="left" id="left">3 tries today</p><div class="won" id="won">You won a piece! Look at the secret cover.</div></div></div>
+  <section class="card"><h2>Sneak peek</h2><p class="sub">The new cover is hiding. Win boxes to open it.</p>
+    <div class="peek"><div class="cov"><i class="tape"></i><img src="cover.jpg" alt=""><div class="tiles" id="tiles"></div><span class="stamp">TOP SECRET</span></div>
+    <ul class="clues"><li><b>1</b><span>A spy story that starts in a train station.</span></li><li><b>2</b><span>Someone hides a message in a loaf of bread.</span></li><li class="lock" id="c3"><b>3</b><span data-in="5 hours">Clue 3</span></li><li class="lock"><b>4</b><span data-in="1 day">Clue 4</span></li></ul></div>
   </section>
 </div>
 <div class="bottom">
@@ -92,22 +109,117 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 </div>
 </div>
 <script>
-var end = Date.now() + ((2 * 24 + 5) * 3600 + 41 * 60 + 9) * 1000, prev = '';
+var end = new Date('2026-12-04T16:12:00-05:00').getTime(), prev = '';   // first Chanukah candle 2026, New York candle lighting
 function draw(){ var t = Math.max(0, end - Date.now()) / 1000, v = [Math.floor(t / 86400), Math.floor(t % 86400 / 3600), Math.floor(t % 3600 / 60), Math.floor(t % 60)].map(function(x){ return ('0' + x).slice(-2); });
   var names = ['Days', 'Hours', 'Minutes', 'Seconds'], s = v.join('');
   var c = document.getElementById('clock'); if (!c.children.length) c.innerHTML = v.map(function(x, i){ return (i ? '<span class="colon">:</span>' : '') + '<div class="unit"><div class="digits"><span class="d"></span><span class="d"></span></div><small>' + names[i] + '</small></div>'; }).join('');
   var ds = c.querySelectorAll('.d'); for (var i = 0; i < 8; i++){ if (prev[i] !== s[i]){ ds[i].textContent = s[i]; if (prev) { ds[i].classList.remove('flip'); void ds[i].offsetWidth; ds[i].classList.add('flip'); } } } prev = s; }
 draw(); setInterval(draw, 1000);
 var tl = document.getElementById('tiles'), open = [1, 4]; for (var i = 0; i < 12; i++){ var e = document.createElement('i'); if (open.indexOf(i) > -1) e.className = 'open'; tl.appendChild(e); }
-var tries = 3, busy = false;
-document.getElementById('go').onclick = function(){
-  if (busy || !tries) return; busy = true; tries--; var mc = document.getElementById('mc'), rope = document.getElementById('rope'), ps = document.querySelectorAll('.prize'), pick = ps[Math.floor(Math.random() * 3)];
-  var x = pick.offsetLeft + 27 - 125; mc.style.transform = 'translateX(' + x + 'px)';
-  setTimeout(function(){ rope.style.height = '186px'; }, 950);
-  setTimeout(function(){ mc.classList.add('shut'); }, 1900);
-  setTimeout(function(){ rope.style.height = '30px'; pick.style.transform = 'translateY(-156px)'; }, 2300);
-  setTimeout(function(){ pick.innerHTML = '<span>&#9733;</span>'; var c = [].filter.call(tl.children, function(t){ return !t.classList.contains('open'); }); if (c.length) c[Math.floor(Math.random() * c.length)].classList.add('open'); document.getElementById('won').classList.add('on'); }, 3300);
-  setTimeout(function(){ mc.classList.remove('shut'); pick.style.transform = ''; pick.innerHTML = '<span>?</span>'; mc.style.transform = ''; document.getElementById('left').textContent = tries ? tries + (tries > 1 ? ' tries' : ' try') + ' today' : 'Come back tomorrow for more tries'; busy = false; }, 4300);
-};
+
+var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call(tl.children, function(t){ return !t.classList.contains('open'); }); if (c.length) c[Math.floor(Math.random() * c.length)].classList.add('open'); } document.getElementById('pc').textContent = tl.querySelectorAll('.open').length; };
+(function(){
+  var cv = document.getElementById('cm'), g = cv.getContext('2d'), W = 560, H = 380, dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = W * dpr; cv.height = H * dpr; g.scale(dpr, dpr);
+  var N = '#12294a', B = '#f5e4cc', BOX = '#c9a77a', BOXD = '#a8865a';
+  var BELT = 318, CH = { x: 18, w: 78 }, TOP = 46;
+  var tries = 5, state = 'idle', x = 300, L = 30, open = 1, held = null, slip = 0, t0 = 0, msgT = null, conf = [], belt = 0, keys = {};
+  var boxes = []; for (var i = 0; i < 5; i++) boxes.push({ x: 140 + i * 90, w: 52, h: 42, y: BELT - 42, gold: i === 3, vy: 0, fall: false });
+  var msg = document.getElementById('cmmsg');
+  function say(t, sub, ms){ msg.innerHTML = t + (sub ? '<small>' + sub + '</small>' : ''); msg.classList.remove('off'); clearTimeout(msgT); if (ms) msgT = setTimeout(function(){ msg.classList.add('off'); }, ms); }
+  function triesUI(){ var h = 'Tries'; for (var i = 0; i < 5; i++) h += '<i class="' + (i >= tries ? 'used' : '') + '"></i>'; document.getElementById('tries').innerHTML = h; }
+  triesUI(); say('Your turn!', 'Move the claw, then DROP', 0);
+  // sound
+  var ac = null, hum = null;
+  function snd(){ if (!ac){ try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} } if (ac && ac.state === 'suspended') ac.resume(); return ac; }
+  function beep(f, d, type, vol, f2){ var a = snd(); if (!a) return; var o = a.createOscillator(), v = a.createGain(), t = a.currentTime; o.type = type || 'square'; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); v.gain.setValueAtTime(vol || .06, t); v.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(v); v.connect(a.destination); o.start(t); o.stop(t + d + .02); }
+  function motor(on){ var a = snd(); if (!a) return; if (on && !hum){ var o = a.createOscillator(), v = a.createGain(); o.type = 'sawtooth'; o.frequency.value = 70; v.gain.value = .025; o.connect(v); v.connect(a.destination); o.start(); hum = { o: o, v: v }; } else if (!on && hum){ hum.v.gain.setTargetAtTime(0, a.currentTime, .03); var h = hum; setTimeout(function(){ try { h.o.stop(); } catch(e){} }, 150); hum = null; } }
+  function win(){ [523, 659, 784, 1046].forEach(function(f, i){ setTimeout(function(){ beep(f, .18, 'triangle', .08); }, i * 110); }); }
+  // controls
+  function hold(id, k){ var b = document.getElementById(id); function on(e){ e.preventDefault(); keys[k] = true; b.classList.add('on'); snd(); } function off(){ keys[k] = false; b.classList.remove('on'); }
+    b.addEventListener('pointerdown', on); ['pointerup', 'pointerleave', 'pointercancel'].forEach(function(t){ b.addEventListener(t, off); }); }
+  hold('bl', 'l'); hold('br', 'r');
+  document.getElementById('bd').addEventListener('click', drop);
+  addEventListener('keydown', function(e){ if (e.target.tagName === 'INPUT') return; if (e.key === 'ArrowLeft'){ keys.l = true; e.preventDefault(); } if (e.key === 'ArrowRight'){ keys.r = true; e.preventDefault(); } if (e.key === ' '){ e.preventDefault(); drop(); } });
+  addEventListener('keyup', function(e){ if (e.key === 'ArrowLeft') keys.l = false; if (e.key === 'ArrowRight') keys.r = false; });
+  var drag = false; cv.addEventListener('pointerdown', function(e){ drag = true; aim(e); snd(); }); cv.addEventListener('pointermove', function(e){ if (drag) aim(e); }); addEventListener('pointerup', function(){ drag = false; keys.to = null; });
+  function aim(e){ var r = cv.getBoundingClientRect(); keys.to = (e.clientX - r.left) / r.width * W; }
+  function drop(){ snd(); if (state !== 'idle' || !tries) return; tries--; triesUI(); state = 'down'; msg.classList.add('off'); beep(220, .12, 'square', .05, 160); document.getElementById('bd').disabled = true; }
+  // game loop
+  var last = performance.now();
+  function step(now){
+    var dt = Math.min(.05, (now - last) / 1000); last = now;
+    belt += dt * 38;
+    boxes.forEach(function(b){ if (b === held || b.fall) return; b.x += dt * 38; if (b.x > W + 10) { var mn = Math.min.apply(null, boxes.filter(function(o){ return o !== b && !o.fall && o !== held; }).map(function(o){ return o.x; }).concat([999])); b.x = Math.min(60, mn - 90); b.gold = Math.random() < .2; } });
+    boxes.forEach(function(b){ if (!b.fall) return; b.vy += 1500 * dt; b.y += b.vy * dt;
+      var floor = b.inChute ? H + 60 : BELT - b.h; if (b.y >= floor){ b.y = floor; if (b.inChute){ b.fall = false; b.inChute = false; b.x = 110; b.y = BELT - b.h; } else { b.fall = false; b.vy = 0; beep(90, .15, 'square', .07); } } });
+    var moving = false;
+    if (state === 'idle'){ var sp = 190 * dt, want = 0; if (keys.l) want = -1; if (keys.r) want = 1; if (keys.to != null){ var d = keys.to - x; want = Math.abs(d) < 3 ? 0 : d > 0 ? 1 : -1; sp = Math.min(sp, Math.abs(d)); }
+      if (want){ x = Math.max(120, Math.min(W - 30, x + want * sp)); moving = true; } }
+    var bottom = BELT - 42 - TOP - 28;
+    if (state === 'down'){ L += 300 * dt; moving = true; if (L >= bottom){ L = bottom; state = 'grab'; t0 = now; } }
+    if (state === 'grab'){ open = Math.max(0, 1 - (now - t0) / 220); if (now - t0 > 300){
+        var best = null, bd = 99; boxes.forEach(function(b){ if (b.fall) return; var d = Math.abs(b.x + b.w / 2 - x); if (d < bd){ bd = d; best = b; } });
+        if (best && bd < 26){ held = best; slip = bd < 11 ? 0 : (Math.random() < .55 ? now + 300 + Math.random() * 900 : 0); beep(140, .1, 'square', .08); } else { held = null; beep(300, .25, 'sawtooth', .04, 120); }
+        state = 'up'; t0 = now; } }
+    if (state === 'up' || state === 'carry'){ moving = true;
+      if (state === 'up'){ L -= 220 * dt; if (L <= 30){ L = 30; state = held ? 'carry' : 'idle'; if (!held){ open = 1; say('Missed!', 'Line the claw up right over a box', 1800); document.getElementById('bd').disabled = !tries; if (!tries) over(); } } }
+      else { x -= 170 * dt; if (x <= CH.x + CH.w / 2){ x = CH.x + CH.w / 2; state = 'release'; t0 = now; } }
+      if (held && slip && now > slip){ held.fall = true; held.vy = 0; held = null; slip = 0; beep(400, .3, 'sawtooth', .05, 90); say('So close!', 'It slipped out', 1800); }
+    }
+    if (held){ held.x = x - held.w / 2; held.y = TOP + L + 34 - 6; }
+    if (state === 'carry' && !held){ state = 'back'; }
+    if (state === 'release'){ open = Math.min(1, (now - t0) / 200); if (now - t0 > 220 && held){ held.fall = true; held.inChute = true; held.vy = 0; var gold = held.gold; held = null; prize(gold); } if (now - t0 > 700) state = 'back'; }
+    if (state === 'back'){ open = 1; x += 220 * dt; moving = true; if (x >= 300){ x = 300; state = 'idle'; document.getElementById('bd').disabled = !tries; if (!tries) over(); } }
+    if (state === 'up' && !held) open = Math.min(1, open + dt * 3);
+    motor(moving);
+    conf = conf.filter(function(c){ c.vy += 600 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.r += c.vr * dt; return c.y < H + 20; });
+    draw(); requestAnimationFrame(step);
+  }
+  function prize(gold){
+    win(); for (var i = 0; i < 60; i++) conf.push({ x: CH.x + CH.w / 2, y: BELT - 10, vx: (Math.random() - .5) * 420, vy: -300 - Math.random() * 380, r: Math.random() * 6, vr: (Math.random() - .5) * 10, c: Math.random() < .5 ? B : '#c9a77a', s: 4 + Math.random() * 5 });
+    var roll = Math.random();
+    if (gold){ tilesOpen(2); say('GOLD BOX!', 'Two pieces of the cover opened', 2600); }
+    else if (roll < .22 && document.getElementById('c3').classList.contains('lock')){ var c = document.getElementById('c3'); c.classList.remove('lock'); c.querySelector('span').textContent = 'The hero is younger than you think.'; say('Secret clue!', 'Clue 3 is open', 2600); }
+    else { tilesOpen(1); say('You won!', 'A piece of the cover opened', 2400); }
+  }
+  function over(){ say('No more tries today', 'Come back tomorrow for 5 more', 0); }
+  function rr(x, y, w, h, r){ g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+  function draw(){
+    g.clearRect(0, 0, W, H);
+    var bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#1d3a64'); bg.addColorStop(1, '#0d1f3a'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    // lights
+    for (var i = 0; i < 14; i++){ g.fillStyle = (Math.floor(belt / 20) + i) % 2 ? B : 'rgba(245,228,204,.25)'; g.beginPath(); g.arc(22 + i * 40, 12, 4, 0, 7); g.fill(); }
+    // rail
+    g.fillStyle = B; rr(16, 26, W - 32, 8, 4); g.fill();
+    // chute
+    g.fillStyle = '#081426'; g.fillRect(CH.x, BELT - 6, CH.w, H - BELT + 6); g.strokeStyle = B; g.lineWidth = 3; g.strokeRect(CH.x, BELT - 6, CH.w, H - BELT + 6);
+    g.fillStyle = B; g.font = '800 16px Figtree, sans-serif'; g.textAlign = 'center'; g.fillText('WIN', CH.x + CH.w / 2, BELT + 34);
+    g.save(); g.globalAlpha = .5 + .5 * Math.sin(belt / 8); g.beginPath(); g.moveTo(CH.x + CH.w / 2 - 10, BELT + 48); g.lineTo(CH.x + CH.w / 2 + 10, BELT + 48); g.lineTo(CH.x + CH.w / 2, BELT + 60); g.fill(); g.restore();
+    // belt
+    g.fillStyle = '#081426'; rr(104, BELT, W - 110, 24, 12); g.fill(); g.strokeStyle = B; g.lineWidth = 3; g.stroke();
+    g.save(); rr(108, BELT + 4, W - 118, 16, 8); g.clip(); g.fillStyle = 'rgba(245,228,204,.35)'; for (var s = -40; s < W; s += 22){ g.fillRect(108 + ((s + belt) % 22 + 22) % 22 + Math.floor(s / 22) * 22, BELT + 6, 4, 12); } g.restore();
+    for (var r = 0; r < 9; r++){ g.fillStyle = B; g.beginPath(); g.arc(124 + r * 52, BELT + 36, 8, 0, 7); g.fill(); g.fillStyle = N; g.beginPath(); g.arc(124 + r * 52, BELT + 36, 3, (belt / 8) % 7, (belt / 8) % 7 + 4); g.fill(); }
+    // boxes
+    boxes.forEach(function(b){ g.save(); g.translate(b.x, b.y);
+      g.fillStyle = b.gold ? B : BOX; rr(0, 0, b.w, b.h, 4); g.fill(); g.strokeStyle = b.gold ? '#c9a77a' : BOXD; g.lineWidth = 2.5; g.stroke();
+      g.fillStyle = b.gold ? '#c9a77a' : 'rgba(245,228,204,.85)'; g.fillRect(b.w / 2 - 5, 0, 10, b.h);
+      g.fillStyle = N; g.font = '800 20px Figtree, sans-serif'; g.textAlign = 'center'; g.fillText(b.gold ? '★' : '?', b.w / 2, b.h / 2 + 7);
+      g.restore(); });
+    // claw
+    var cy = TOP + L;
+    g.strokeStyle = B; g.lineWidth = 4; g.beginPath(); g.moveTo(x, 30); g.lineTo(x, cy); g.stroke();
+    g.fillStyle = B; rr(x - 22, cy, 44, 18, 6); g.fill(); g.fillStyle = N; g.fillRect(x - 3, cy + 5, 6, 6);
+    var a = .15 + open * .55;
+    [-1, 1].forEach(function(sd){ g.save(); g.translate(x + sd * 16, cy + 16); g.rotate(sd * a); g.fillStyle = B; rr(-4, 0, 8, 34, 3); g.fill(); g.translate(0, 32); g.rotate(-sd * .9); rr(-3, -2, 6, 14, 3); g.fill(); g.restore(); });
+    // aim line
+    if (state === 'idle'){ g.save(); g.setLineDash([4, 6]); g.strokeStyle = 'rgba(245,228,204,.35)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x, cy + 50); g.lineTo(x, BELT - 2); g.stroke(); g.restore(); }
+    // confetti
+    conf.forEach(function(c){ g.save(); g.translate(c.x, c.y); g.rotate(c.r); g.fillStyle = c.c; g.fillRect(-c.s / 2, -c.s / 4, c.s, c.s / 2); g.restore(); });
+    // glass shine
+    g.fillStyle = 'rgba(255,255,255,.05)'; g.beginPath(); g.moveTo(W - 140, 40); g.lineTo(W - 90, 40); g.lineTo(W - 200, BELT - 10); g.lineTo(W - 250, BELT - 10); g.fill();
+  }
+  requestAnimationFrame(step);
+})();
 </script>
 </body></html>
