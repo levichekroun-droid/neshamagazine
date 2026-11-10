@@ -5,6 +5,7 @@
 <style>
 :root{--n:#12294a;--b:#f5e4cc;--n2:#1b3762}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{margin:0;background:var(--n);color:var(--b);font:600 16px/1.45 Figtree,system-ui,sans-serif}
 .wrap{max-width:1180px;margin:0 auto;padding:30px max(18px,env(safe-area-inset-right,0px)) 48px max(18px,env(safe-area-inset-left,0px))}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
@@ -103,6 +104,58 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 .cov.done .stamp{animation:stampoff 1s forwards}
 @keyframes stampoff{to{transform:translate(-50%,180%) rotate(30deg);opacity:0}}
 @media (max-width:860px){.more{grid-template-columns:1fr}.bk,.bk img{width:104px}.bk img{height:136px}}
+
+.goals{display:grid;gap:10px;margin-top:14px}
+.goal{display:grid;grid-template-columns:1fr auto;grid-template-areas:"t n" "b b";gap:6px 12px;align-items:center;border:2px solid rgba(245,228,204,.5);border-radius:12px;padding:10px 14px}
+.goal .gt{grid-area:t;display:flex;flex-direction:column;min-width:0}.goal .gt span{font-size:.85rem;opacity:.85}
+.goal .bar{grid-area:b;height:10px;border-radius:5px;border:2px solid var(--b);overflow:hidden}.goal .bar i{display:block;height:100%;width:0;background:var(--b);transition:width .5s}
+.goal .gn{grid-area:n;font-weight:800}
+.goal .gbtn{grid-area:n;border:0;border-radius:8px;background:var(--b);color:var(--n);font:800 .95rem Figtree,sans-serif;padding:8px 16px;cursor:pointer;animation:gb 1s ease-in-out infinite alternate}
+@keyframes gb{to{transform:scale(1.08)}}
+.goal.done{border-color:var(--b);background:rgba(245,228,204,.08)}
+.rw{position:fixed;inset:0;z-index:50;background:rgba(8,20,38,.86);display:flex;align-items:center;justify-content:center;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px))}
+.rw-box{position:relative;background:var(--n);border:3px solid var(--b);border-radius:16px;padding:24px;max-width:860px;width:100%;max-height:92vh;overflow:auto;animation:rwin .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes rwin{from{transform:scale(.6);opacity:0}}
+.rw-box h2{margin:0 0 4px;font:800 1.7rem/1.1 "Bricolage Grotesque",sans-serif}
+.rw-box .sub{margin:0 0 16px;opacity:.85}
+.rw-x{position:absolute;z-index:5;top:10px;right:12px;width:40px;height:40px;border-radius:50%;border:2px solid var(--b);background:none;color:var(--b);font:800 1.5rem/1 Figtree,sans-serif;cursor:pointer}
+
+.fbk{display:flex;flex-direction:column;align-items:center;gap:14px}
+.fb-book{position:relative;width:min(300px,70vw);aspect-ratio:520/690;perspective:1600px;cursor:pointer}
+.leaf{position:absolute;inset:0;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.6,.05,.3,1)}
+.leaf.turn{transform:rotateY(-170deg)}
+.leaf .fr,.leaf .bk2{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:3px solid var(--b);border-radius:2px 6px 6px 2px;overflow:hidden}
+.leaf .fr{background:#fff;box-shadow:6px 8px 0 rgba(0,0,0,.25)}
+.leaf .fr:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,41,74,.25),transparent 12%)}
+.leaf .fr img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;user-select:none}
+.leaf .bk2{transform:rotateY(180deg);background:var(--b) repeating-linear-gradient(45deg,transparent 0 14px,rgba(18,41,74,.07) 14px 28px)}
+.fb-nav{display:flex;align-items:center;gap:16px;font-weight:800}
+.fb-nav button{width:46px;height:46px;border-radius:50%;border:0;background:var(--b);color:var(--n);font-size:1.1rem;cursor:pointer}
+.fb-nav button:disabled{opacity:.35}
+.libscene{position:relative;margin:-24px;padding:30px 26px 26px;border-radius:13px;background:radial-gradient(ellipse at 50% -10%,rgba(245,228,204,.28),transparent 55%),repeating-linear-gradient(90deg,#132c50 0 46px,#11274a 46px 92px);overflow:hidden}
+.lamp{position:absolute;left:50%;top:0;width:2px;height:20px;background:var(--b)}
+.lamp i{position:absolute;left:-22px;top:18px;width:46px;height:20px;background:var(--b);border-radius:24px 24px 4px 4px}
+.lamp i:after{content:"";position:absolute;left:50%;top:20px;width:340px;height:220px;margin-left:-170px;background:radial-gradient(ellipse at 50% 0,rgba(245,228,204,.22),transparent 70%);pointer-events:none}
+.sign{display:table;margin:34px auto 6px;padding:8px 20px;border:3px double var(--n);background:var(--b);color:var(--n);font:800 1.3rem "Bricolage Grotesque",sans-serif;border-radius:4px;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.lib-sub{text-align:center;margin:8px 0 20px;font-weight:700}
+.srow{margin-bottom:22px}
+.books{display:flex;justify-content:center;align-items:flex-end;gap:clamp(6px,2vw,16px);padding:0 12px}
+.lc{border:0;background:none;padding:0;cursor:pointer;width:clamp(52px,14vw,112px);transform:rotate(var(--r));transform-origin:50% 100%;transition:transform .25s,opacity .3s}
+.lc img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border:2px solid var(--b);border-radius:2px 4px 4px 2px;box-shadow:inset 6px 0 0 rgba(0,0,0,.2),4px 6px 0 rgba(0,0,0,.3)}
+.lc:hover{transform:rotate(0) translateY(-10px) scale(1.06)}
+.plank{display:block;height:16px;margin-top:-2px;background:var(--b);border-radius:3px;box-shadow:0 10px 0 #c9a77a,0 16px 18px rgba(0,0,0,.4)}
+.libscene.used .lc:not(.pick){opacity:.35;pointer-events:none}.lc.pick{opacity:0}
+.openbk{position:absolute;inset:0;background:rgba(8,20,38,.8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}
+.openbk p{margin:0;font-weight:800;text-align:center}
+.ob-in{position:relative;width:min(220px,46vw);aspect-ratio:3/4;perspective:1400px;animation:pull .6s cubic-bezier(.2,1.3,.4,1)}
+@keyframes pull{from{transform:translateY(80px) scale(.4) rotate(-6deg);opacity:0}}
+.ob-page,.ob-cover{position:absolute;inset:0;border:3px solid var(--b);border-radius:2px 6px 6px 2px;overflow:hidden;background:#fff}
+.ob-page img,.ob-cover img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;user-select:none}
+.ob-cover{transform-origin:0 50%;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.6,.05,.3,1) .5s;overflow:visible;background:none;border:0}
+.ob-cover img{position:absolute;inset:0;border:3px solid var(--b);border-radius:2px 6px 6px 2px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.ob-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--b);border:3px solid var(--b);border-radius:6px 2px 2px 6px}
+.openbk.go .ob-cover{transform:rotateY(-160deg)}
+
 .bottom{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;margin-top:22px}
 .riddle q{display:block;font:700 1.25rem/1.35 "Bricolage Grotesque",sans-serif;quotes:none;margin:0 0 12px}
 .riddle .ans{display:none;margin-top:10px;font-weight:800}
@@ -127,6 +180,10 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
     <div class="cm-ctrl"><button class="cm-b" id="bl" aria-label="Move left">&#9664;</button><button class="cm-b drop" id="bd">DROP</button><button class="cm-b" id="br" aria-label="Move right">&#9654;</button></div>
     <div class="cm-info"><span id="tries"></span><span>Score <b id="sc">0</b></span><span>Pieces <b id="pc">2</b> / 12</span></div>
     <p class="cm-tip">On a computer: arrow keys to move, space to drop.</p>
+    <div class="goals">
+      <div class="goal" id="g1"><div class="gt"><b>Win 2 star boxes</b><span>Secret preview: the last 3 pages of The Hunt for Mengele</span></div><div class="bar"><i id="g1b"></i></div><span class="gn" id="g1n">0 / 2</span><button class="gbtn" id="g1o" hidden>Open</button></div>
+      <div class="goal" id="g2"><div class="gt"><b>Win 10 boxes</b><span>Unlock the cover library and peek inside one</span></div><div class="bar"><i id="g2b"></i></div><span class="gn" id="g2n">0 / 10</span><button class="gbtn" id="g2o" hidden>Open</button></div>
+    </div>
   </section>
   <section class="card"><h2>Sneak peek</h2><p class="sub">The new cover is hiding. Win boxes to open it.</p>
     <div class="peek"><div class="cov"><i class="tape"></i><img src="cover.jpg" alt=""><div class="tiles" id="tiles"></div><span class="stamp">TOP SECRET</span></div>
@@ -143,6 +200,19 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
   <section class="card notify"><h2>Be first to read it</h2><p class="sub">We will email you the minute it opens.</p><form onsubmit="event.preventDefault();this.innerHTML='<b style=&quot;padding:13px 14px&quot;>You are on the list!</b>'"><input type="email" placeholder="Your email"><button>Notify me</button></form><p class="perk">The first 50 people get a Front Row badge.</p></section>
 </div>
 </div>
+<div class="rw" id="rw" hidden><div class="rw-box" role="dialog" aria-modal="true">
+  <button class="rw-x" id="rwx" aria-label="Close">&times;</button>
+  <div id="rw-hunt" hidden><p class="kick2">Reward unlocked</p><h2>The Hunt for Mengele: the last 3 pages</h2><p class="sub">Tap the page or the arrows to flip.</p>
+    <div class="fbk" id="fbk"><div class="fb-book" id="fbb">
+      <div class="leaf" style="z-index:3"><div class="fr"><img src="h10.jpg" alt="Page 1"></div><div class="bk2"></div></div>
+      <div class="leaf" style="z-index:2"><div class="fr"><img src="h11.jpg" alt="Page 2"></div><div class="bk2"></div></div>
+      <div class="leaf" style="z-index:1"><div class="fr"><img src="h12.jpg" alt="Page 3"></div><div class="bk2"></div></div>
+    </div><div class="fb-nav"><button id="fbp" aria-label="Previous page">&#9664;</button><span id="fbn">Page 1 of 3</span><button id="fbx" aria-label="Next page">&#9654;</button></div></div></div>
+  <div id="rw-lib" hidden><div class="libscene"><div class="lamp"><i></i></div><p class="sign">The NeshamaGazine Library</p><p class="lib-sub" id="lib-sub">Pick ONE book to pull off the shelf. Choose carefully!</p>
+    <div class="srow"><div class="books"><button class="lc" data-k="issue-13-bereishis" data-t="Issue 13 · Bereishis" style="--r:-3deg"><img src="i-issue-13-bereishis.jpg" alt="Issue 13 · Bereishis"></button><button class="lc" data-k="issue-12-rosh-hashana" data-t="Issue 12 · Rosh Hashana" style="--r:2deg"><img src="i-issue-12-rosh-hashana.jpg" alt="Issue 12 · Rosh Hashana"></button><button class="lc" data-k="the-double-life-of-eli-cohen" data-t="The Double Life of Eli Cohen" style="--r:-1deg"><img src="i-the-double-life-of-eli-cohen.jpg" alt="The Double Life of Eli Cohen"></button><button class="lc" data-k="sukkos-edition" data-t="Sukkos Edition" style="--r:3deg"><img src="i-sukkos-edition.jpg" alt="Sukkos Edition"></button><button class="lc" data-k="issue-10-behaalotcha" data-t="Issue 10 · Behaalotcha" style="--r:-2deg"><img src="i-issue-10-behaalotcha.jpg" alt="Issue 10 · Behaalotcha"></button></div><i class="plank"></i></div><div class="srow"><div class="books"><button class="lc" data-k="issue-09-shavuos" data-t="Issue 9 · Shavuos" style="--r:-3deg"><img src="i-issue-09-shavuos.jpg" alt="Issue 9 · Shavuos"></button><button class="lc" data-k="parsha-food-season" data-t="Parsha Food Season" style="--r:2deg"><img src="i-parsha-food-season.jpg" alt="Parsha Food Season"></button><button class="lc" data-k="issue-08-tazria-metzora" data-t="Issue 8 · Tazria Metzora" style="--r:-1deg"><img src="i-issue-08-tazria-metzora.jpg" alt="Issue 8 · Tazria Metzora"></button><button class="lc" data-k="escape-to-shanghai" data-t="Escape to Shanghai" style="--r:3deg"><img src="i-escape-to-shanghai.jpg" alt="Escape to Shanghai"></button><button class="lc" data-k="issue-5" data-t="Issue 5" style="--r:-2deg"><img src="i-issue-5.jpg" alt="Issue 5"></button></div><i class="plank"></i></div>
+    <div class="openbk" id="ob" hidden><div class="ob-in"><div class="ob-page"><img id="lpi" alt=""></div><div class="ob-cover" id="obc"><img id="lci" alt=""><div class="ob-back"></div></div></div><p id="lpt"></p><button class="gbtn" id="obx">Put it back</button></div>
+  </div></div>
+</div></div>
 <script>
 var end = new Date('2026-12-04T16:12:00-05:00').getTime(), prev = '';   // first Chanukah candle 2026, New York candle lighting
 function draw(){ var t = Math.max(0, end - Date.now()) / 1000, v = [Math.floor(t / 86400), Math.floor(t % 86400 / 3600), Math.floor(t % 3600 / 60), Math.floor(t % 60)].map(function(x){ return ('0' + x).slice(-2); });
@@ -229,6 +299,7 @@ var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call
     draw(); requestAnimationFrame(step);
   }
   function prize(k){
+    goal(k);
     combo++; var pts = (k === 'star' ? 250 : 100) * combo; score += pts;
     var cx = CH.x + CH.w / 2; shk = 10 + combo * 2; burst(cx, BELT - 10, k === 'star' ? 120 : 70, k === 'star' ? 1.25 : 1);
     pop('+' + pts, cx + 40, BELT - 60, true); if (combo > 1) pop('COMBO x' + combo, W / 2, 120, true);
@@ -241,6 +312,15 @@ var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call
     triesUI();
     if (p >= 12 && !document.querySelector('.cov.done')){ document.querySelector('.cov').classList.add('done'); setTimeout(function(){ burst(W / 2, 200, 220, 1.5); tune([523, 659, 784, 1046, 784, 1046, 1318], 120); say('COVER UNLOCKED!', 'You found all 12 pieces', 3500); }, 900); }
   }
+  var stars = 0, won = 0, got1 = false, got2 = false;
+  function goal(k){ won++; if (k === 'star') stars++;
+    document.getElementById('g1b').style.width = Math.min(100, stars / 2 * 100) + '%'; document.getElementById('g1n').textContent = Math.min(stars, 2) + ' / 2';
+    document.getElementById('g2b').style.width = Math.min(100, won / 10 * 100) + '%'; document.getElementById('g2n').textContent = Math.min(won, 10) + ' / 10';
+    if (!got1 && stars >= 2){ got1 = true; unlock('g1', 'hunt'); }
+    else if (!got2 && won >= 10){ got2 = true; unlock('g2', 'lib'); } }
+  function unlock(id, which){ var gEl = document.getElementById(id); gEl.classList.add('done'); document.getElementById(id + 'n').hidden = true; document.getElementById(id + 'o').hidden = false;
+    setTimeout(function(){ tune([392, 523, 659, 784, 1046, 1318], 110); burst(W / 2, 160, 160, 1.4); showRw(which); }, 1500); }
+  function showRw(w){ window.showRw(w); }
   function rr(x, y, w, h, r){ g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
   function star(cx, cy, r){ g.beginPath(); for (var i = 0; i < 10; i++){ var a = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r * .45 : r; g.lineTo(cx + Math.cos(a) * rad, cy + Math.sin(a) * rad); } g.closePath(); g.fill(); }
   function drawBox(b){
@@ -289,6 +369,34 @@ var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call
     g.fillStyle = 'rgba(255,255,255,.05)'; g.beginPath(); g.moveTo(W - 140, 40); g.lineTo(W - 90, 40); g.lineTo(W - 200, BELT - 10); g.lineTo(W - 250, BELT - 10); g.fill();
   }
   requestAnimationFrame(step);
+})();
+
+(function(){
+  var rw = document.getElementById('rw');
+  window.showRw = function(which){ document.getElementById('rw-hunt').hidden = which !== 'hunt'; document.getElementById('rw-lib').hidden = which !== 'lib'; rw.hidden = false; };
+  document.getElementById('g1o').onclick = function(){ showRw('hunt'); };
+  document.getElementById('g2o').onclick = function(){ showRw('lib'); };
+  document.getElementById('rwx').onclick = function(){ rw.hidden = true; };
+  rw.addEventListener('click', function(e){ if (e.target === rw) rw.hidden = true; });
+  addEventListener('keydown', function(e){ if (e.key === 'Escape') rw.hidden = true; });
+  rw.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  // Hunt flipbook
+  var leaves = [].slice.call(document.querySelectorAll('#fbb .leaf')), pg = 0;
+  function fbUI(){ leaves.forEach(function(l, i){ l.classList.toggle('turn', i < pg); l.style.zIndex = i < pg ? 10 + i : 3 - i; }); document.getElementById('fbn').textContent = 'Page ' + (pg + 1) + ' of 3'; document.getElementById('fbp').disabled = !pg; document.getElementById('fbx').disabled = pg >= 2; }
+  function flip(d){ var n = Math.max(0, Math.min(2, pg + d)); if (n === pg) return; pg = n; fbUI(); }
+  document.getElementById('fbx').onclick = function(){ flip(1); }; document.getElementById('fbp').onclick = function(){ flip(-1); };
+  document.getElementById('fbb').onclick = function(e){ var r = this.getBoundingClientRect(); flip(e.clientX - r.left < r.width / 3 ? -1 : 1); };
+  addEventListener('keydown', function(e){ if (rw.hidden || document.getElementById('rw-hunt').hidden) return; if (e.key === 'ArrowRight') flip(1); if (e.key === 'ArrowLeft') flip(-1); });
+  fbUI();
+  // library: pull one book off the shelf
+  var sc = document.querySelector('.libscene'), ob = document.getElementById('ob');
+  sc.addEventListener('click', function(e){ var c = e.target.closest('.lc'); if (!c || sc.classList.contains('used')) return;
+    sc.classList.add('used'); c.classList.add('pick');
+    document.getElementById('lci').src = 'i-' + c.dataset.k + '.jpg'; document.getElementById('lpi').src = 'p-' + c.dataset.k + '.jpg';
+    document.getElementById('lpt').textContent = 'A peek inside ' + c.dataset.t;
+    ob.hidden = false; ob.classList.remove('go'); void ob.offsetWidth; ob.classList.add('go');
+    document.getElementById('lib-sub').textContent = 'You used your peek. Win more boxes next time!'; });
+  document.getElementById('obx').onclick = function(){ ob.hidden = true; };
 })();
 </script>
 </body></html>
