@@ -9587,8 +9587,9 @@ html.ng-ch .tape{padding-top:70px!important}
   var X = [58, 112, 166, 220, 300, 354, 408, 462], SX = 260;
   var m = '<svg id="ch-menorah" viewBox="0 0 520 300" aria-hidden="true"><defs><radialGradient id="chg"><stop offset="0" stop-color="#f2c230" stop-opacity=".55"/><stop offset="1" stop-color="#f2c230" stop-opacity="0"/></radialGradient></defs>';
   // arms
-  m += '<path d="M260 150V258M40 150H480" stroke="' + BEI + '" stroke-width="9" stroke-linecap="round" fill="none"/>';
-  X.forEach(function(x){ m += '<path d="M' + x + ' 150V128" stroke="' + BEI + '" stroke-width="7" stroke-linecap="round"/><rect x="' + (x - 14) + '" y="118" width="28" height="12" rx="3" fill="' + BEI + '"/>'; });
+  // Rambam style: straight arms slanting up from the middle stem
+  m += '<path d="M260 96V262" stroke="' + BEI + '" stroke-width="10" stroke-linecap="round" fill="none"/>';
+  X.forEach(function(x){ var dx = Math.abs(260 - x), y0 = 128 + dx * .62; m += '<path d="M260 ' + y0.toFixed(1) + 'L' + x + ' 126" stroke="' + BEI + '" stroke-width="7" stroke-linecap="round"/><rect x="' + (x - 14) + '" y="118" width="28" height="12" rx="3" fill="' + BEI + '"/>'; });
   m += '<path d="M260 150V96" stroke="' + BEI + '" stroke-width="8" stroke-linecap="round"/><rect x="244" y="86" width="32" height="12" rx="3" fill="' + BEI + '"/>';
   m += '<path d="M206 286h108l-18-28h-72z" fill="' + BEI + '"/>';
   function cand(x, top, id, h){ return '<circle class="ch-glow" id="' + id + 'g" cx="' + x + '" cy="' + (top - 14) + '" r="30" fill="url(#chg)"/><rect x="' + (x - 7) + '" y="' + top + '" width="14" height="' + h + '" rx="2" fill="#fbf1e1" stroke="' + NAV + '" stroke-width="1.5"/><path d="M' + x + ' ' + top + 'v-5" stroke="' + NAV + '" stroke-width="2"/>' +
