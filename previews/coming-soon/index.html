@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coming Soon Preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@500;600;700;800&display=swap">
+<style>
+:root{--n:#12294a;--b:#f5e4cc;--n2:#1b3762}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--n);color:var(--b);font:600 16px/1.45 Figtree,system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:30px max(18px,env(safe-area-inset-right,0px)) 48px max(18px,env(safe-area-inset-left,0px))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+.top img{height:54px;background:var(--b);border-radius:4px;padding:6px 12px}
+.waiting{border:2px solid var(--b);border-radius:999px;padding:7px 16px;font-weight:800;font-size:.95rem}
+.waiting b{font-size:1.1rem}
+.hero{text-align:center;margin:0 0 30px}
+.kick{display:inline-flex;align-items:center;gap:12px;font:800 .8rem Figtree,sans-serif;letter-spacing:.3em;text-transform:uppercase;margin:0 0 12px}
+.kick:before,.kick:after{content:"";width:40px;height:2px;background:var(--b)}
+h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",Figtree,sans-serif;letter-spacing:-.03em}
+.clock{display:inline-flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.unit{display:flex;flex-direction:column;align-items:center;gap:8px}
+.digits{display:flex;gap:6px}
+.d{position:relative;width:62px;height:84px;border-radius:8px;background:var(--b);color:var(--n);display:flex;align-items:center;justify-content:center;font:800 3.2rem/1 "Bricolage Grotesque",sans-serif;overflow:hidden}
+.d:after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--n);opacity:.25}
+.d.flip{animation:flip .45s ease}
+@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.unit small{font:800 .72rem Figtree,sans-serif;letter-spacing:.24em;text-transform:uppercase;opacity:.8}
+.colon{font:800 3rem/84px "Bricolage Grotesque",sans-serif;opacity:.6}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:8px}
+.card{border:2px solid var(--b);border-radius:14px;padding:22px;position:relative;overflow:hidden}
+.card h2{margin:0 0 4px;font:800 1.6rem/1.1 "Bricolage Grotesque",sans-serif}
+.card p.sub{margin:0 0 16px;opacity:.85}
+/* sneak peek: the next cover, hidden under tiles you unlock */
+.peek{display:flex;gap:20px;align-items:center}
+.cov{position:relative;flex:0 0 210px;height:264px;transform:rotate(-3deg);border:4px solid var(--b);border-radius:3px;overflow:hidden;background:var(--n2)}
+.cov img{width:100%;height:100%;object-fit:cover;display:block}
+.tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr)}
+.tiles i{backdrop-filter:blur(14px) saturate(.6);-webkit-backdrop-filter:blur(14px) saturate(.6);background:rgba(18,41,74,.55);border:1px solid rgba(245,228,204,.25);transition:opacity .6s}
+.tiles i.open{opacity:0}
+.stamp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-14deg);border:4px solid var(--b);color:var(--b);font:800 1.35rem "Bricolage Grotesque",sans-serif;letter-spacing:.08em;padding:4px 12px;white-space:nowrap;background:rgba(18,41,74,.4)}
+.tape{position:absolute;top:-10px;left:50%;width:90px;height:26px;margin-left:-45px;background:rgba(245,228,204,.85);transform:rotate(4deg);z-index:2}
+.clues{list-style:none;margin:0;padding:0;display:grid;gap:8px;flex:1;min-width:0}
+.clues li{display:flex;gap:10px;align-items:flex-start;border:1.5px solid rgba(245,228,204,.5);border-radius:10px;padding:9px 12px;font-size:.95rem}
+.clues li b{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--b);color:var(--n);display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.clues li.lock{opacity:.6}
+.clues li.lock span:after{content:" (opens in " attr(data-in) ")";opacity:.8}
+/* the claw game */
+.game{display:flex;gap:18px;align-items:stretch}
+.machine{position:relative;flex:0 0 250px;height:270px;border:4px solid var(--b);border-radius:12px 12px 6px 6px;background:linear-gradient(180deg,#1d3a64,#12294a);overflow:hidden}
+.machine .rail{position:absolute;left:8px;right:8px;top:10px;height:6px;border-radius:3px;background:var(--b);opacity:.8}
+.mclaw{position:absolute;top:10px;left:50%;width:46px;margin-left:-23px;transition:transform .9s cubic-bezier(.4,0,.2,1)}
+.mclaw .rope{width:4px;height:30px;margin:0 auto;background:var(--b);transition:height .9s cubic-bezier(.4,0,.2,1)}
+.mclaw .head{width:30px;height:14px;margin:0 auto;background:var(--b);border-radius:6px 6px 3px 3px}
+.mclaw .f{position:absolute;bottom:-18px;width:6px;height:22px;background:var(--b);border-radius:3px;transform-origin:50% 0;transition:transform .35s}
+.mclaw .f.l{left:9px;transform:rotate(26deg)}.mclaw .f.r{right:9px;transform:rotate(-26deg)}
+.mclaw.shut .f.l{transform:rotate(6deg)}.mclaw.shut .f.r{transform:rotate(-6deg)}
+.prize{position:absolute;bottom:14px;width:54px;height:44px;border:3px solid var(--b);border-radius:4px;background:#c9a77a;display:flex;align-items:center;justify-content:center;color:var(--n);font:800 1.2rem "Bricolage Grotesque",sans-serif;transition:transform .9s cubic-bezier(.4,0,.2,1)}
+.prize:before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:8px;margin-left:-4px;background:rgba(245,228,204,.85)}
+.prize span{position:relative}
+.side{display:flex;flex-direction:column;gap:10px;justify-content:center;flex:1;min-width:0}
+.btn{border:0;border-radius:10px;background:var(--b);color:var(--n);font:800 1.05rem Figtree,sans-serif;padding:14px 18px;cursor:pointer}
+.btn.ghost{background:none;color:var(--b);border:2px solid var(--b)}
+.left{font-weight:700;opacity:.85}
+.won{border:2px dashed var(--b);border-radius:10px;padding:10px 12px;font-size:.95rem;display:none}
+.won.on{display:block}
+.bottom{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;margin-top:22px}
+.riddle q{display:block;font:700 1.25rem/1.35 "Bricolage Grotesque",sans-serif;quotes:none;margin:0 0 12px}
+.riddle .ans{display:none;margin-top:10px;font-weight:800}
+.riddle.show .ans{display:block}
+.notify form{display:flex;border:2px solid var(--b);border-radius:10px;overflow:hidden;margin-top:6px}
+.notify input{flex:1;min-width:0;border:0;background:none;color:var(--b);font:700 1rem Figtree,sans-serif;padding:13px 14px}
+.notify input::placeholder{color:rgba(245,228,204,.6)}
+.notify button{border:0;background:var(--b);color:var(--n);font:800 1rem Figtree,sans-serif;padding:0 18px}
+.perk{margin:12px 0 0;font-size:.92rem;opacity:.9}
+@media (max-width:860px){.grid,.bottom{grid-template-columns:1fr}.clock{gap:8px;flex-wrap:nowrap}.digits{gap:3px}.d{width:34px;height:50px;font-size:1.8rem;border-radius:6px}.colon{display:none}.unit small{font-size:.6rem;letter-spacing:.12em}.peek,.game{flex-direction:column;align-items:center}.cov{flex-basis:auto;width:190px;height:240px}.machine{flex-basis:auto;width:100%;max-width:300px}.side{width:100%}}
+</style></head><body><div class="wrap">
+<div class="top"><img src="logo.png" alt="NeshamaGazine"><span class="waiting"><b id="w">312</b> readers are waiting</span></div>
+<div class="hero"><p class="kick">Coming soon</p><h1>Issue 14 opens in</h1>
+<div class="clock" id="clock"></div></div>
+<div class="grid">
+  <section class="card"><h2>Sneak peek</h2><p class="sub">The new cover is hiding. Every few hours a piece opens up.</p>
+    <div class="peek"><div class="cov"><i class="tape"></i><img src="cover.jpg" alt=""><div class="tiles" id="tiles"></div><span class="stamp">TOP SECRET</span></div>
+    <ul class="clues"><li><b>1</b><span>A spy story that starts in a train station.</span></li><li><b>2</b><span>Someone hides a message in a loaf of bread.</span></li><li class="lock"><b>3</b><span data-in="5 hours">Clue 3</span></li><li class="lock"><b>4</b><span data-in="1 day">Clue 4</span></li></ul></div>
+  </section>
+  <section class="card"><h2>Grab a peek</h2><p class="sub">Play the claw. Every box you win opens one more piece of the secret cover.</p>
+    <div class="game"><div class="machine" id="m"><i class="rail"></i><div class="mclaw" id="mc"><div class="rope" id="rope"></div><div class="head"></div><i class="f l"></i><i class="f r"></i></div>
+      <div class="prize" style="left:22px"><span>?</span></div><div class="prize" style="left:98px"><span>?</span></div><div class="prize" style="left:174px"><span>?</span></div></div>
+    <div class="side"><button class="btn" id="go">Drop the claw</button><p class="left" id="left">3 tries today</p><div class="won" id="won">You won a piece! Look at the secret cover.</div></div></div>
+  </section>
+</div>
+<div class="bottom">
+  <section class="card riddle" id="rd"><h2>Riddle while you wait</h2><q>What has many pages, but no one can ever turn them?</q><button class="btn ghost" onclick="document.getElementById('rd').classList.toggle('show')">Show the answer</button><p class="ans">A calendar on the wall... until Issue 14 comes!</p></section>
+  <section class="card notify"><h2>Be first to read it</h2><p class="sub">We will email you the minute it opens.</p><form onsubmit="event.preventDefault();this.innerHTML='<b style=&quot;padding:13px 14px&quot;>You are on the list!</b>'"><input type="email" placeholder="Your email"><button>Notify me</button></form><p class="perk">The first 50 people get a Front Row badge.</p></section>
+</div>
+</div>
+<script>
+var end = Date.now() + ((2 * 24 + 5) * 3600 + 41 * 60 + 9) * 1000, prev = '';
+function draw(){ var t = Math.max(0, end - Date.now()) / 1000, v = [Math.floor(t / 86400), Math.floor(t % 86400 / 3600), Math.floor(t % 3600 / 60), Math.floor(t % 60)].map(function(x){ return ('0' + x).slice(-2); });
+  var names = ['Days', 'Hours', 'Minutes', 'Seconds'], s = v.join('');
+  var c = document.getElementById('clock'); if (!c.children.length) c.innerHTML = v.map(function(x, i){ return (i ? '<span class="colon">:</span>' : '') + '<div class="unit"><div class="digits"><span class="d"></span><span class="d"></span></div><small>' + names[i] + '</small></div>'; }).join('');
+  var ds = c.querySelectorAll('.d'); for (var i = 0; i < 8; i++){ if (prev[i] !== s[i]){ ds[i].textContent = s[i]; if (prev) { ds[i].classList.remove('flip'); void ds[i].offsetWidth; ds[i].classList.add('flip'); } } } prev = s; }
+draw(); setInterval(draw, 1000);
+var tl = document.getElementById('tiles'), open = [1, 4]; for (var i = 0; i < 12; i++){ var e = document.createElement('i'); if (open.indexOf(i) > -1) e.className = 'open'; tl.appendChild(e); }
+var tries = 3, busy = false;
+document.getElementById('go').onclick = function(){
+  if (busy || !tries) return; busy = true; tries--; var mc = document.getElementById('mc'), rope = document.getElementById('rope'), ps = document.querySelectorAll('.prize'), pick = ps[Math.floor(Math.random() * 3)];
+  var x = pick.offsetLeft + 27 - 125; mc.style.transform = 'translateX(' + x + 'px)';
+  setTimeout(function(){ rope.style.height = '186px'; }, 950);
+  setTimeout(function(){ mc.classList.add('shut'); }, 1900);
+  setTimeout(function(){ rope.style.height = '30px'; pick.style.transform = 'translateY(-156px)'; }, 2300);
+  setTimeout(function(){ pick.innerHTML = '<span>&#9733;</span>'; var c = [].filter.call(tl.children, function(t){ return !t.classList.contains('open'); }); if (c.length) c[Math.floor(Math.random() * c.length)].classList.add('open'); document.getElementById('won').classList.add('on'); }, 3300);
+  setTimeout(function(){ mc.classList.remove('shut'); pick.style.transform = ''; pick.innerHTML = '<span>?</span>'; mc.style.transform = ''; document.getElementById('left').textContent = tries ? tries + (tries > 1 ? ' tries' : ' try') + ' today' : 'Come back tomorrow for more tries'; busy = false; }, 4300);
+};
+</script>
+</body></html>
