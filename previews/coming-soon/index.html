@@ -201,7 +201,7 @@ var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call
     g.save(); rr(108, BELT + 4, W - 118, 16, 8); g.clip(); g.fillStyle = 'rgba(245,228,204,.35)'; for (var s = -40; s < W; s += 22){ g.fillRect(108 + ((s + belt) % 22 + 22) % 22 + Math.floor(s / 22) * 22, BELT + 6, 4, 12); } g.restore();
     for (var r = 0; r < 9; r++){ g.fillStyle = B; g.beginPath(); g.arc(124 + r * 52, BELT + 36, 8, 0, 7); g.fill(); g.fillStyle = N; g.beginPath(); g.arc(124 + r * 52, BELT + 36, 3, (belt / 8) % 7, (belt / 8) % 7 + 4); g.fill(); }
     // boxes
-    boxes.forEach(function(b){ g.save(); g.translate(b.x, b.y);
+    boxes.forEach(function(b){ if (b !== held && !b.fall && b.x < 104) return; g.save(); g.translate(b.x, b.y);
       g.fillStyle = b.gold ? B : BOX; rr(0, 0, b.w, b.h, 4); g.fill(); g.strokeStyle = b.gold ? '#c9a77a' : BOXD; g.lineWidth = 2.5; g.stroke();
       g.fillStyle = b.gold ? '#c9a77a' : 'rgba(245,228,204,.85)'; g.fillRect(b.w / 2 - 5, 0, 10, b.h);
       g.fillStyle = N; g.font = '800 20px Figtree, sans-serif'; g.textAlign = 'center'; g.fillText(b.gold ? '★' : '?', b.w / 2, b.h / 2 + 7);
