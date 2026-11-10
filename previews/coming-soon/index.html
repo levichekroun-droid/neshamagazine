@@ -1,5 +1,9 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex">
+<script>try { if (window.top !== window.self) window.top.location.replace(window.self.location.href); } catch(e){ document.documentElement.style.display = 'none'; }</script><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Coming Soon Preview</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@500;600;700;800&display=swap">
 <style>
@@ -156,6 +160,38 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 .ob-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--b);border:3px solid var(--b);border-radius:6px 2px 2px 6px}
 .openbk.go .ob-cover{transform:rotateY(-160deg)}
 
+
+.how{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:7px}
+.how li{display:flex;gap:10px;align-items:flex-start;font-size:.95rem}
+.how li b{flex:0 0 24px;height:24px;border-radius:50%;background:var(--b);color:var(--n);display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.how em{font-style:normal;font-weight:800;border-bottom:2px solid var(--b)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:0 0 14px;font-size:.88rem;font-weight:700}
+.legend span{display:flex;align-items:center;gap:6px}
+.lb{display:inline-flex;align-items:center;justify-content:center;width:30px;height:24px;border-radius:4px;background:#c69660;color:var(--n);font:800 .8rem Figtree,sans-serif;font-style:normal;box-shadow:inset 0 0 0 2px rgba(18,41,74,.25)}
+.lb.st{background:#e6c48c}
+.tile .go{border-bottom:0;display:inline-flex;align-items:center;gap:6px;border:2px solid currentColor;border-radius:999px;padding:3px 10px;font-size:.85rem}
+.tile .go:before{content:"";width:10px;height:8px;border:2px solid currentColor;border-radius:2px;margin-top:4px;box-shadow:0 -5px 0 -2px currentColor}
+.tile{cursor:default}.tile:hover{background:none;color:var(--b);transform:none}
+.tap{position:absolute;right:-8px;top:50%;z-index:20;transform:translate(0,-50%);background:var(--b);color:var(--n);font-weight:800;font-size:.85rem;padding:8px 12px;border-radius:999px;box-shadow:0 4px 0 rgba(0,0,0,.3);pointer-events:none;animation:tapme 1s ease-in-out infinite alternate}
+@keyframes tapme{to{transform:translate(8px,-50%)}}
+.foot{text-align:center;margin:28px 0 0}
+.foot button{background:none;border:0;color:var(--b);opacity:.45;font:700 .8rem Figtree,sans-serif;cursor:pointer;text-decoration:underline}
+.og{position:fixed;inset:0;z-index:60;background:rgba(8,20,38,.86);display:flex;align-items:center;justify-content:center;padding:16px}
+.og-box{position:relative;background:var(--n);border:3px solid var(--b);border-radius:14px;padding:24px;width:min(380px,100%);display:grid;gap:12px}
+.og-box h2{margin:0;font:800 1.5rem "Bricolage Grotesque",sans-serif}
+.og-box label{display:grid;gap:4px;font-weight:700}
+.og-box input{border:2px solid var(--b);border-radius:8px;background:none;color:var(--b);font:700 1rem Figtree,sans-serif;padding:10px}
+.ogm{margin:0;min-height:1.2em;font-weight:700}
+.op{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;width:min(300px,calc(100vw - 28px));background:var(--b);color:var(--n);border-radius:14px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.op-h{margin:0;display:flex;justify-content:space-between;align-items:center;font:800 1.05rem "Bricolage Grotesque",sans-serif}
+.op-h button{border:2px solid var(--n);background:none;color:var(--n);border-radius:8px;font:800 .75rem Figtree,sans-serif;padding:3px 8px;cursor:pointer}
+.op-s{margin:2px 0 8px;font-size:.82rem;font-weight:700}
+.op-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.op-g button{border:0;border-radius:8px;background:var(--n);color:var(--b);font:800 .78rem Figtree,sans-serif;padding:8px 4px;cursor:pointer}
+.guard{position:fixed;inset:0;z-index:99;background:#000;display:flex;align-items:center;justify-content:center}
+.guard b{color:#e4493c;font:800 1.6rem Figtree,sans-serif;text-align:center;padding:20px}
+img{-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none}
+@media print{body{display:none!important}}
 .bottom{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;margin-top:22px}
 .riddle q{display:block;font:700 1.25rem/1.35 "Bricolage Grotesque",sans-serif;quotes:none;margin:0 0 12px}
 .riddle .ans{display:none;margin-top:10px;font-weight:800}
@@ -174,12 +210,14 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 <div class="stats"><span><b>10</b> magazines</span><span><b>284</b> pages</span><span><b>10+</b> comics</span></div></div>
 <div class="shelf"><div class="track"><figure class="bk"><img src="i-issue-13-bereishis.jpg" alt="Issue 13 · Bereishis" loading="lazy"><figcaption>Issue 13 · Bereishis</figcaption></figure><figure class="bk"><img src="i-issue-12-rosh-hashana.jpg" alt="Issue 12 · Rosh Hashana" loading="lazy"><figcaption>Issue 12 · Rosh Hashana</figcaption></figure><figure class="bk"><img src="i-the-double-life-of-eli-cohen.jpg" alt="The Double Life of Eli Cohen" loading="lazy"><figcaption>The Double Life of Eli Cohen</figcaption></figure><figure class="bk"><img src="i-sukkos-edition.jpg" alt="Sukkos Edition" loading="lazy"><figcaption>Sukkos Edition</figcaption></figure><figure class="bk"><img src="i-issue-10-behaalotcha.jpg" alt="Issue 10 · Behaalotcha" loading="lazy"><figcaption>Issue 10 · Behaalotcha</figcaption></figure><figure class="bk"><img src="i-issue-09-shavuos.jpg" alt="Issue 9 · Shavuos" loading="lazy"><figcaption>Issue 9 · Shavuos</figcaption></figure><figure class="bk"><img src="i-parsha-food-season.jpg" alt="Parsha Food Season" loading="lazy"><figcaption>Parsha Food Season</figcaption></figure><figure class="bk"><img src="i-issue-08-tazria-metzora.jpg" alt="Issue 8 · Tazria Metzora" loading="lazy"><figcaption>Issue 8 · Tazria Metzora</figcaption></figure><figure class="bk"><img src="i-escape-to-shanghai.jpg" alt="Escape to Shanghai" loading="lazy"><figcaption>Escape to Shanghai</figcaption></figure><figure class="bk"><img src="i-issue-5.jpg" alt="Issue 5" loading="lazy"><figcaption>Issue 5</figcaption></figure><figure class="bk"><img src="i-issue-13-bereishis.jpg" alt="Issue 13 · Bereishis" loading="lazy"><figcaption>Issue 13 · Bereishis</figcaption></figure><figure class="bk"><img src="i-issue-12-rosh-hashana.jpg" alt="Issue 12 · Rosh Hashana" loading="lazy"><figcaption>Issue 12 · Rosh Hashana</figcaption></figure><figure class="bk"><img src="i-the-double-life-of-eli-cohen.jpg" alt="The Double Life of Eli Cohen" loading="lazy"><figcaption>The Double Life of Eli Cohen</figcaption></figure><figure class="bk"><img src="i-sukkos-edition.jpg" alt="Sukkos Edition" loading="lazy"><figcaption>Sukkos Edition</figcaption></figure><figure class="bk"><img src="i-issue-10-behaalotcha.jpg" alt="Issue 10 · Behaalotcha" loading="lazy"><figcaption>Issue 10 · Behaalotcha</figcaption></figure><figure class="bk"><img src="i-issue-09-shavuos.jpg" alt="Issue 9 · Shavuos" loading="lazy"><figcaption>Issue 9 · Shavuos</figcaption></figure><figure class="bk"><img src="i-parsha-food-season.jpg" alt="Parsha Food Season" loading="lazy"><figcaption>Parsha Food Season</figcaption></figure><figure class="bk"><img src="i-issue-08-tazria-metzora.jpg" alt="Issue 8 · Tazria Metzora" loading="lazy"><figcaption>Issue 8 · Tazria Metzora</figcaption></figure><figure class="bk"><img src="i-escape-to-shanghai.jpg" alt="Escape to Shanghai" loading="lazy"><figcaption>Escape to Shanghai</figcaption></figure><figure class="bk"><img src="i-issue-5.jpg" alt="Issue 5" loading="lazy"><figcaption>Issue 5</figcaption></figure></div></div></section>
 <div class="grid">
-  <section class="card"><h2>Claw Machine</h2><p class="sub">Steer the claw, drop it on a box and it flies to the WIN hole. Star boxes open 2 pieces, +1 boxes give an extra try. Win in a row for a combo!</p>
+  <section class="card"><h2>Claw Machine</h2><ol class="how"><li><b>1</b><span><em>Steer</em> the claw with the arrow buttons. You can also drag on the machine, or use the arrow keys.</span></li><li><b>2</b><span>When a box <em>glows</em>, the claw is right on top of it. Press <em>DROP</em>.</span></li><li><b>3</b><span>The claw carries the box to the <em>WIN</em> hole and you get the prize inside.</span></li></ol>
+    <div class="legend"><span><i class="lb">?</i>1 piece of the cover</span><span><i class="lb st">&#9733;</i>2 pieces</span><span><i class="lb">+1</i>Extra try</span><span><i class="lb">
+<svg viewBox="0 0 20 12" width="14" height="9"><circle cx="5" cy="6" r="3.6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M8.5 5h10v2.4h-10zM14.5 6h2.4v5h-2.4z" fill="currentColor"/></svg></i>Secret clue</span></div>
     <div class="cm-wrap"><canvas id="cm" width="560" height="380" aria-label="Claw machine game"></canvas>
       <div class="cm-msg" id="cmmsg">Press Start</div></div>
     <div class="cm-ctrl"><button class="cm-b" id="bl" aria-label="Move left">&#9664;</button><button class="cm-b drop" id="bd">DROP</button><button class="cm-b" id="br" aria-label="Move right">&#9654;</button></div>
     <div class="cm-info"><span id="tries"></span><span>Score <b id="sc">0</b></span><span>Pieces <b id="pc">2</b> / 12</span></div>
-    <p class="cm-tip">On a computer: arrow keys to move, space to drop.</p>
+    <p class="cm-tip">Win in a row for a combo: more points and a faster belt.</p>
     <div class="goals">
       <div class="goal" id="g1"><div class="gt"><b>Win 2 star boxes</b><span>Secret preview: the last 3 pages of The Hunt for Mengele</span></div><div class="bar"><i id="g1b"></i></div><span class="gn" id="g1n">0 / 2</span><button class="gbtn" id="g1o" hidden>Open</button></div>
       <div class="goal" id="g2"><div class="gt"><b>Win 10 boxes</b><span>Unlock the cover library and peek inside one</span></div><div class="bar"><i id="g2b"></i></div><span class="gn" id="g2n">0 / 10</span><button class="gbtn" id="g2o" hidden>Open</button></div>
@@ -191,24 +229,31 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
   </section>
 </div>
 <div class="more">
-  <a class="tile" href="https://levichekroun-droid.github.io/neshamagazine/#videos"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="10" width="40" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M20 17v14l12-7z" fill="currentColor"/></svg><h3>NeshamaTV videos</h3><p>Watch the stories come alive.</p><span class="go">Watch</span></a>
-  <a class="tile" href="https://levichekroun-droid.github.io/neshamagazine/#videos"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="18" width="38" height="24" rx="3" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M5 18l4-10 36 0-2 10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M15 8l-3 10M25 8l-3 10M35 8l-3 10" stroke="currentColor" stroke-width="3.5"/></svg><h3>Behind the scenes</h3><p>See how an issue gets made, from sketch to page.</p><span class="go">Peek</span></a>
-  <a class="tile" href="https://levichekroun-droid.github.io/neshamagazine/#team"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="17" cy="17" r="7" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="33" cy="19" r="6" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M4 41c1-9 7-13 13-13s12 4 13 13M30 30c6 0 12 3 14 11" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Meet the team</h3><p>The kids and grown-ups who make NeshamaGazine.</p><span class="go">Meet</span></a>
+   <div class="tile"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="10" width="40" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M20 17v14l12-7z" fill="currentColor"/></svg><h3>NeshamaTV videos</h3><p>Watch the stories come alive.</p><span class="go">Opens with Issue 14</span></div>
+   <div class="tile"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="18" width="38" height="24" rx="3" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M5 18l4-10 36 0-2 10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M15 8l-3 10M25 8l-3 10M35 8l-3 10" stroke="currentColor" stroke-width="3.5"/></svg><h3>Behind the scenes</h3><p>See how an issue gets made, from sketch to page.</p><span class="go">Opens with Issue 14</span></div>
+   <div class="tile"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="17" cy="17" r="7" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="33" cy="19" r="6" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M4 41c1-9 7-13 13-13s12 4 13 13M30 30c6 0 12 3 14 11" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Meet the team</h3><p>The kids and grown-ups who make NeshamaGazine.</p><span class="go">Opens with Issue 14</span></div>
 </div>
 <div class="bottom">
   <section class="card riddle" id="rd"><h2>Riddle while you wait</h2><q>What has many pages, but no one can ever turn them?</q><button class="btn ghost" onclick="document.getElementById('rd').classList.toggle('show')">Show the answer</button><p class="ans">A calendar on the wall... until Issue 14 comes!</p></section>
   <section class="card notify"><h2>Be first to read it</h2><p class="sub">We will email you the minute it opens.</p><form onsubmit="event.preventDefault();this.innerHTML='<b style=&quot;padding:13px 14px&quot;>You are on the list!</b>'"><input type="email" placeholder="Your email"><button>Notify me</button></form><p class="perk">The first 50 people get a Front Row badge.</p></section>
 </div>
 </div>
+<p class="foot"><button type="button" id="own-btn">Owner</button></p>
+<div class="og" id="og" hidden><form class="og-box" id="ogf" autocomplete="off"><button type="button" class="rw-x" id="ogx" aria-label="Close">&times;</button><h2>Owner only</h2>
+  <label>Owner email<input id="oge" type="email" required></label><label>Owner code<input id="ogc" type="password" required></label>
+  <button class="btn">Unlock</button><p id="ogm" class="ogm"></p></form></div>
+<div class="op" id="op" hidden><p class="op-h">Owner test <button type="button" id="opx">Log out</button></p><p class="op-s">Try every prize without playing:</p>
+  <div class="op-g"><button data-t="q">? box</button><button data-t="star">Star box</button><button data-t="plus">+1 box</button><button data-t="key">Clue box</button><button data-t="hunt">Hunt prize</button><button data-t="lib">Library prize</button><button data-t="all">Whole cover</button><button data-t="out">Out of tries</button><button data-t="reset">Reset game</button></div></div>
+<div class="guard" id="guard" hidden><b id="guardt"></b></div>
 <div class="rw" id="rw" hidden><div class="rw-box" role="dialog" aria-modal="true">
   <button class="rw-x" id="rwx" aria-label="Close">&times;</button>
-  <div id="rw-hunt" hidden><p class="kick2">Reward unlocked</p><h2>The Hunt for Mengele: the last 3 pages</h2><p class="sub">Tap the page or the arrows to flip.</p>
-    <div class="fbk" id="fbk"><div class="fb-book" id="fbb">
+  <div id="rw-hunt" hidden><p class="kick2">Reward unlocked</p><h2>The Hunt for Mengele: the last 3 pages</h2><p class="sub"><b>How to read:</b> tap the <b>right side</b> of the page (or the &#9654; button) to turn to the next page. Tap the <b>left side</b> (or &#9664;) to go back.</p>
+    <div class="fbk" id="fbk"><div class="fb-book" id="fbb"><span class="tap" id="tap">Tap here to turn</span>
       <div class="leaf" style="z-index:3"><div class="fr"><img src="h10.jpg" alt="Page 1"></div><div class="bk2"></div></div>
       <div class="leaf" style="z-index:2"><div class="fr"><img src="h11.jpg" alt="Page 2"></div><div class="bk2"></div></div>
       <div class="leaf" style="z-index:1"><div class="fr"><img src="h12.jpg" alt="Page 3"></div><div class="bk2"></div></div>
     </div><div class="fb-nav"><button id="fbp" aria-label="Previous page">&#9664;</button><span id="fbn">Page 1 of 3</span><button id="fbx" aria-label="Next page">&#9654;</button></div></div></div>
-  <div id="rw-lib" hidden><div class="libscene"><div class="lamp"><i></i></div><p class="sign">The NeshamaGazine Library</p><p class="lib-sub" id="lib-sub">Pick ONE book to pull off the shelf. Choose carefully!</p>
+  <div id="rw-lib" hidden><div class="libscene"><div class="lamp"><i></i></div><p class="sign">The NeshamaGazine Library</p><p class="lib-sub" id="lib-sub"><b>How it works:</b> tap any book. It comes off the shelf and opens to one page inside. You only get ONE peek, so choose carefully!</p>
     <div class="srow"><div class="books"><button class="lc" data-k="issue-13-bereishis" data-t="Issue 13 · Bereishis" style="--r:-3deg"><img src="i-issue-13-bereishis.jpg" alt="Issue 13 · Bereishis"></button><button class="lc" data-k="issue-12-rosh-hashana" data-t="Issue 12 · Rosh Hashana" style="--r:2deg"><img src="i-issue-12-rosh-hashana.jpg" alt="Issue 12 · Rosh Hashana"></button><button class="lc" data-k="the-double-life-of-eli-cohen" data-t="The Double Life of Eli Cohen" style="--r:-1deg"><img src="i-the-double-life-of-eli-cohen.jpg" alt="The Double Life of Eli Cohen"></button><button class="lc" data-k="sukkos-edition" data-t="Sukkos Edition" style="--r:3deg"><img src="i-sukkos-edition.jpg" alt="Sukkos Edition"></button><button class="lc" data-k="issue-10-behaalotcha" data-t="Issue 10 · Behaalotcha" style="--r:-2deg"><img src="i-issue-10-behaalotcha.jpg" alt="Issue 10 · Behaalotcha"></button></div><i class="plank"></i></div><div class="srow"><div class="books"><button class="lc" data-k="issue-09-shavuos" data-t="Issue 9 · Shavuos" style="--r:-3deg"><img src="i-issue-09-shavuos.jpg" alt="Issue 9 · Shavuos"></button><button class="lc" data-k="parsha-food-season" data-t="Parsha Food Season" style="--r:2deg"><img src="i-parsha-food-season.jpg" alt="Parsha Food Season"></button><button class="lc" data-k="issue-08-tazria-metzora" data-t="Issue 8 · Tazria Metzora" style="--r:-1deg"><img src="i-issue-08-tazria-metzora.jpg" alt="Issue 8 · Tazria Metzora"></button><button class="lc" data-k="escape-to-shanghai" data-t="Escape to Shanghai" style="--r:3deg"><img src="i-escape-to-shanghai.jpg" alt="Escape to Shanghai"></button><button class="lc" data-k="issue-5" data-t="Issue 5" style="--r:-2deg"><img src="i-issue-5.jpg" alt="Issue 5"></button></div><i class="plank"></i></div>
     <div class="openbk" id="ob" hidden><div class="ob-in"><div class="ob-page"><img id="lpi" alt=""></div><div class="ob-cover" id="obc"><img id="lci" alt=""><div class="ob-back"></div></div></div><p id="lpt"></p><button class="gbtn" id="obx">Put it back</button></div>
   </div></div>
@@ -326,17 +371,43 @@ var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call
   function drawBox(b){
     var glow = b === target && state === 'idle';
     g.save(); g.translate(b.x + b.w / 2, b.y + b.h / 2); g.rotate(b.rot || 0);
-    if (glow){ var pulse = 4 + Math.sin(clock * 10) * 2; g.strokeStyle = B; g.lineWidth = 3; rr(-b.w / 2 - pulse, -b.h / 2 - pulse, b.w + pulse * 2, b.h + pulse * 2, 7); g.stroke(); }
-    var gold = b.k === 'star';
-    g.fillStyle = gold ? B : BOX; rr(-b.w / 2, -b.h / 2, b.w, b.h, 4); g.fill(); g.strokeStyle = gold ? BOX : BOXD; g.lineWidth = 2.5; g.stroke();
-    g.fillStyle = gold ? BOX : 'rgba(245,228,204,.85)'; g.fillRect(-5, -b.h / 2, 10, b.h);
+    var w = b.w, h = b.h, l = -w / 2, t = -h / 2;
+    if (glow){ var pulse = 4 + Math.sin(clock * 10) * 2; g.strokeStyle = B; g.lineWidth = 3; rr(l - pulse, t - pulse, w + pulse * 2, h + pulse * 2, 7); g.stroke(); }
+    var gold = b.k === 'star', cg = g.createLinearGradient(0, t, 0, t + h);
+    cg.addColorStop(0, gold ? '#e6c48c' : '#c69660'); cg.addColorStop(1, gold ? '#cfa66a' : '#b98a55');
+    g.fillStyle = 'rgba(0,0,0,.35)'; rr(l + 2, t + 5, w, h, 4); g.fill();
+    g.fillStyle = cg; rr(l, t, w, h, 4); g.fill();
+    g.fillStyle = 'rgba(0,0,0,.08)'; g.fillRect(l + w - 8, t + 2, 6, h - 4);
+    g.fillStyle = 'rgba(0,0,0,.12)'; g.fillRect(l + 2, t + 7, w - 4, 2);
+    g.fillStyle = 'rgba(255,250,235,.6)'; g.fillRect(-5, t - 1, 10, 10); g.fillRect(-5, t + h - 9, 10, 9);
+    g.fillStyle = B; g.beginPath(); g.arc(0, 3, 12.5, 0, 7); g.fill(); g.strokeStyle = N; g.lineWidth = 2; g.stroke();
     g.fillStyle = N;
-    if (gold){ star(0, 1, 12); }
-    else { g.font = '800 ' + (b.k === 'plus' ? 17 : 20) + 'px Figtree, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-      if (b.k === 'key'){ g.beginPath(); g.arc(-6, 0, 6, 0, 7); g.lineWidth = 3; g.strokeStyle = N; g.stroke(); g.fillRect(0, -1.5, 14, 3); g.fillRect(9, 0, 3, 6); }
-      else g.fillText(b.k === 'plus' ? '+1' : '?', 0, 1); }
+    if (gold) star(0, 3.5, 9);
+    else if (b.k === 'key'){ g.beginPath(); g.arc(-4, 3, 4, 0, 7); g.lineWidth = 2.5; g.strokeStyle = N; g.stroke(); g.fillRect(0, 2, 8, 2.5); g.fillRect(5, 3, 2.5, 4); }
+    else { g.font = '800 ' + (b.k === 'plus' ? 13 : 16) + 'px Figtree, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(b.k === 'plus' ? '+1' : '?', 0, 4); }
     if (gold && Math.random() < .3) conf.push({ x: b.x + Math.random() * b.w, y: b.y + Math.random() * b.h, vx: 0, vy: -40, r: 0, vr: 3, c: B, s: 3 });
     g.restore();
+  }
+  // the claw from the NeshamaGazine website: steel head, hazard stripe, red light, 4 fingers
+  function finger(fx, fy, ang, len, back){ g.save(); g.translate(fx, fy); g.rotate(ang);
+    var fg = g.createLinearGradient(-5, 0, 5, 0); fg.addColorStop(0, back ? '#7c8798' : '#aab4c3'); fg.addColorStop(1, back ? '#4d5768' : '#6b7688');
+    g.fillStyle = fg; rr(-5, 0, 10, len, 4); g.fill(); g.strokeStyle = N; g.lineWidth = 2; g.stroke(); g.restore(); }
+  function clawBack(cy){ var a = (open * .3); finger(x - 11, cy + 22, a * .4, 40, true); finger(x + 11, cy + 22, -a * .4, 40, true); }
+  function clawFront(cy){
+    // cable
+    g.lineCap = 'butt'; g.strokeStyle = '#5b6678'; g.lineWidth = 6; g.beginPath(); g.moveTo(x, 30); g.lineTo(x, cy + 2); g.stroke();
+    g.save(); g.setLineDash([9, 4]); g.lineDashOffset = -L; g.strokeStyle = '#8a96a8'; g.lineWidth = 6; g.beginPath(); g.moveTo(x, 30); g.lineTo(x, cy + 2); g.stroke(); g.restore();
+    var a = -.1 + open * .6;
+    finger(x - 26, cy + 22, a, 44, false); finger(x + 26, cy + 22, -a, 44, false);
+    // head
+    g.save(); rr(x - 31, cy, 62, 30, 7); g.clip();
+    var hg = g.createLinearGradient(0, cy, 0, cy + 30); hg.addColorStop(0, '#d7dde6'); hg.addColorStop(1, '#8a96a8'); g.fillStyle = hg; g.fillRect(x - 31, cy, 62, 30);
+    g.fillStyle = '#f2c230'; g.fillRect(x - 31, cy + 22, 62, 8); g.fillStyle = N; for (var k = -40; k < 40; k += 10){ g.beginPath(); g.moveTo(x + k, cy + 30); g.lineTo(x + k + 5, cy + 30); g.lineTo(x + k + 13, cy + 22); g.lineTo(x + k + 8, cy + 22); g.fill(); }
+    g.restore();
+    g.strokeStyle = N; g.lineWidth = 2.5; rr(x - 31, cy, 62, 30, 7); g.stroke();
+    var on = Math.floor(clock * 3.3) % 2 === 0;
+    g.save(); if (on){ g.shadowColor = 'rgba(228,73,60,.9)'; g.shadowBlur = 10; } g.fillStyle = on ? '#e4493c' : '#8a3a33'; g.beginPath(); g.arc(x - 19, cy + 11, 4.5, 0, 7); g.fill(); g.restore();
+    g.fillStyle = N; g.font = '800 8.5px Figtree, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('ROBO 2.5', x + 6, cy + 11);
   }
   function draw(){
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
@@ -349,25 +420,35 @@ var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call
     g.fillStyle = '#081426'; g.fillRect(CH.x, BELT - 6, CH.w, H - BELT + 6); g.strokeStyle = B; g.lineWidth = 3; g.strokeRect(CH.x, BELT - 6, CH.w, H - BELT + 6);
     g.fillStyle = B; g.font = '800 16px Figtree, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillText('WIN', CH.x + CH.w / 2, BELT + 34);
     g.save(); g.globalAlpha = .5 + .5 * Math.sin(clock * 6); g.beginPath(); g.moveTo(CH.x + CH.w / 2 - 10, BELT + 44); g.lineTo(CH.x + CH.w / 2 + 10, BELT + 44); g.lineTo(CH.x + CH.w / 2, BELT + 56); g.fill(); g.restore();
-    // belt
-    g.fillStyle = '#081426'; rr(104, BELT, W - 110, 24, 12); g.fill(); g.strokeStyle = B; g.lineWidth = 3; g.stroke();
-    g.save(); rr(108, BELT + 4, W - 118, 16, 8); g.clip(); g.fillStyle = 'rgba(245,228,204,.35)'; var o = belt % 22; for (var s = 96; s < W; s += 22) g.fillRect(s + o, BELT + 6, 4, 12); g.restore();
-    for (var r = 0; r < 9; r++){ g.fillStyle = B; g.beginPath(); g.arc(124 + r * 52, BELT + 36, 8, 0, 7); g.fill(); g.fillStyle = N; g.beginPath(); g.arc(124 + r * 52, BELT + 36, 3, (belt / 8) % 7, (belt / 8) % 7 + 4); g.fill(); }
+    // belt (like the website conveyor)
+    var bx0 = 104, bw = W - 110;
+    g.fillStyle = '#46505f'; g.fillRect(bx0, BELT, bw, 62);
+    g.save(); g.beginPath(); g.rect(bx0, BELT, bw, 30); g.clip();
+    g.fillStyle = '#2d343e'; g.fillRect(bx0, BELT, bw, 30); g.fillStyle = '#4a5462'; var o = belt % 40; for (var s2 = bx0 - 40; s2 < W; s2 += 40) g.fillRect(s2 + o + 26, BELT, 3, 30);
+    var gl = g.createLinearGradient(0, BELT, 0, BELT + 30); gl.addColorStop(0, 'rgba(255,255,255,.12)'); gl.addColorStop(.3, 'rgba(0,0,0,0)'); gl.addColorStop(1, 'rgba(0,0,0,.28)'); g.fillStyle = gl; g.fillRect(bx0, BELT, bw, 30); g.restore();
+    g.fillStyle = '#c3cad3'; g.fillRect(bx0, BELT + 30, bw, 3); g.fillStyle = '#8f99a6'; g.fillRect(bx0, BELT + 33, bw, 13); g.fillStyle = '#5b6573'; g.fillRect(bx0, BELT + 46, bw, 9); g.fillStyle = '#3a424d'; g.fillRect(bx0, BELT + 55, bw, 8);
+    for (var r = bx0 + 14; r < W - 6; r += 40){ g.fillStyle = '#7d8794'; g.beginPath(); g.arc(r, BELT + 39.5, 3.2, 0, 7); g.fill(); g.fillStyle = '#e3e7ec'; g.beginPath(); g.arc(r - .5, BELT + 39, 2, 0, 7); g.fill(); }
+    [bx0, W - 6].forEach(function(ex){ g.fillStyle = '#5b6678'; g.beginPath(); g.arc(ex, BELT + 15, 15, 0, 7); g.fill(); g.strokeStyle = N; g.lineWidth = 2; g.stroke(); g.save(); g.translate(ex, BELT + 15); g.rotate(belt / 15); g.fillStyle = '#c3cad3'; g.fillRect(-1.5, -11, 3, 22); g.fillRect(-11, -1.5, 22, 3); g.restore(); });
     // aim line, solid when a box is locked
     var cy = TOP + L;
     if (state === 'idle'){ g.save(); if (!target) g.setLineDash([4, 6]); g.strokeStyle = target ? B : 'rgba(245,228,204,.35)'; g.lineWidth = target ? 2.5 : 2; g.beginPath(); g.moveTo(x, cy + 50); g.lineTo(x, BELT - 46); g.stroke(); g.restore(); }
+    clawBack(cy);
     boxes.forEach(function(b){ if (b !== held && !b.fall && b.x < 104) return; drawBox(b); });
-    // claw
-    g.strokeStyle = B; g.lineWidth = 4; g.beginPath(); g.moveTo(x, 30); g.lineTo(x, cy); g.stroke();
-    g.fillStyle = B; rr(x - 22, cy, 44, 18, 6); g.fill(); g.fillStyle = state === 'idle' && target ? B : N; g.fillStyle = N; g.beginPath(); g.arc(x, cy + 9, 4, 0, 7); g.fill();
-    if (state === 'idle' && target){ g.fillStyle = B; g.globalAlpha = .5 + .5 * Math.sin(clock * 12); g.beginPath(); g.arc(x, cy + 9, 2.5, 0, 7); g.fill(); g.globalAlpha = 1; }
-    var a = .15 + open * .55;
-    [-1, 1].forEach(function(sd){ g.save(); g.translate(x + sd * 16, cy + 16); g.rotate(sd * a); g.fillStyle = B; rr(-4, 0, 8, 34, 3); g.fill(); g.translate(0, 32); g.rotate(-sd * .9); rr(-3, -2, 6, 14, 3); g.fill(); g.restore(); });
+    clawFront(cy);
     conf.forEach(function(c){ g.save(); g.translate(c.x, c.y); g.rotate(c.r); g.fillStyle = c.c; g.fillRect(-c.s / 2, -c.s / 4, c.s, c.s / 2); g.restore(); });
     pops.forEach(function(p){ g.save(); g.globalAlpha = Math.min(1, p.life * 2); g.fillStyle = B; g.strokeStyle = N; g.lineWidth = 5; g.textAlign = 'center'; g.font = '800 ' + (p.big ? 30 : 22) + 'px "Bricolage Grotesque", Figtree, sans-serif'; var sc = 1 + (1 - p.life) * .3; g.translate(p.x, p.y); g.scale(sc, sc); g.strokeText(p.t, 0, 0); g.fillText(p.t, 0, 0); g.restore(); });
     if (combo > 1){ g.fillStyle = B; g.font = '800 15px Figtree, sans-serif'; g.textAlign = 'right'; g.fillText('COMBO x' + combo, W - 22, 56); }
     g.fillStyle = 'rgba(255,255,255,.05)'; g.beginPath(); g.moveTo(W - 140, 40); g.lineTo(W - 90, 40); g.lineTo(W - 200, BELT - 10); g.lineTo(W - 250, BELT - 10); g.fill();
   }
+  window.NG_CLAW = {
+    give: function(k){ prize(k); },
+    out: function(){ tries = 0; triesUI(); if (state === 'idle') over(); },
+    reset: function(){ tries = 5; score = 0; combo = 0; stars = 0; won = 0; got1 = got2 = false; state = 'idle'; bd.disabled = false; bd.textContent = 'DROP'; triesUI();
+      [].forEach.call(tl.children, function(t, i){ t.classList.toggle('open', i === 1 || i === 4); }); document.getElementById('pc').textContent = 2;
+      document.querySelector('.cov').classList.remove('done'); c3.classList.add('lock'); c3.querySelector('span').textContent = 'Clue 3';
+      ['g1', 'g2'].forEach(function(id){ document.getElementById(id).classList.remove('done'); document.getElementById(id + 'n').hidden = false; document.getElementById(id + 'o').hidden = true; document.getElementById(id + 'b').style.width = 0; });
+      document.getElementById('g1n').textContent = '0 / 2'; document.getElementById('g2n').textContent = '0 / 10'; say('Game reset', 'Fresh start', 1400); }
+  };
   requestAnimationFrame(step);
 })();
 
@@ -383,7 +464,7 @@ var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call
   // Hunt flipbook
   var leaves = [].slice.call(document.querySelectorAll('#fbb .leaf')), pg = 0;
   function fbUI(){ leaves.forEach(function(l, i){ l.classList.toggle('turn', i < pg); l.style.zIndex = i < pg ? 10 + i : 3 - i; }); document.getElementById('fbn').textContent = 'Page ' + (pg + 1) + ' of 3'; document.getElementById('fbp').disabled = !pg; document.getElementById('fbx').disabled = pg >= 2; }
-  function flip(d){ var n = Math.max(0, Math.min(2, pg + d)); if (n === pg) return; pg = n; fbUI(); }
+  function flip(d){ var n = Math.max(0, Math.min(2, pg + d)); if (n === pg) return; pg = n; fbUI(); var tp = document.getElementById('tap'); if (tp) tp.remove(); }
   document.getElementById('fbx').onclick = function(){ flip(1); }; document.getElementById('fbp').onclick = function(){ flip(-1); };
   document.getElementById('fbb').onclick = function(e){ var r = this.getBoundingClientRect(); flip(e.clientX - r.left < r.width / 3 ? -1 : 1); };
   addEventListener('keydown', function(e){ if (rw.hidden || document.getElementById('rw-hunt').hidden) return; if (e.key === 'ArrowRight') flip(1); if (e.key === 'ArrowLeft') flip(-1); });
@@ -397,6 +478,46 @@ var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call
     ob.hidden = false; ob.classList.remove('go'); void ob.offsetWidth; ob.classList.add('go');
     document.getElementById('lib-sub').textContent = 'You used your peek. Win more boxes next time!'; });
   document.getElementById('obx').onclick = function(){ ob.hidden = true; };
+})();
+
+// ---- security: no screenshots, no saving, no sneaking in ----
+(function(){
+  var EMAIL_HASH = '2ce4f7ead91590c8644bbc79fe4d9b22891116566efb5694de4feb3fe2dda739';
+  var CODE_HASH = 'd94f6435ead9d1a54e6af10bfb3fc8dd15b1d4fb56e4d575302ad0b7e78a5701';
+  var owner = false; try { owner = sessionStorage.getItem('ng_owner') === CODE_HASH; } catch(e){}
+  var guard = document.getElementById('guard'), gt = document.getElementById('guardt'), gtT = null;
+  function black(text, ms){ if (owner) return; gt.textContent = text || ''; guard.hidden = false; clearTimeout(gtT); if (ms) gtT = setTimeout(function(){ guard.hidden = true; }, ms); }
+  function shot(){ black('Screenshot is not allowed', 3000); try { navigator.clipboard.writeText(''); } catch(e){} }
+  addEventListener('keydown', function(e){ if (owner) return; var k = (e.key || '').toLowerCase(), c = e.ctrlKey || e.metaKey;
+    if (k === 'printscreen' || (e.metaKey && e.shiftKey && /[345s]/.test(k)) || (e.shiftKey && e.key === 'S' && e.metaKey)){ e.preventDefault(); shot(); }
+    else if (c && /^[psu]$/.test(k) || k === 'f12' || (c && e.shiftKey && /^[ijc]$/.test(k))){ e.preventDefault(); shot(); } }, true);
+  addEventListener('keyup', function(e){ if (!owner && (e.key || '').toLowerCase() === 'printscreen') shot(); }, true);
+  ['contextmenu', 'dragstart', 'copy', 'cut'].forEach(function(t){ document.addEventListener(t, function(e){ if (!owner && !(e.target.closest && e.target.closest('input'))) e.preventDefault(); }, true); });
+  addEventListener('blur', function(){ black(''); }); addEventListener('focus', function(){ if (gt.textContent === '') guard.hidden = true; });
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) black(''); });
+  document.addEventListener('mouseleave', function(e){ if (e.clientY >= innerHeight - 2) black(''); });
+  document.addEventListener('mouseenter', function(){ if (gt.textContent === '') guard.hidden = true; });
+  guard.addEventListener('click', function(){ if (gt.textContent === '') guard.hidden = true; });
+  // owner
+  function sha256(t){ return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function(b){ return [].map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); }); }
+  function tries(){ try { return JSON.parse(localStorage.getItem('ng_owner_tries') || '{"n":0,"t":0}'); } catch(e){ return { n: 0, t: 0 }; } }
+  function locked(){ var o = tries(); return o.n >= 5 && Date.now() - o.t < 15 * 60000; }
+  function wrong(){ var o = tries(); if (Date.now() - o.t > 15 * 60000) o.n = 0; o.n++; o.t = Date.now(); try { localStorage.setItem('ng_owner_tries', JSON.stringify(o)); } catch(e){} return 5 - o.n; }
+  var og = document.getElementById('og'), ogm = document.getElementById('ogm'), op = document.getElementById('op');
+  function setOwner(v){ owner = v; op.hidden = !v; try { if (v) sessionStorage.setItem('ng_owner', CODE_HASH); else sessionStorage.removeItem('ng_owner'); } catch(e){} }
+  setOwner(owner);
+  document.getElementById('own-btn').onclick = function(){ if (owner){ op.hidden = false; return; } og.hidden = false; ogm.textContent = ''; document.getElementById('oge').focus(); };
+  document.getElementById('ogx').onclick = function(){ og.hidden = true; };
+  document.getElementById('ogf').addEventListener('submit', function(e){ e.preventDefault();
+    if (locked()){ ogm.textContent = 'Too many wrong tries. Locked for 15 minutes.'; return; }
+    var em = document.getElementById('oge').value.trim().toLowerCase(), pw = document.getElementById('ogc').value.trim(); ogm.textContent = 'Checking...';
+    Promise.all([sha256('neshama-salt-7f3:' + em), sha256('neshama-salt-7f3:' + pw)]).then(function(h){
+      setTimeout(function(){ if (h[0] === EMAIL_HASH && h[1] === CODE_HASH){ try { localStorage.setItem('ng_owner_tries', '{"n":0,"t":0}'); } catch(e){} setOwner(true); og.hidden = true; document.getElementById('ogc').value = ''; }
+        else { var left = wrong(); ogm.textContent = left > 0 ? 'Not the owner. ' + left + ' tries left.' : 'Too many wrong tries. Locked for 15 minutes.'; } }, 600);
+    }).catch(function(){ ogm.textContent = 'This browser cannot check here.'; }); });
+  document.getElementById('opx').onclick = function(){ setOwner(false); };
+  op.addEventListener('click', function(e){ var b = e.target.closest('[data-t]'); if (!b) return; var t = b.dataset.t, C = window.NG_CLAW;
+    if (t === 'hunt' || t === 'lib') showRw(t); else if (t === 'all'){ tilesOpen(12); C.give('q'); } else if (t === 'out') C.out(); else if (t === 'reset') C.reset(); else C.give(t); });
 })();
 </script>
 </body></html>
