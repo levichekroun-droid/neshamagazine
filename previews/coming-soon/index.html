@@ -76,6 +76,33 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 .cm-info i{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--b);margin-left:5px;vertical-align:-1px}
 .cm-info i.used{background:none;border:2px solid var(--b)}
 .cm-tip{margin:6px 0 0;font-size:.85rem;opacity:.7}
+
+.kick2{margin:0 0 4px;font:800 .78rem Figtree,sans-serif;letter-spacing:.24em;text-transform:uppercase;opacity:.8}
+.lib{margin:0 0 26px}
+.lib-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.lib h2{margin:0;font:800 1.6rem/1.1 "Bricolage Grotesque",sans-serif}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stats span{border:2px solid var(--b);border-radius:999px;padding:5px 13px;font-weight:700;font-size:.9rem}
+.stats b{font-size:1.05rem}
+.shelf{overflow:hidden;border-radius:14px;padding:14px 0 8px;-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.track{display:flex;gap:18px;width:max-content;animation:shelf 48s linear infinite}
+.shelf:hover .track{animation-play-state:paused}
+@keyframes shelf{to{transform:translateX(-50%)}}
+.bk{margin:0;width:132px;flex:0 0 auto;transition:transform .25s}
+.bk:nth-child(odd){transform:rotate(-2deg)}.bk:nth-child(even){transform:rotate(2deg)}
+.bk:hover{transform:translateY(-8px) rotate(0) scale(1.06)}
+.bk img{display:block;width:132px;height:172px;object-fit:cover;border:3px solid var(--b);border-radius:4px;background:var(--n2)}
+.bk figcaption{margin-top:7px;font-size:.78rem;font-weight:700;line-height:1.25;opacity:.85}
+.more{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px}
+.tile{display:flex;flex-direction:column;gap:6px;border:2px solid var(--b);border-radius:14px;padding:20px;color:var(--b);text-decoration:none;transition:background .2s,color .2s,transform .2s}
+.tile svg{width:44px;height:44px}
+.tile h3{margin:4px 0 0;font:800 1.3rem/1.1 "Bricolage Grotesque",sans-serif}
+.tile p{margin:0;opacity:.85;flex:1}
+.tile .go{align-self:flex-start;margin-top:8px;font-weight:800;border-bottom:2px solid currentColor}
+.tile:hover{background:var(--b);color:var(--n);transform:translateY(-3px)}
+.cov.done .stamp{animation:stampoff 1s forwards}
+@keyframes stampoff{to{transform:translate(-50%,180%) rotate(30deg);opacity:0}}
+@media (max-width:860px){.more{grid-template-columns:1fr}.bk,.bk img{width:104px}.bk img{height:136px}}
 .bottom{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;margin-top:22px}
 .riddle q{display:block;font:700 1.25rem/1.35 "Bricolage Grotesque",sans-serif;quotes:none;margin:0 0 12px}
 .riddle .ans{display:none;margin-top:10px;font-weight:800}
@@ -90,18 +117,26 @@ h1{margin:0 0 20px;font:800 clamp(2.4rem,7vw,4.6rem)/.98 "Bricolage Grotesque",F
 <div class="top"><img src="logo.png" alt="NeshamaGazine"><span class="waiting"><b id="w">312</b> readers are waiting</span></div>
 <div class="hero"><p class="kick">Coming for Chanukah</p><h1>Issue 14 opens in</h1>
 <div class="clock" id="clock"></div></div>
+<section class="lib"><div class="lib-head"><div><p class="kick2">Already on NeshamaGazine</p><h2>Read every issue while you wait</h2></div>
+<div class="stats"><span><b>10</b> magazines</span><span><b>284</b> pages</span><span><b>10+</b> comics</span></div></div>
+<div class="shelf"><div class="track"><figure class="bk"><img src="i-issue-13-bereishis.jpg" alt="Issue 13 · Bereishis" loading="lazy"><figcaption>Issue 13 · Bereishis</figcaption></figure><figure class="bk"><img src="i-issue-12-rosh-hashana.jpg" alt="Issue 12 · Rosh Hashana" loading="lazy"><figcaption>Issue 12 · Rosh Hashana</figcaption></figure><figure class="bk"><img src="i-the-double-life-of-eli-cohen.jpg" alt="The Double Life of Eli Cohen" loading="lazy"><figcaption>The Double Life of Eli Cohen</figcaption></figure><figure class="bk"><img src="i-sukkos-edition.jpg" alt="Sukkos Edition" loading="lazy"><figcaption>Sukkos Edition</figcaption></figure><figure class="bk"><img src="i-issue-10-behaalotcha.jpg" alt="Issue 10 · Behaalotcha" loading="lazy"><figcaption>Issue 10 · Behaalotcha</figcaption></figure><figure class="bk"><img src="i-issue-09-shavuos.jpg" alt="Issue 9 · Shavuos" loading="lazy"><figcaption>Issue 9 · Shavuos</figcaption></figure><figure class="bk"><img src="i-parsha-food-season.jpg" alt="Parsha Food Season" loading="lazy"><figcaption>Parsha Food Season</figcaption></figure><figure class="bk"><img src="i-issue-08-tazria-metzora.jpg" alt="Issue 8 · Tazria Metzora" loading="lazy"><figcaption>Issue 8 · Tazria Metzora</figcaption></figure><figure class="bk"><img src="i-escape-to-shanghai.jpg" alt="Escape to Shanghai" loading="lazy"><figcaption>Escape to Shanghai</figcaption></figure><figure class="bk"><img src="i-issue-5.jpg" alt="Issue 5" loading="lazy"><figcaption>Issue 5</figcaption></figure><figure class="bk"><img src="i-issue-13-bereishis.jpg" alt="Issue 13 · Bereishis" loading="lazy"><figcaption>Issue 13 · Bereishis</figcaption></figure><figure class="bk"><img src="i-issue-12-rosh-hashana.jpg" alt="Issue 12 · Rosh Hashana" loading="lazy"><figcaption>Issue 12 · Rosh Hashana</figcaption></figure><figure class="bk"><img src="i-the-double-life-of-eli-cohen.jpg" alt="The Double Life of Eli Cohen" loading="lazy"><figcaption>The Double Life of Eli Cohen</figcaption></figure><figure class="bk"><img src="i-sukkos-edition.jpg" alt="Sukkos Edition" loading="lazy"><figcaption>Sukkos Edition</figcaption></figure><figure class="bk"><img src="i-issue-10-behaalotcha.jpg" alt="Issue 10 · Behaalotcha" loading="lazy"><figcaption>Issue 10 · Behaalotcha</figcaption></figure><figure class="bk"><img src="i-issue-09-shavuos.jpg" alt="Issue 9 · Shavuos" loading="lazy"><figcaption>Issue 9 · Shavuos</figcaption></figure><figure class="bk"><img src="i-parsha-food-season.jpg" alt="Parsha Food Season" loading="lazy"><figcaption>Parsha Food Season</figcaption></figure><figure class="bk"><img src="i-issue-08-tazria-metzora.jpg" alt="Issue 8 · Tazria Metzora" loading="lazy"><figcaption>Issue 8 · Tazria Metzora</figcaption></figure><figure class="bk"><img src="i-escape-to-shanghai.jpg" alt="Escape to Shanghai" loading="lazy"><figcaption>Escape to Shanghai</figcaption></figure><figure class="bk"><img src="i-issue-5.jpg" alt="Issue 5" loading="lazy"><figcaption>Issue 5</figcaption></figure></div></div></section>
 <div class="grid">
-  <section class="card"><h2>Claw Machine</h2><p class="sub">Move the claw, drop it on a box and carry it to the WIN hole. Every box opens a piece of the secret cover. Gold boxes open two.</p>
+  <section class="card"><h2>Claw Machine</h2><p class="sub">Steer the claw, drop it on a box and it flies to the WIN hole. Star boxes open 2 pieces, +1 boxes give an extra try. Win in a row for a combo!</p>
     <div class="cm-wrap"><canvas id="cm" width="560" height="380" aria-label="Claw machine game"></canvas>
       <div class="cm-msg" id="cmmsg">Press Start</div></div>
     <div class="cm-ctrl"><button class="cm-b" id="bl" aria-label="Move left">&#9664;</button><button class="cm-b drop" id="bd">DROP</button><button class="cm-b" id="br" aria-label="Move right">&#9654;</button></div>
-    <div class="cm-info"><span id="tries"></span><span>Pieces found <b id="pc">2</b> / 12</span></div>
+    <div class="cm-info"><span id="tries"></span><span>Score <b id="sc">0</b></span><span>Pieces <b id="pc">2</b> / 12</span></div>
     <p class="cm-tip">On a computer: arrow keys to move, space to drop.</p>
   </section>
   <section class="card"><h2>Sneak peek</h2><p class="sub">The new cover is hiding. Win boxes to open it.</p>
     <div class="peek"><div class="cov"><i class="tape"></i><img src="cover.jpg" alt=""><div class="tiles" id="tiles"></div><span class="stamp">TOP SECRET</span></div>
     <ul class="clues"><li><b>1</b><span>A spy story that starts in a train station.</span></li><li><b>2</b><span>Someone hides a message in a loaf of bread.</span></li><li class="lock" id="c3"><b>3</b><span data-in="5 hours">Clue 3</span></li><li class="lock"><b>4</b><span data-in="1 day">Clue 4</span></li></ul></div>
   </section>
+</div>
+<div class="more">
+  <a class="tile" href="https://levichekroun-droid.github.io/neshamagazine/#videos"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="10" width="40" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M20 17v14l12-7z" fill="currentColor"/></svg><h3>NeshamaTV videos</h3><p>Watch the stories come alive.</p><span class="go">Watch</span></a>
+  <a class="tile" href="https://levichekroun-droid.github.io/neshamagazine/#behind"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="18" width="38" height="24" rx="3" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M5 18l4-10 36 0-2 10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M15 8l-3 10M25 8l-3 10M35 8l-3 10" stroke="currentColor" stroke-width="3.5"/></svg><h3>Behind the scenes</h3><p>See how an issue gets made, from sketch to page.</p><span class="go">Peek</span></a>
+  <a class="tile" href="https://levichekroun-droid.github.io/neshamagazine/#team"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="17" cy="17" r="7" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="33" cy="19" r="6" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M4 41c1-9 7-13 13-13s12 4 13 13M30 30c6 0 12 3 14 11" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Meet the team</h3><p>The kids and grown-ups who make NeshamaGazine.</p><span class="go">Meet</span></a>
 </div>
 <div class="bottom">
   <section class="card riddle" id="rd"><h2>Riddle while you wait</h2><q>What has many pages, but no one can ever turn them?</q><button class="btn ghost" onclick="document.getElementById('rd').classList.toggle('show')">Show the answer</button><p class="ans">A calendar on the wall... until Issue 14 comes!</p></section>
@@ -117,106 +152,140 @@ function draw(){ var t = Math.max(0, end - Date.now()) / 1000, v = [Math.floor(t
 draw(); setInterval(draw, 1000);
 var tl = document.getElementById('tiles'), open = [1, 4]; for (var i = 0; i < 12; i++){ var e = document.createElement('i'); if (open.indexOf(i) > -1) e.className = 'open'; tl.appendChild(e); }
 
-var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call(tl.children, function(t){ return !t.classList.contains('open'); }); if (c.length) c[Math.floor(Math.random() * c.length)].classList.add('open'); } document.getElementById('pc').textContent = tl.querySelectorAll('.open').length; };
+var tilesOpen = function(n){ for (var k = 0; k < n; k++){ var c = [].filter.call(tl.children, function(t){ return !t.classList.contains('open'); }); if (c.length) c[Math.floor(Math.random() * c.length)].classList.add('open'); } var p = tl.querySelectorAll('.open').length; document.getElementById('pc').textContent = p; return p; };
 (function(){
   var cv = document.getElementById('cm'), g = cv.getContext('2d'), W = 560, H = 380, dpr = Math.min(2, window.devicePixelRatio || 1);
   cv.width = W * dpr; cv.height = H * dpr; g.scale(dpr, dpr);
   var N = '#12294a', B = '#f5e4cc', BOX = '#c9a77a', BOXD = '#a8865a';
-  var BELT = 318, CH = { x: 18, w: 78 }, TOP = 46;
-  var tries = 5, state = 'idle', x = 300, L = 30, open = 1, held = null, slip = 0, t0 = 0, msgT = null, conf = [], belt = 0, keys = {};
-  var boxes = []; for (var i = 0; i < 5; i++) boxes.push({ x: 140 + i * 90, w: 52, h: 42, y: BELT - 42, gold: i === 3, vy: 0, fall: false });
-  var msg = document.getElementById('cmmsg');
+  var BELT = 318, CH = { x: 18, w: 78 }, TOP = 46, HOME = 330;
+  var tries = 5, state = 'idle', x = HOME, L = 30, open = 1, held = null, slip = 0, t0 = 0, msgT = null, conf = [], pops = [], belt = 0, keys = {};
+  var combo = 0, score = 0, shk = 0, sw = 0, swv = 0, lastX = x, target = null, clock = 0;
+  var bd = document.getElementById('bd'), msg = document.getElementById('cmmsg'), c3 = document.getElementById('c3');
+  function kind(){ var r = Math.random(); if (r < .16) return 'star'; if (r < .29) return 'plus'; if (r < .38 && c3.classList.contains('lock')) return 'key'; return 'q'; }
+  var boxes = [], kinds = ['q', 'star', 'q', 'plus', 'q', 'key'];
+  for (var i = 0; i < 6; i++) boxes.push({ x: 112 + i * 82, w: 52, h: 42, y: BELT - 42, k: kinds[i], vy: 0, fall: false, rot: 0 });
+  function speed(){ return Math.min(95, 42 + combo * 10); }
   function say(t, sub, ms){ msg.innerHTML = t + (sub ? '<small>' + sub + '</small>' : ''); msg.classList.remove('off'); clearTimeout(msgT); if (ms) msgT = setTimeout(function(){ msg.classList.add('off'); }, ms); }
-  function triesUI(){ var h = 'Tries'; for (var i = 0; i < 5; i++) h += '<i class="' + (i >= tries ? 'used' : '') + '"></i>'; document.getElementById('tries').innerHTML = h; }
-  triesUI(); say('Your turn!', 'Move the claw, then DROP', 0);
+  function triesUI(){ var h = 'Tries'; for (var i = 0; i < Math.max(5, tries); i++) h += '<i class="' + (i >= tries ? 'used' : '') + '"></i>'; document.getElementById('tries').innerHTML = h; document.getElementById('sc').textContent = score; }
+  function pop(t, px, py, big){ pops.push({ t: t, x: px, y: py, life: 1, big: big }); }
+  triesUI(); say('Your turn!', 'Steer the claw, then press DROP', 0);
   // sound
   var ac = null, hum = null;
   function snd(){ if (!ac){ try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} } if (ac && ac.state === 'suspended') ac.resume(); return ac; }
   function beep(f, d, type, vol, f2){ var a = snd(); if (!a) return; var o = a.createOscillator(), v = a.createGain(), t = a.currentTime; o.type = type || 'square'; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); v.gain.setValueAtTime(vol || .06, t); v.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(v); v.connect(a.destination); o.start(t); o.stop(t + d + .02); }
-  function motor(on){ var a = snd(); if (!a) return; if (on && !hum){ var o = a.createOscillator(), v = a.createGain(); o.type = 'sawtooth'; o.frequency.value = 70; v.gain.value = .025; o.connect(v); v.connect(a.destination); o.start(); hum = { o: o, v: v }; } else if (!on && hum){ hum.v.gain.setTargetAtTime(0, a.currentTime, .03); var h = hum; setTimeout(function(){ try { h.o.stop(); } catch(e){} }, 150); hum = null; } }
-  function win(){ [523, 659, 784, 1046].forEach(function(f, i){ setTimeout(function(){ beep(f, .18, 'triangle', .08); }, i * 110); }); }
+  function motor(on){ var a = snd(); if (!a) return; if (on && !hum){ var o = a.createOscillator(), v = a.createGain(); o.type = 'sawtooth'; o.frequency.value = 70; v.gain.value = .02; o.connect(v); v.connect(a.destination); o.start(); hum = { o: o, v: v }; } else if (!on && hum){ hum.v.gain.setTargetAtTime(0, a.currentTime, .03); var h = hum; setTimeout(function(){ try { h.o.stop(); } catch(e){} }, 150); hum = null; } }
+  function tune(notes, gap){ notes.forEach(function(f, i){ setTimeout(function(){ beep(f, .2, 'triangle', .08); }, i * (gap || 100)); }); }
   // controls
   function hold(id, k){ var b = document.getElementById(id); function on(e){ e.preventDefault(); keys[k] = true; b.classList.add('on'); snd(); } function off(){ keys[k] = false; b.classList.remove('on'); }
     b.addEventListener('pointerdown', on); ['pointerup', 'pointerleave', 'pointercancel'].forEach(function(t){ b.addEventListener(t, off); }); }
   hold('bl', 'l'); hold('br', 'r');
-  document.getElementById('bd').addEventListener('click', drop);
-  addEventListener('keydown', function(e){ if (e.target.tagName === 'INPUT') return; if (e.key === 'ArrowLeft'){ keys.l = true; e.preventDefault(); } if (e.key === 'ArrowRight'){ keys.r = true; e.preventDefault(); } if (e.key === ' '){ e.preventDefault(); drop(); } });
+  bd.addEventListener('click', drop);
+  addEventListener('keydown', function(e){ if (e.target.tagName === 'INPUT') return; if (e.key === 'ArrowLeft'){ keys.l = true; e.preventDefault(); } if (e.key === 'ArrowRight'){ keys.r = true; e.preventDefault(); } if (e.key === ' ' || e.key === 'ArrowDown'){ e.preventDefault(); if (!e.repeat) drop(); } });
   addEventListener('keyup', function(e){ if (e.key === 'ArrowLeft') keys.l = false; if (e.key === 'ArrowRight') keys.r = false; });
   var drag = false; cv.addEventListener('pointerdown', function(e){ drag = true; aim(e); snd(); }); cv.addEventListener('pointermove', function(e){ if (drag) aim(e); }); addEventListener('pointerup', function(){ drag = false; keys.to = null; });
   function aim(e){ var r = cv.getBoundingClientRect(); keys.to = (e.clientX - r.left) / r.width * W; }
-  function drop(){ snd(); if (state !== 'idle' || !tries) return; tries--; triesUI(); state = 'down'; msg.classList.add('off'); beep(220, .12, 'square', .05, 160); document.getElementById('bd').disabled = true; }
+  function drop(){ snd();
+    if (state === 'over'){ tries = 5; state = 'idle'; triesUI(); bd.textContent = 'DROP'; say('New round!', 'You have 5 more tries', 1400); tune([392, 523, 659]); return; }
+    if (state !== 'idle' || !tries) return; tries--; triesUI(); state = 'down'; msg.classList.add('off'); beep(240, .14, 'square', .05, 150); bd.disabled = true; }
+  function ready(){ state = 'idle'; bd.disabled = false; if (!tries) over(); }
+  function over(){ state = 'over'; bd.disabled = false; bd.textContent = 'AGAIN'; say('Out of tries!', 'Score ' + score + ' . Press AGAIN to keep playing', 0); }
+  function burst(px, py, n, power){ for (var i = 0; i < n; i++) conf.push({ x: px, y: py, vx: (Math.random() - .5) * 460 * power, vy: (-260 - Math.random() * 420) * power, r: Math.random() * 6, vr: (Math.random() - .5) * 12, c: Math.random() < .5 ? B : BOX, s: 4 + Math.random() * 6 }); }
+  function respawn(b){ var xs = boxes.filter(function(o){ return o !== b && !o.fall && o !== held; }).map(function(o){ return o.x; }); var mn = Math.min.apply(null, xs.concat([999])); b.x = Math.min(40, mn - 84); b.y = BELT - b.h; b.k = kind(); b.fall = false; b.inChute = false; b.vy = 0; b.rot = 0; }
   // game loop
   var last = performance.now();
   function step(now){
-    var dt = Math.min(.05, (now - last) / 1000); last = now;
-    belt += dt * 38;
-    boxes.forEach(function(b){ if (b === held || b.fall) return; b.x += dt * 38; if (b.x > W + 10) { var mn = Math.min.apply(null, boxes.filter(function(o){ return o !== b && !o.fall && o !== held; }).map(function(o){ return o.x; }).concat([999])); b.x = Math.min(60, mn - 90); b.gold = Math.random() < .2; } });
-    boxes.forEach(function(b){ if (!b.fall) return; b.vy += 1500 * dt; b.y += b.vy * dt;
-      var floor = b.inChute ? H + 60 : BELT - b.h; if (b.y >= floor){ b.y = floor; if (b.inChute){ b.fall = false; b.inChute = false; b.x = 110; b.y = BELT - b.h; } else { b.fall = false; b.vy = 0; beep(90, .15, 'square', .07); } } });
+    var dt = Math.min(.05, (now - last) / 1000); last = now; clock += dt;
+    var sp = speed(); belt += dt * sp;
+    boxes.forEach(function(b){ if (b === held || b.fall) return; b.x += dt * sp; if (b.x > W + 10) respawn(b); });
+    boxes.forEach(function(b){ if (!b.fall) return; b.vy += 1500 * dt; b.y += b.vy * dt; b.rot += dt * (b.inChute ? 6 : 3);
+      if (b.inChute){ if (b.y > H + 60) respawn(b); }
+      else if (b.y >= BELT - b.h){ if (b.x + b.w / 2 < 104){ b.inChute = false; respawn(b); } else { b.y = BELT - b.h; b.fall = false; b.vy = 0; b.rot = 0; beep(90, .15, 'square', .07); shk = 5; } } });
     var moving = false;
-    if (state === 'idle'){ var sp = 190 * dt, want = 0; if (keys.l) want = -1; if (keys.r) want = 1; if (keys.to != null){ var d = keys.to - x; want = Math.abs(d) < 3 ? 0 : d > 0 ? 1 : -1; sp = Math.min(sp, Math.abs(d)); }
-      if (want){ x = Math.max(120, Math.min(W - 30, x + want * sp)); moving = true; } }
+    if (state === 'idle'){ var spd = 240 * dt, want = 0; if (keys.l) want = -1; if (keys.r) want = 1; if (keys.to != null){ var d = keys.to - x; want = Math.abs(d) < 3 ? 0 : d > 0 ? 1 : -1; spd = Math.min(spd, Math.abs(d)); }
+      if (want){ x = Math.max(120, Math.min(W - 30, x + want * spd)); moving = true; } }
+    // which box is under the claw right now
+    target = null; var bdist = 99; boxes.forEach(function(b){ if (b.fall || b === held || b.x < 104) return; var d = Math.abs(b.x + b.w / 2 - x); if (d < bdist){ bdist = d; target = b; } }); if (bdist > 36) target = null;
     var bottom = BELT - 42 - TOP - 28;
-    if (state === 'down'){ L += 300 * dt; moving = true; if (L >= bottom){ L = bottom; state = 'grab'; t0 = now; } }
-    if (state === 'grab'){ open = Math.max(0, 1 - (now - t0) / 220); if (now - t0 > 300){
-        var best = null, bd = 99; boxes.forEach(function(b){ if (b.fall) return; var d = Math.abs(b.x + b.w / 2 - x); if (d < bd){ bd = d; best = b; } });
-        if (best && bd < 26){ held = best; slip = bd < 11 ? 0 : (Math.random() < .55 ? now + 300 + Math.random() * 900 : 0); beep(140, .1, 'square', .08); } else { held = null; beep(300, .25, 'sawtooth', .04, 120); }
+    if (state === 'down'){ L += 340 * dt; moving = true; if (L >= bottom){ L = bottom; state = 'grab'; t0 = now; shk = 3; beep(110, .08, 'square', .06); } }
+    if (state === 'grab'){ open = Math.max(0, 1 - (now - t0) / 200); if (now - t0 > 260){
+        if (target){ held = target; var off = bdist; slip = off < 20 ? 0 : (Math.random() < .35 ? now + 350 + Math.random() * 700 : 0); beep(150, .1, 'square', .08); held.ox = (held.x + held.w / 2) - x; }
+        else { held = null; beep(300, .3, 'sawtooth', .04, 110); }
         state = 'up'; t0 = now; } }
-    if (state === 'up' || state === 'carry'){ moving = true;
-      if (state === 'up'){ L -= 220 * dt; if (L <= 30){ L = 30; state = held ? 'carry' : 'idle'; if (!held){ open = 1; say('Missed!', 'Line the claw up right over a box', 1800); document.getElementById('bd').disabled = !tries; if (!tries) over(); } } }
-      else { x -= 170 * dt; if (x <= CH.x + CH.w / 2){ x = CH.x + CH.w / 2; state = 'release'; t0 = now; } }
-      if (held && slip && now > slip){ held.fall = true; held.vy = 0; held = null; slip = 0; beep(400, .3, 'sawtooth', .05, 90); say('So close!', 'It slipped out', 1800); }
-    }
-    if (held){ held.x = x - held.w / 2; held.y = TOP + L + 34 - 6; }
+    if (state === 'up'){ moving = true; L -= 260 * dt; if (held && held.ox) held.ox *= .9; if (L <= 30){ L = 30;
+        if (held){ state = 'carry'; } else { open = 1; combo = 0; shk = 6; pop('MISS', x, 150); say('Missed!', 'Stop when the box glows, then DROP', 1700); ready(); } } }
+    if (state === 'carry'){ moving = true; x -= 260 * dt; if (x <= CH.x + CH.w / 2){ x = CH.x + CH.w / 2; state = 'release'; t0 = now; swv += 3; } }
+    // swing: the box sways on the claw like a real machine
+    var vx = (x - lastX) / Math.max(dt, .001); lastX = x; swv += (-sw * 60 - swv * 4 - vx * .02) * dt; sw += swv * dt; sw = Math.max(-.6, Math.min(.6, sw));
+    if (held && slip && now > slip){ held.fall = true; held.vy = -120; held = null; slip = 0; combo = 0; beep(420, .35, 'sawtooth', .05, 80); shk = 8; pop('SO CLOSE', x, 140); say('So close!', 'It slipped. Aim closer to the middle', 1700); }
     if (state === 'carry' && !held){ state = 'back'; }
-    if (state === 'release'){ open = Math.min(1, (now - t0) / 200); if (now - t0 > 220 && held){ held.fall = true; held.inChute = true; held.vy = 0; var gold = held.gold; held = null; prize(gold); } if (now - t0 > 700) state = 'back'; }
-    if (state === 'back'){ open = 1; x += 220 * dt; moving = true; if (x >= 300){ x = 300; state = 'idle'; document.getElementById('bd').disabled = !tries; if (!tries) over(); } }
+    if (held){ held.x = x - held.w / 2 + (held.ox || 0) + Math.sin(sw) * 26; held.y = TOP + L + 34 - 6; held.rot = sw * .8; }
+    if (state === 'release'){ open = Math.min(1, (now - t0) / 160); if (now - t0 > 180 && held){ held.fall = true; held.inChute = true; held.vy = 60; var k = held.k; held = null; setTimeout(function(){ prize(k); }, 260); } if (now - t0 > 650) state = 'back'; }
+    if (state === 'back'){ open = 1; x += 280 * dt; moving = true; if (x >= HOME){ x = HOME; ready(); } }
     if (state === 'up' && !held) open = Math.min(1, open + dt * 3);
     motor(moving);
-    conf = conf.filter(function(c){ c.vy += 600 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.r += c.vr * dt; return c.y < H + 20; });
+    shk *= Math.pow(.02, dt);
+    conf = conf.filter(function(c){ c.vy += 650 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.r += c.vr * dt; return c.y < H + 20; });
+    pops = pops.filter(function(p){ p.life -= dt * .8; p.y -= dt * 40; return p.life > 0; });
     draw(); requestAnimationFrame(step);
   }
-  function prize(gold){
-    win(); for (var i = 0; i < 60; i++) conf.push({ x: CH.x + CH.w / 2, y: BELT - 10, vx: (Math.random() - .5) * 420, vy: -300 - Math.random() * 380, r: Math.random() * 6, vr: (Math.random() - .5) * 10, c: Math.random() < .5 ? B : '#c9a77a', s: 4 + Math.random() * 5 });
-    var roll = Math.random();
-    if (gold){ tilesOpen(2); say('GOLD BOX!', 'Two pieces of the cover opened', 2600); }
-    else if (roll < .22 && document.getElementById('c3').classList.contains('lock')){ var c = document.getElementById('c3'); c.classList.remove('lock'); c.querySelector('span').textContent = 'The hero is younger than you think.'; say('Secret clue!', 'Clue 3 is open', 2600); }
-    else { tilesOpen(1); say('You won!', 'A piece of the cover opened', 2400); }
+  function prize(k){
+    combo++; var pts = (k === 'star' ? 250 : 100) * combo; score += pts;
+    var cx = CH.x + CH.w / 2; shk = 10 + combo * 2; burst(cx, BELT - 10, k === 'star' ? 120 : 70, k === 'star' ? 1.25 : 1);
+    pop('+' + pts, cx + 40, BELT - 60, true); if (combo > 1) pop('COMBO x' + combo, W / 2, 120, true);
+    var p = +document.getElementById('pc').textContent;
+    if (k === 'star'){ p = tilesOpen(2); tune([523, 659, 784, 1046, 1318], 90); say('STAR BOX!', 'Two pieces of the cover opened', 2400); }
+    else if (k === 'plus'){ tries++; tune([659, 880, 1175], 90); say('+1 TRY!', 'You get an extra drop', 2200); }
+    else if (k === 'key' && c3.classList.contains('lock')){ c3.classList.remove('lock'); c3.querySelector('span').textContent = 'The hero is younger than you think.'; tune([440, 554, 659, 880], 110); say('Secret clue!', 'Clue 3 just opened', 2400); }
+    else { p = tilesOpen(1); tune([523, 659, 784, 1046], 100); say(combo > 2 ? 'ON FIRE!' : 'You won!', 'A piece of the cover opened', 2200); }
+    if (combo > 1) document.getElementById('cmmsg').innerHTML += '<small>Combo x' + combo + '. The belt speeds up!</small>';
+    triesUI();
+    if (p >= 12 && !document.querySelector('.cov.done')){ document.querySelector('.cov').classList.add('done'); setTimeout(function(){ burst(W / 2, 200, 220, 1.5); tune([523, 659, 784, 1046, 784, 1046, 1318], 120); say('COVER UNLOCKED!', 'You found all 12 pieces', 3500); }, 900); }
   }
-  function over(){ say('No more tries today', 'Come back tomorrow for 5 more', 0); }
   function rr(x, y, w, h, r){ g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+  function star(cx, cy, r){ g.beginPath(); for (var i = 0; i < 10; i++){ var a = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r * .45 : r; g.lineTo(cx + Math.cos(a) * rad, cy + Math.sin(a) * rad); } g.closePath(); g.fill(); }
+  function drawBox(b){
+    var glow = b === target && state === 'idle';
+    g.save(); g.translate(b.x + b.w / 2, b.y + b.h / 2); g.rotate(b.rot || 0);
+    if (glow){ var pulse = 4 + Math.sin(clock * 10) * 2; g.strokeStyle = B; g.lineWidth = 3; rr(-b.w / 2 - pulse, -b.h / 2 - pulse, b.w + pulse * 2, b.h + pulse * 2, 7); g.stroke(); }
+    var gold = b.k === 'star';
+    g.fillStyle = gold ? B : BOX; rr(-b.w / 2, -b.h / 2, b.w, b.h, 4); g.fill(); g.strokeStyle = gold ? BOX : BOXD; g.lineWidth = 2.5; g.stroke();
+    g.fillStyle = gold ? BOX : 'rgba(245,228,204,.85)'; g.fillRect(-5, -b.h / 2, 10, b.h);
+    g.fillStyle = N;
+    if (gold){ star(0, 1, 12); }
+    else { g.font = '800 ' + (b.k === 'plus' ? 17 : 20) + 'px Figtree, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      if (b.k === 'key'){ g.beginPath(); g.arc(-6, 0, 6, 0, 7); g.lineWidth = 3; g.strokeStyle = N; g.stroke(); g.fillRect(0, -1.5, 14, 3); g.fillRect(9, 0, 3, 6); }
+      else g.fillText(b.k === 'plus' ? '+1' : '?', 0, 1); }
+    if (gold && Math.random() < .3) conf.push({ x: b.x + Math.random() * b.w, y: b.y + Math.random() * b.h, vx: 0, vy: -40, r: 0, vr: 3, c: B, s: 3 });
+    g.restore();
+  }
   function draw(){
-    g.clearRect(0, 0, W, H);
-    var bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#1d3a64'); bg.addColorStop(1, '#0d1f3a'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
-    // lights
-    for (var i = 0; i < 14; i++){ g.fillStyle = (Math.floor(belt / 20) + i) % 2 ? B : 'rgba(245,228,204,.25)'; g.beginPath(); g.arc(22 + i * 40, 12, 4, 0, 7); g.fill(); }
-    // rail
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    var ox = (Math.random() - .5) * shk, oy = (Math.random() - .5) * shk; g.translate(ox, oy);
+    var bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#1d3a64'); bg.addColorStop(1, '#0d1f3a'); g.fillStyle = bg; g.fillRect(-10, -10, W + 20, H + 20);
+    // marquee lights (go wild during a combo)
+    for (var i = 0; i < 14; i++){ var on = combo > 1 ? Math.random() < .5 : (Math.floor(belt / 20) + i) % 2; g.fillStyle = on ? B : 'rgba(245,228,204,.25)'; g.beginPath(); g.arc(22 + i * 40, 12, 4, 0, 7); g.fill(); }
     g.fillStyle = B; rr(16, 26, W - 32, 8, 4); g.fill();
-    // chute
+    // win chute
     g.fillStyle = '#081426'; g.fillRect(CH.x, BELT - 6, CH.w, H - BELT + 6); g.strokeStyle = B; g.lineWidth = 3; g.strokeRect(CH.x, BELT - 6, CH.w, H - BELT + 6);
-    g.fillStyle = B; g.font = '800 16px Figtree, sans-serif'; g.textAlign = 'center'; g.fillText('WIN', CH.x + CH.w / 2, BELT + 34);
-    g.save(); g.globalAlpha = .5 + .5 * Math.sin(belt / 8); g.beginPath(); g.moveTo(CH.x + CH.w / 2 - 10, BELT + 48); g.lineTo(CH.x + CH.w / 2 + 10, BELT + 48); g.lineTo(CH.x + CH.w / 2, BELT + 60); g.fill(); g.restore();
+    g.fillStyle = B; g.font = '800 16px Figtree, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillText('WIN', CH.x + CH.w / 2, BELT + 34);
+    g.save(); g.globalAlpha = .5 + .5 * Math.sin(clock * 6); g.beginPath(); g.moveTo(CH.x + CH.w / 2 - 10, BELT + 44); g.lineTo(CH.x + CH.w / 2 + 10, BELT + 44); g.lineTo(CH.x + CH.w / 2, BELT + 56); g.fill(); g.restore();
     // belt
     g.fillStyle = '#081426'; rr(104, BELT, W - 110, 24, 12); g.fill(); g.strokeStyle = B; g.lineWidth = 3; g.stroke();
-    g.save(); rr(108, BELT + 4, W - 118, 16, 8); g.clip(); g.fillStyle = 'rgba(245,228,204,.35)'; for (var s = -40; s < W; s += 22){ g.fillRect(108 + ((s + belt) % 22 + 22) % 22 + Math.floor(s / 22) * 22, BELT + 6, 4, 12); } g.restore();
+    g.save(); rr(108, BELT + 4, W - 118, 16, 8); g.clip(); g.fillStyle = 'rgba(245,228,204,.35)'; var o = belt % 22; for (var s = 96; s < W; s += 22) g.fillRect(s + o, BELT + 6, 4, 12); g.restore();
     for (var r = 0; r < 9; r++){ g.fillStyle = B; g.beginPath(); g.arc(124 + r * 52, BELT + 36, 8, 0, 7); g.fill(); g.fillStyle = N; g.beginPath(); g.arc(124 + r * 52, BELT + 36, 3, (belt / 8) % 7, (belt / 8) % 7 + 4); g.fill(); }
-    // boxes
-    boxes.forEach(function(b){ if (b !== held && !b.fall && b.x < 104) return; g.save(); g.translate(b.x, b.y);
-      g.fillStyle = b.gold ? B : BOX; rr(0, 0, b.w, b.h, 4); g.fill(); g.strokeStyle = b.gold ? '#c9a77a' : BOXD; g.lineWidth = 2.5; g.stroke();
-      g.fillStyle = b.gold ? '#c9a77a' : 'rgba(245,228,204,.85)'; g.fillRect(b.w / 2 - 5, 0, 10, b.h);
-      g.fillStyle = N; g.font = '800 20px Figtree, sans-serif'; g.textAlign = 'center'; g.fillText(b.gold ? '★' : '?', b.w / 2, b.h / 2 + 7);
-      g.restore(); });
-    // claw
+    // aim line, solid when a box is locked
     var cy = TOP + L;
+    if (state === 'idle'){ g.save(); if (!target) g.setLineDash([4, 6]); g.strokeStyle = target ? B : 'rgba(245,228,204,.35)'; g.lineWidth = target ? 2.5 : 2; g.beginPath(); g.moveTo(x, cy + 50); g.lineTo(x, BELT - 46); g.stroke(); g.restore(); }
+    boxes.forEach(function(b){ if (b !== held && !b.fall && b.x < 104) return; drawBox(b); });
+    // claw
     g.strokeStyle = B; g.lineWidth = 4; g.beginPath(); g.moveTo(x, 30); g.lineTo(x, cy); g.stroke();
-    g.fillStyle = B; rr(x - 22, cy, 44, 18, 6); g.fill(); g.fillStyle = N; g.fillRect(x - 3, cy + 5, 6, 6);
+    g.fillStyle = B; rr(x - 22, cy, 44, 18, 6); g.fill(); g.fillStyle = state === 'idle' && target ? B : N; g.fillStyle = N; g.beginPath(); g.arc(x, cy + 9, 4, 0, 7); g.fill();
+    if (state === 'idle' && target){ g.fillStyle = B; g.globalAlpha = .5 + .5 * Math.sin(clock * 12); g.beginPath(); g.arc(x, cy + 9, 2.5, 0, 7); g.fill(); g.globalAlpha = 1; }
     var a = .15 + open * .55;
     [-1, 1].forEach(function(sd){ g.save(); g.translate(x + sd * 16, cy + 16); g.rotate(sd * a); g.fillStyle = B; rr(-4, 0, 8, 34, 3); g.fill(); g.translate(0, 32); g.rotate(-sd * .9); rr(-3, -2, 6, 14, 3); g.fill(); g.restore(); });
-    // aim line
-    if (state === 'idle'){ g.save(); g.setLineDash([4, 6]); g.strokeStyle = 'rgba(245,228,204,.35)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x, cy + 50); g.lineTo(x, BELT - 2); g.stroke(); g.restore(); }
-    // confetti
     conf.forEach(function(c){ g.save(); g.translate(c.x, c.y); g.rotate(c.r); g.fillStyle = c.c; g.fillRect(-c.s / 2, -c.s / 4, c.s, c.s / 2); g.restore(); });
-    // glass shine
+    pops.forEach(function(p){ g.save(); g.globalAlpha = Math.min(1, p.life * 2); g.fillStyle = B; g.strokeStyle = N; g.lineWidth = 5; g.textAlign = 'center'; g.font = '800 ' + (p.big ? 30 : 22) + 'px "Bricolage Grotesque", Figtree, sans-serif'; var sc = 1 + (1 - p.life) * .3; g.translate(p.x, p.y); g.scale(sc, sc); g.strokeText(p.t, 0, 0); g.fillText(p.t, 0, 0); g.restore(); });
+    if (combo > 1){ g.fillStyle = B; g.font = '800 15px Figtree, sans-serif'; g.textAlign = 'right'; g.fillText('COMBO x' + combo, W - 22, 56); }
     g.fillStyle = 'rgba(255,255,255,.05)'; g.beginPath(); g.moveTo(W - 140, 40); g.lineTo(W - 90, 40); g.lineTo(W - 200, BELT - 10); g.lineTo(W - 250, BELT - 10); g.fill();
   }
   requestAnimationFrame(step);
