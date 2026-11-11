@@ -4508,12 +4508,21 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       if (first === null){ first = st; return; }
       if (st !== first){
         if (busy()){ setTimeout(check, 15000); return; }
-        if (window.NG && NG.toast) NG.toast(' The website was just updated! Refreshing…');
-        setTimeout(function(){ location.reload(); }, 2500);
+        fixing(); setTimeout(function(){ location.reload(); }, 4200);
       }
     }).catch(function(){});
   }
-  check(); setInterval(check, 60000);
+  // the technician screen pops up for a moment, then the fixed website loads
+  function fixing(){
+    var ov = document.getElementById('ng-frozen'); if (!ov){ location.reload(); return; }
+    var m = document.getElementById('ngf-msg'), st = document.getElementById('fz-step'), lg = ov.querySelector('.fz-logo'), any = document.querySelector('.nf-logo,#loader-logo,header img');
+    if (lg && !lg.getAttribute('src') && any) lg.src = any.src;
+    if (m) m.textContent = 'We just fixed something!'; if (st) st.textContent = 'Loading the new version\u2026';
+    var k = ov.querySelector('.fz-kick'); if (k) k.lastChild.textContent = 'TECHNICIAN TEAM AT WORK';
+    ov.hidden = false; ov.style.display = 'flex';
+  }
+  window.NG_FIXING_SCREEN = fixing;
+  check(); setInterval(check, 30000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
 })();
 </script>
