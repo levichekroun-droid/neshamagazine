@@ -859,7 +859,7 @@ html.vm-open body{overflow:hidden}
 .vm-filter{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 8px}
 .vm-filter input{flex:1;min-width:160px;background:#071209;border:1px solid rgba(57,255,136,.45);color:#39ff88;border-radius:8px;padding:8px 10px;font:600 .9rem "Courier New",monospace}
 .vm-list{flex:1;overflow:auto;padding:0 14px 14px}
-.vm-row{display:grid;grid-template-columns:16px minmax(0,2fr) minmax(0,2fr) auto auto;gap:12px;align-items:center;padding:10px 6px;border-bottom:1px dashed rgba(57,255,136,.22)}
+.vm-row{display:grid;grid-template-columns:16px minmax(0,2fr) minmax(0,2fr) auto auto auto;gap:12px;align-items:center;padding:10px 6px;border-bottom:1px dashed rgba(57,255,136,.22)}
 .vm-row:hover{background:rgba(57,255,136,.06)}
 .vm-dot{width:10px;height:10px;border-radius:50%;background:rgba(57,255,136,.5)}
 .vm-row.live .vm-dot,.vm-prow.live .vm-dot{background:#ff3b3b;box-shadow:0 0 10px #ff3b3b;animation:csPulse 1s infinite}
@@ -880,7 +880,7 @@ html.vm-open body{overflow:hidden}
 .vm-tip{background:rgba(3,8,5,.9);border:1px solid #39ff88;border-radius:8px;padding:6px 8px;font:700 12px "Courier New",monospace;color:#39ff88}
 .vm-note{position:absolute;left:14px;bottom:6px;margin:0;font-size:.7rem;opacity:.55;z-index:6}
 .vm-msg{position:relative;z-index:6;margin:0;padding:0 14px 8px;color:#ffd84a;font-size:.85rem;min-height:0}
-@media (max-width:700px){.vm-stats{grid-template-columns:repeat(3,1fr)}.vm-stats div:nth-child(n+4){display:none}.vm-cam{display:none}.vm-row{grid-template-columns:14px 1fr auto;}.vm-where{grid-column:2/4}.vm-meta{display:none}}
+@media (max-width:700px){.vm-stats{grid-template-columns:repeat(3,1fr)}.vm-stats div:nth-child(n+4){display:none}.vm-cam{display:none}.vm-row{grid-template-columns:14px 1fr auto;}.vm-where{grid-column:2/4}.vm-seen{grid-column:3;grid-row:1}.vm-act{grid-column:2/4;margin-top:2px}.vm-meta{display:none}}
 .ng-frozen-bar button{margin-left:8px;border:2px solid #fff;background:#fff;color:#c0392b;border-radius:6px;padding:4px 12px;font:800 .85rem "Figtree",system-ui,sans-serif;cursor:pointer}
 .ng-frozen-bar button + button{background:transparent;color:#fff}
 .ngf-back{position:fixed;left:0;right:0;bottom:64px;text-align:center;opacity:.8;font-family:"Figtree",system-ui,sans-serif;margin:0}
@@ -5274,7 +5274,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     $('vm-list').innerHTML = list.length ? list.map(function(x){
       var live = now - x.t < 150000;
       return '<div class="vm-row' + (live ? ' live' : '') + '"><span class="vm-dot"></span><div class="vm-who"><b>' + esc(x.name || x.email.split('@')[0]) + '</b><small>' + esc(x.email) + '</small></div>' +
-        '<div class="vm-where">' + flag(x.cc) + ' ' + esc(x.place || 'Unknown place') + '</div><div class="vm-meta">' + (x.dev === 'phone' ? '' : x.dev ? '' : '') + ' ' + x.n + ' visit' + (x.n === 1 ? '' : 's') + '</div><div class="vm-seen">' + (live ? 'ONLINE NOW' : ago(x.t)) + '</div></div>';
+        '<div class="vm-where">' + flag(x.cc) + ' ' + esc(x.place || 'Unknown place') + '</div><div class="vm-meta">' + (x.dev === 'phone' ? '' : x.dev ? '' : '') + ' ' + x.n + ' visit' + (x.n === 1 ? '' : 's') + '</div><div class="vm-seen">' + (live ? 'ONLINE NOW' : ago(x.t)) + '</div><div class="vm-act"><button type="button" class="ng-ask" data-to="' + esc(x.email) + '" data-nm="' + esc(x.name || '') + '">Email</button><button type="button" class="ng-blk" data-to="' + esc(x.email) + '" data-nm="' + esc(x.name || '') + '">Block</button></div></div>';
     }).join('') : '<p class="vm-empty">' + (filter === 'now' ? 'Nobody is on the website right now.' : 'Nobody here yet.') + '</p>';
   }
   // ----  3D globe ----
@@ -10754,6 +10754,7 @@ html.ng-ch .tape{padding-top:70px!important}
 .ng-blk{margin-left:6px;flex:none;border:2px solid #12294a;background:#12294a;color:#f5e4cc;border-radius:8px;padding:3px 10px;font:700 .78rem Figtree,system-ui,sans-serif;cursor:pointer;vertical-align:middle}
 .rd-notel{display:block;font-weight:700;font-size:.85rem;margin:10px 0 4px}
 .rd-bannote{width:100%;box-sizing:border-box;min-height:70px;border:2px solid #12294a;border-radius:8px;padding:8px;font:inherit;background:#fffaf0;color:#12294a}
+.vm-act{display:flex;gap:6px;align-items:center}.vm-act .ng-ask,.vm-act .ng-blk{margin:0}
 .rd-when{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .rd-when button{border:2px solid #12294a;background:#f5e4cc;color:#12294a;border-radius:999px;padding:5px 14px;font:700 .85rem Figtree,system-ui,sans-serif;cursor:pointer}
 .rd-when button.on{background:#12294a;color:#f5e4cc}
