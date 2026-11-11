@@ -4920,7 +4920,8 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     if (location.protocol === 'https:') body.continueUrl = location.origin + location.pathname;
     return fbAuth('sendOobCode', body).catch(function(e){ if (body.continueUrl){ delete body.continueUrl; return fbAuth('sendOobCode', body); } throw e; });
   }
-  function enter(u, isNew){
+  function enter(u, isNew, how){
+    window.NG_ENTER_HOW = how || (isNew ? 'signup' : 'login');
     showVerify(false); pend = null;
     NG.setUser({ name: u.name || '', email: u.email, uid: u.uid, via: 'password' });
     try { sessionStorage.removeItem('ng_counted_p'); } catch(e){}
@@ -4936,7 +4937,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     if (!pend) return;
     fbAuth('lookup', { idToken: pend.idToken }).then(function(j){
       var x = j.users && j.users[0];
-      if (x && x.emailVerified) enter({ name: pend.name || x.displayName || '', email: pend.email, uid: x.localId }, pend.isNew);
+      if (x && x.emailVerified) enter({ name: pend.name || x.displayName || '', email: pend.email, uid: x.localId }, pend.isNew, 'confirm-link');
       else if (!quiet) $('ngw-vmsg').textContent = "Not confirmed yet. Open the email and press the link first.";
     }).catch(function(e){ if (!quiet){ $('ngw-vmsg').textContent = nice(e); if (/TOKEN|INVALID_ID/.test(e.message)){ showVerify(false); setWMode('login'); } } });
   }
@@ -5054,6 +5055,9 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   setInterval(function(){ var now = !!(NG.getUser && NG.getUser()); if (wasIn && !now){ wall(); if (NG.toast) NG.toast('For your safety, please log in again.'); } wasIn = now; }, 30000);
   function pkey(em){ return em.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 120); }
   function commit(w){ return fetch('https://firestore.googleapis.com/v1/projects/' + PROJ + '/databases/(default)/documents:commit?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ writes:[w] }) }); }
+  function devId(){ try { var d = localStorage.getItem('ng_did'); if (!d){ d = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); localStorage.setItem('ng_did', d); } return d; } catch(e){ return ''; } }
+  function ownerDev(){ try { if (isOwner()) localStorage.setItem('ng_owner_dev', '1'); return localStorage.getItem('ng_owner_dev') === '1'; } catch(e){ return false; } }
+  setInterval(ownerDev, 5000); setTimeout(ownerDev, 1500);
   function logPerson(test){
     var u = test ? { email: 'test-visitor@neshamagazine.com', name: 'Test visitor ' } : ((window.NG && NG.getUser && NG.getUser()) || window.NG_READER);
     if (!u || !u.email || (!test && isOwner())) return Promise.resolve();
@@ -5061,7 +5065,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     return geoPlace().then(function(g){
       var place = g.cc ? ((NAMES.get(g.cc) || g.cc) + (g.region ? ' · ' + g.region : '') + (g.city && g.city !== g.region ? ' · ' + g.city : '')) : '';
       var dev = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'phone' : 'computer';
-      var f = { email:{ stringValue: u.email }, name:{ stringValue: u.name || '' }, place:{ stringValue: place }, cc:{ stringValue: g.cc || '' }, dev:{ stringValue: dev }, lastSeen:{ timestampValue: new Date().toISOString() } };
+      var f = { email:{ stringValue: u.email }, name:{ stringValue: u.name || '' }, place:{ stringValue: place }, cc:{ stringValue: g.cc || '' }, dev:{ stringValue: dev }, did:{ stringValue: devId() }, odev:{ booleanValue: ownerDev() }, how:{ stringValue: window.NG_ENTER_HOW || '' }, lastSeen:{ timestampValue: new Date().toISOString() } };
       if (g.lat != null && g.lon != null){ f.lat = { doubleValue: g.lat }; f.lon = { doubleValue: g.lon }; }
       return commit({ update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/visitors/' + pkey(u.email), fields: f }, updateMask:{ fieldPaths: Object.keys(f) }, updateTransforms:[{ fieldPath:'visits', increment:{ integerValue:'1' } }] })
         .then(function(r){ if (!r.ok && test) return r.json().then(function(j){ throw new Error((j.error && j.error.message) || 'error'); }); });
@@ -5249,10 +5253,12 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     var views = get('https://firestore.googleapis.com/v1/projects/' + PROJ + '/databases/(default)/documents:batchGet', { documents:['projects/' + PROJ + '/databases/(default)/documents/visits/' + day(new Date())] }).then(function(l){ var f = l && l[0] && l[0].found && l[0].found.fields; return f ? num(f.total) : 0; }).catch(function(){ return '–'; });
     return Promise.all([next(), views]).then(function(r){
       people = r[0].map(function(d){ var f = d.fields || {}, S = function(k){ return f[k] && f[k].stringValue || ''; };
-        return { f: f, email:S('email'), name:S('name'), place:S('place'), cc:S('cc'), dev:S('dev'), n:num(f.visits), t: f.lastSeen ? new Date(f.lastSeen.timestampValue).getTime() : 0, lat: f.lat ? num(f.lat) : null, lon: f.lon ? num(f.lon) : null }; })
+        return { f: f, email:S('email'), name:S('name'), place:S('place'), cc:S('cc'), dev:S('dev'), did:S('did'), how:S('how'), odev: !!(f.odev && f.odev.booleanValue), n:num(f.visits), t: f.lastSeen ? new Date(f.lastSeen.timestampValue).getTime() : 0, lat: f.lat ? num(f.lat) : null, lon: f.lon ? num(f.lon) : null }; })
         .sort(function(a, b){ return b.t - a.t; });
       var now = Date.now(), sod = new Date(); sod.setHours(0, 0, 0, 0);
       var c = function(fn){ return people.filter(fn).length; };
+      var byDev = {}; people.forEach(function(x){ if (x.did) (byDev[x.did] = byDev[x.did] || []).push(x); });
+      people.forEach(function(x){ x.same = x.did ? (byDev[x.did] || []).filter(function(y){ return y !== x; }) : []; });
       $('vm-now').textContent = c(function(x){ return now - x.t < 150000; });
       $('vm-today').textContent = c(function(x){ return x.t >= sod.getTime(); });
       $('vm-week').textContent = c(function(x){ return now - x.t < 7 * 864e5; });
@@ -5269,11 +5275,16 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     var q = $('vm-search').value.trim().toLowerCase();
     return !q || (x.name + ' ' + x.email + ' ' + x.place).toLowerCase().indexOf(q) >= 0;
   }
+  function tags(x){ var t = [];
+    if (x.odev) t.push(['YOUR DEVICE (TEST)', 'This was done on a computer or phone you use as the owner, so it was you testing, not them.']);
+    else if (x.same && x.same.length) t.push(['SAME DEVICE AS ' + x.same.map(function(y){ return y.name || y.email.split('@')[0]; }).slice(0, 2).join(', ').toUpperCase(), 'Someone used the same computer or phone for both accounts.']);
+    if (x.how === 'confirm-link') t.push(['GOT IN BY THE CONFIRM LINK', 'Their account was opened on the device that signed up, right after someone clicked the confirm link in their email.']);
+    return t.length ? '<span class="vm-tags">' + t.map(function(a){ return '<em title="' + esc(a[1]) + '">' + esc(a[0]) + '</em>'; }).join('') + '</span>' : ''; }
   function drawList(){
     var list = people.filter(pass), now = Date.now();
     $('vm-list').innerHTML = list.length ? list.map(function(x){
       var live = now - x.t < 150000;
-      return '<div class="vm-row' + (live ? ' live' : '') + '"><span class="vm-dot"></span><div class="vm-who"><b>' + esc(x.name || x.email.split('@')[0]) + '</b><small>' + esc(x.email) + '</small></div>' +
+      return '<div class="vm-row' + (live ? ' live' : '') + '"><span class="vm-dot"></span><div class="vm-who"><b>' + esc(x.name || x.email.split('@')[0]) + '</b><small>' + esc(x.email) + '</small>' + tags(x) + '</div>' +
         '<div class="vm-where">' + flag(x.cc) + ' ' + esc(x.place || 'Unknown place') + '</div><div class="vm-meta">' + (x.dev === 'phone' ? '' : x.dev ? '' : '') + ' ' + x.n + ' visit' + (x.n === 1 ? '' : 's') + '</div><div class="vm-seen">' + (live ? 'ONLINE NOW' : ago(x.t)) + '</div><div class="vm-act"><button type="button" class="ng-ask" data-to="' + esc(x.email) + '" data-nm="' + esc(x.name || '') + '">Email</button><button type="button" class="ng-blk" data-to="' + esc(x.email) + '" data-nm="' + esc(x.name || '') + '">Block</button></div></div>';
     }).join('') : '<p class="vm-empty">' + (filter === 'now' ? 'Nobody is on the website right now.' : 'Nobody here yet.') + '</p>';
   }
@@ -10754,7 +10765,8 @@ html.ng-ch .tape{padding-top:70px!important}
 .ng-blk{margin-left:6px;flex:none;border:2px solid #12294a;background:#12294a;color:#f5e4cc;border-radius:8px;padding:3px 10px;font:700 .78rem Figtree,system-ui,sans-serif;cursor:pointer;vertical-align:middle}
 .rd-notel{display:block;font-weight:700;font-size:.85rem;margin:10px 0 4px}
 .rd-bannote{width:100%;box-sizing:border-box;min-height:70px;border:2px solid #12294a;border-radius:8px;padding:8px;font:inherit;background:#fffaf0;color:#12294a}
-.vm-act{display:flex;gap:6px;align-items:center}.vm-act .ng-ask,.vm-act .ng-blk{margin:0}
+.vm-act{display:flex;gap:6px;align-items:center}
+.vm-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.vm-tags em{font-style:normal;font:800 .66rem Figtree,system-ui,sans-serif;letter-spacing:.04em;border:1.5px solid #12294a;border-radius:6px;padding:1px 6px;color:#12294a;background:#f5e4cc}.vm-act .ng-ask,.vm-act .ng-blk{margin:0}
 .rd-when{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .rd-when button{border:2px solid #12294a;background:#f5e4cc;color:#12294a;border-radius:999px;padding:5px 14px;font:700 .85rem Figtree,system-ui,sans-serif;cursor:pointer}
 .rd-when button.on{background:#12294a;color:#f5e4cc}
