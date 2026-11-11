@@ -4499,22 +4499,26 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
 // ---- When a new version of the site is published, open pages refresh by themselves ----
 (function(){
   if (!/^https?:$/.test(location.protocol)) return;
-  var url = location.href.split('#')[0], first = null;
+  var url = location.href.split('#')[0], first = null, pending = null, seen = {};
   function stamp(r){ return (r.headers.get('etag') || '') + '|' + (r.headers.get('last-modified') || '') + '|' + (r.headers.get('content-length') || ''); }
   function busy(){ return document.body.classList.contains('fbv-open') || document.querySelector('#owner-panel.open') || document.querySelector('video:not([paused])') && Array.prototype.some.call(document.querySelectorAll('video'), function(v){ return !v.paused; }); }
   function check(){
     fetch(url, { method:'HEAD', cache:'no-store' }).then(function(r){
       if (!r.ok) return; var st = stamp(r); if (st === '||') return;
-      if (first === null){ first = st; return; }
-      if (st !== first){
-        if (busy()){ setTimeout(check, 15000); return; }
-        fixing();
-      }
+      if (first === null){ first = st; seen[st] = 1; return; }
+      if (st === first || seen[st] > 1){ pending = null; return; }   // the same version, or an older copy we already passed
+      seen[first] = 2;
+      var last = 0; try { last = +sessionStorage.getItem('ng_upd_last') || 0; } catch(e){}
+      if (Date.now() - last < 180000){ first = st; return; }   // just updated: don't show it again right away
+      if (pending !== st){ pending = st; setTimeout(check, 12000); return; }   // make sure the new version is really out (seen twice)
+      if (busy()){ setTimeout(check, 15000); return; }
+      try { sessionStorage.setItem('ng_upd_last', String(Date.now())); } catch(e){}
+      fixing();
     }).catch(function(){});
   }
   // the technician screen shows while the new version really downloads, then it opens
   function fixing(){
-    var ov = document.getElementById('ng-frozen'); if (!ov){ location.reload(); return; }
+    var ov = document.getElementById('ng-frozen'); if (!ov || (window.NG_IS_OWNER && NG_IS_OWNER())){ location.reload(); return; }
     window.NG_UPDATING = true; ov.classList.add('ng-updating');
     var m = document.getElementById('ngf-msg'), st = document.getElementById('fz-step'), bar = ov.querySelector('.fz-prog i'), lg = ov.querySelector('.fz-logo'), any = document.querySelector('a[aria-label="NeshamaGazine home"] img');
     if (lg && !lg.getAttribute('src') && any) lg.src = any.src;
@@ -9849,5 +9853,45 @@ html.ng-ch .tape{padding-top:70px!important}
   set(); document.querySelectorAll('#ng-frozen .fz-logo').forEach(function(im){ new MutationObserver(set).observe(im, { attributes: true, attributeFilter: ['src'] }); });
 })();
 </script>
+<!-- ===== OWNER SECRET DOOR (works on every fixing screen) ===== -->
+<style id="ng-door">
+#ngf-door{position:relative;z-index:5;margin:22px auto 0;width:min(340px,100%);display:grid;gap:10px;text-align:left}
+#ngf-door[hidden]{display:none!important}
+#ngf-door b{font:800 1rem Figtree,system-ui,sans-serif;color:#f5e4cc;text-align:center}
+#ngf-door input{width:100%;box-sizing:border-box;border:2px solid #f5e4cc;border-radius:10px;background:none;color:#f5e4cc;font:700 1rem Figtree,system-ui,sans-serif;padding:11px 12px}
+#ngf-door input::placeholder{color:rgba(245,228,204,.55)}
+#ngf-door button{border:0;border-radius:999px;background:#f5e4cc;color:#12294a;font:800 1rem Figtree,system-ui,sans-serif;padding:11px;cursor:pointer}
+#ngf-door p{margin:0;min-height:1.2em;text-align:center;color:#f5e4cc;font:700 .9rem Figtree,system-ui,sans-serif}
+.ng-frozen .fz-gears{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ng-frozen .fz-gears.ngf-hold svg{transform:scale(.94);transition:transform 3s linear}
+</style>
+<script>
+/* Owner secret door: on the fixing screen, hold the gears 3 seconds (or type "neshama") and log in with your owner email + code */
+(function(){
+  var ov = document.getElementById('ng-frozen'); if (!ov) return;
+  var box = ov.querySelector('.ngf-box') || ov, door = document.createElement('form');
+  door.id = 'ngf-door'; door.hidden = true; door.autocomplete = 'off';
+  door.innerHTML = '<b>Owner</b><input id="ngf-em" type="email" placeholder="Owner email" autocomplete="off"><input id="ngf-pw" type="password" placeholder="Owner code" autocomplete="off"><button type="submit">Go in</button><p id="ngf-dm"></p>';
+  box.appendChild(door);
+  function openDoor(){ door.hidden = false; setTimeout(function(){ document.getElementById('ngf-em').focus(); }, 30); }
+  var gears = ov.querySelector('.fz-gears'), t = null;
+  function down(e){ if (!gears) return; e.preventDefault(); gears.classList.add('ngf-hold'); clearTimeout(t); t = setTimeout(function(){ gears.classList.remove('ngf-hold'); openDoor(); }, 3000); }
+  function up(){ clearTimeout(t); if (gears) gears.classList.remove('ngf-hold'); }
+  if (gears){ gears.addEventListener('pointerdown', down); ['pointerup', 'pointerleave', 'pointercancel'].forEach(function(ev){ gears.addEventListener(ev, up); }); gears.addEventListener('contextmenu', function(e){ e.preventDefault(); }); }
+  var typed = '';
+  document.addEventListener('keydown', function(e){ if (ov.hidden || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return; typed = (typed + (e.key || '')).slice(-7).toLowerCase(); if (typed === 'neshama') openDoor(); }, true);
+  door.addEventListener('submit', function(e){
+    e.preventDefault(); var m = document.getElementById('ngf-dm'), em = document.getElementById('ngf-em').value, pw = document.getElementById('ngf-pw').value;
+    if (!window.NG_OWNER_CHECK){ m.textContent = 'One second, still loading.'; return; }
+    m.textContent = 'Checking…';
+    NG_OWNER_CHECK(em, pw).then(function(r){
+      if (r === 'owner'){ m.textContent = ''; door.hidden = true; document.getElementById('ngf-pw').value = ''; window.NG_UPDATING = false; ov.classList.remove('ng-updating'); ov.hidden = true; ov.style.display = ''; }
+      else m.textContent = r === 'locked' ? 'Too many wrong tries. Locked for 15 minutes.' : 'That is not the owner.';
+    });
+  });
+})();
+</script>
+<!-- ===== END OWNER SECRET DOOR ===== -->
+
 </body>
 </html>
