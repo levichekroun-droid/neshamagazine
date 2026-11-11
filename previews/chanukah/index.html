@@ -8027,7 +8027,7 @@ html.ed-dash-open body{overflow:hidden}
     return function(){ return on.checked ? parseTime(inp.value) : 0; };
   }
   function pauseForm(k, after){
-    if (k === 'chanukah' && window.NG_CH_FORM) return NG_CH_FORM(modal);   // Chanukah has its own switches
+    if (/^chanukah/.test(k) && window.NG_CH_FORM) return NG_CH_FORM(modal, k, after);   // Chanukah has its own switches
     var p = draft.pauses[k] || {}, msgs = ['Coming back soon', 'Not working right now', 'Come back later', 'We’re fixing this part'];
     var o = modal('<h3>Pause: ' + esc(partName(k)) + '</h3><p class="ed-tip">Visitors can’t use this part until you take the pause off (or the timer ends).</p>' +
       '<p class="ed-lab">How it looks</p><div class="ed-seg" id="pz-look">' + [['blur', 'Blurry'], ['black', 'Black'], ['plain', 'Message only']].map(function(x){ return '<button type="button" data-v="' + x[0] + '"' + ((p.look || 'blur') === x[0] ? ' class="on"' : '') + '>' + x[1] + '</button>'; }).join('') + '</div>' +
@@ -8113,6 +8113,9 @@ html.ed-dash-open body{overflow:hidden}
     var c = card(B, '<h2>Pause something</h2><p class="ed-tip">A paused part is covered for visitors (blurry, black, or just your message). Add a timer and it opens again by itself.</p><div class="ed-grid" id="ed-pgrid"></div>');
     var g = c.querySelector('#ed-pgrid');
     PARTS.forEach(function(p){
+      if (p[0] === 'chanukah'){ if (!window.NG_CH_FORM) return; var cs = NG_CH_SUMMARY(), cb = document.createElement('div'); cb.className = 'ed-tile' + (cs.off ? ' on' : '');
+        cb.innerHTML = '<b>Chanukah</b><span>' + esc(cs.text) + '</span><button type="button" class="ed-btn' + (cs.off ? '' : ' ed-main') + '">' + (cs.off ? 'Change' : 'Pause') + '</button>';
+        cb.querySelector('button').onclick = function(){ pauseForm('chanukah', function(){ show('pause'); }); }; g.appendChild(cb); return; }
       var pz = draft.pauses[p[0]], on = pz && (!pz.until || pz.until > now);
       var b = document.createElement('div'); b.className = 'ed-tile' + (on ? ' on' : '');
       b.innerHTML = '<b>' + esc(p[2]) + '</b><span>' + (on ? 'Paused: ' + esc(pz.msg) + (pz.until ? ' (ends ' + whenText(pz.until) + ')' : '') : 'Open') + '</span><button type="button" class="ed-btn' + (on ? '' : ' ed-main') + '">' + (on ? 'Change' : 'Pause') + '</button>';
@@ -8235,10 +8238,10 @@ html.ed-dash-open body{overflow:hidden}
   function chips(on){
     document.querySelectorAll('.ed-chip').forEach(function(c){ c.remove(); });
     if (!on) return;
-    PARTS.forEach(function(p){ var el = document.querySelector(p[1]); if (!el) return;
+    PARTS.forEach(function(p){ var el = document.querySelector(p[1]); if (!el || p[0] === 'chanukah') return;
       if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
       var c = document.createElement('button'); c.type = 'button'; c.className = 'ed-chip'; c.setAttribute('data-part', p[0]);
-      c.textContent = p[0] === 'chanukah' ? 'Chanukah: menorah, music, snow' : (draft.pauses[p[0]] ? 'Paused: ' : 'Pause ') + p[2]; el.appendChild(c); });
+      c.textContent = (draft.pauses[p[0]] ? 'Paused: ' : 'Pause ') + p[2]; el.appendChild(c); });
   }
   var frozenOK = false;
   function start(){
@@ -9465,7 +9468,7 @@ html.ng-ch #countdown .cd-thumb{outline:3px solid #12294a}
 .ch-own i{flex-basis:100%;font:600 .85rem Figtree,system-ui,sans-serif;font-style:normal;min-height:1.2em;opacity:.9}
 .ch-band.ch-hid>*:not(.ch-tag){opacity:.35}
 .ch-tag{margin:0 auto 10px;display:table;background:#f5e4cc;color:#12294a;border-radius:999px;padding:5px 14px;font:800 .82rem Figtree,system-ui,sans-serif}
-.ch-cand{display:flex;align-items:center;gap:14px;margin:4px 0 10px}.ch-cand b{font:800 1.4rem Figtree,system-ui,sans-serif;min-width:2ch;text-align:center}
+.ch-edc{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:12px}.ch-edc .ed-chip{position:static!important}.ch-edc span{font:800 1rem Figtree,system-ui,sans-serif}
 .ch-kick{margin:0 0 4px;font:800 .82rem Figtree,system-ui,sans-serif;letter-spacing:.28em;text-transform:uppercase;opacity:.8}
 .ch-band h2{margin:0;font:800 clamp(1.8rem,4.4vw,2.8rem)/1.1 "Bricolage Grotesque",Figtree,system-ui,sans-serif;color:#f5e4cc;text-wrap:balance}
 .ch-sub{margin:8px auto 0;max-width:560px;font:600 1.02rem/1.45 Figtree,system-ui,sans-serif;opacity:.88}
@@ -9589,9 +9592,7 @@ html.ng-ch .tape{padding-top:70px!important}
     '<p class="ch-sub" id="ch-subt"></p>' +
     '';
   var fin = $('finder'); if (fin) fin.parentNode.insertBefore(band, fin); else document.body.appendChild(band);
-  function edChip(){ if (!document.documentElement.classList.contains('ng-editing') || band.querySelector(':scope > .ed-chip')) return;   // the Chanukah button in Edit Mode
-    var c = document.createElement('button'); c.type = 'button'; c.className = 'ed-chip'; c.setAttribute('data-part', 'chanukah'); c.textContent = 'Chanukah: menorah, music, snow'; band.appendChild(c); }
-  edChip(); setTimeout(edChip, 1500); new MutationObserver(edChip).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
   function subText(){ $('ch-h').textContent = N ? 'Night ' + N + ' of Chanukah' : 'Happy Chanukah'; $('ch-subt').textContent = N === 8 ? 'All eight candles are lit tonight!' : N ? 'A new candle lights up by itself every night. Tonight ' + N + (N > 1 ? ' candles are' : ' candle is') + ' lit.' : 'The candles light up at sunset.'; }
   function fire(){   // a soft match "fwoosh" with a little crackle
     if (muted()) return; var a = actx(); if (!a || a.state !== 'running') return; duck();
@@ -9770,25 +9771,35 @@ html.ng-ch .tape{padding-top:70px!important}
   }
   function ownUI(){
     var tag = band.querySelector('.ch-tag');
-    if (isOwner() && !CFG.menorah){ if (!tag){ tag = document.createElement('p'); tag.className = 'ch-tag'; tag.textContent = 'Hidden for visitors. Change it in Edit Mode.'; band.insertBefore(tag, band.firstChild); } }
+    if (isOwner() && !CFG.menorah){ if (!tag){ tag = document.createElement('p'); tag.className = 'ch-tag'; tag.textContent = 'Paused for visitors. Change it in the Owner Panel, Pause something.'; band.insertBefore(tag, band.firstChild); } }
     else if (tag) tag.remove();
   }
-  // the Chanukah window in Edit Mode (pause mode)
-  window.NG_CH_FORM = function(modal){
-    var n = N;
-    function sw(id, label, on){ return '<label class="ed-sw"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + '> ' + label + '</label>'; }
-    var o = modal('<h3>Chanukah</h3><p class="ed-tip">These change the website for everyone as soon as you press Save.</p>' +
-      sw('chf-m', 'Show the menorah', CFG.menorah) + sw('chf-mu', 'Play the Chanukah music', CFG.music) + sw('chf-s', 'Snow', CFG.snow) +
-      '<p class="ed-lab">Candles lit</p><div class="ch-cand"><button type="button" class="ed-btn" data-c="-1" aria-label="One less candle">&minus;</button><b id="chf-n">' + n + '</b><button type="button" class="ed-btn" data-c="1" aria-label="One more candle">+</button></div>' +
-      sw('chf-a', 'Automatic: one more candle every night by itself', CFG.candles == null), function(o){
-        CFG.menorah = o.querySelector('#chf-m').checked; CFG.snow = o.querySelector('#chf-s').checked;
-        var mu = o.querySelector('#chf-mu').checked; if (mu !== CFG.music){ CFG.music = mu; if (mu){ started = false; begin(); } else halt(); }
-        if (o.querySelector('#chf-a').checked){ CFG.candles = null; N = N0; } else { CFG.candles = n; N = n; }
-        setLit(N, true); subText(); apply(); save();
+  // Owner Panel > Pause something > Chanukah: pause the menorah, the music or the snow
+  window.NG_CH_SUMMARY = function(){ var off = [];
+    if (!CFG.menorah) off.push('menorah'); if (!CFG.music) off.push('music'); if (!CFG.snow) off.push('snow');
+    return { off: off.length > 0, text: off.length ? 'Paused: ' + off.join(', ') : 'Menorah, music and snow are on' }; };
+  window.NG_CH_FORM = function(modal, k, after){
+    if (k === 'chanukah-plus' || k === 'chanukah-minus' || k === 'chanukah-auto'){   // the candle buttons in Edit Mode
+      if (k === 'chanukah-auto'){ CFG.candles = null; N = N0; } else { N = Math.max(0, Math.min(8, N + (k === 'chanukah-plus' ? 1 : -1))); CFG.candles = N; }
+      setLit(N, true); subText(); edCandles(); save(); return;
+    }
+    function sw(id, label, on){ return '<label class="ed-sw"><input type="checkbox" id="' + id + '"' + (on ? '' : ' checked') + '> ' + label + '</label>'; }
+    return modal('<h3>Pause: Chanukah</h3><p class="ed-tip">Pick what to pause. It changes for everyone as soon as you press Save.</p>' +
+      sw('chf-m', 'Pause the menorah (it disappears for visitors)', CFG.menorah) + sw('chf-mu', 'Pause the music', CFG.music) + sw('chf-s', 'Pause the snow', CFG.snow), function(o){
+        CFG.menorah = !o.querySelector('#chf-m').checked; CFG.snow = !o.querySelector('#chf-s').checked;
+        var mu = !o.querySelector('#chf-mu').checked; if (mu !== CFG.music){ CFG.music = mu; if (mu){ started = false; begin(); } else halt(); }
+        apply(); save(); if (after) after();
       });
-    o.querySelector('.ch-cand').addEventListener('click', function(e){ var b = e.target.closest('[data-c]'); if (!b) return; n = Math.max(0, Math.min(8, n + +b.dataset.c)); o.querySelector('#chf-n').textContent = n; o.querySelector('#chf-a').checked = false; });
-    return o;
   };
+  // Edit Mode: add or take away a candle right on the menorah
+  function edCandles(){
+    var box = band.querySelector(':scope > .ch-edc'), on = document.documentElement.classList.contains('ng-editing');
+    if (!on){ if (box) box.remove(); return; }
+    if (!box){ box = document.createElement('div'); box.className = 'ch-edc'; band.appendChild(box); }
+    box.innerHTML = '<button type="button" class="ed-chip" data-part="chanukah-minus">&minus; candle</button><span>' + N + ' lit</span><button type="button" class="ed-chip" data-part="chanukah-plus">+ candle</button>' +
+      (CFG.candles != null ? '<button type="button" class="ed-chip" data-part="chanukah-auto">Back to automatic</button>' : '');
+  }
+  edCandles(); new MutationObserver(edCandles).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   document.addEventListener('ng:owner', function(){ apply(); });
   window.NG_CH_TEST = { grab: grab, drop: drop, card: showCard, music: function(){ return { started: started, notes: Object.keys(bufs).length, playing: !!master, song: songI }; } };
 })();
