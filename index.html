@@ -9894,104 +9894,202 @@ html.ng-ch .tape{padding-top:70px!important}
 
 <!-- ===== ROBO RUNNER (a game on the fixing screen) ===== -->
 <style id="ng-rr">
-.rr-start{margin:18px auto 0;display:inline-flex;align-items:center;gap:10px;border:2px solid #f5e4cc;background:none;color:#f5e4cc;border-radius:999px;padding:11px 20px;font:800 1rem Figtree,system-ui,sans-serif;cursor:pointer}
-.rr-start kbd{font:800 .8rem Figtree,system-ui,sans-serif;background:#f5e4cc;color:#12294a;border-radius:6px;padding:3px 7px}
-.rr-start:hover{background:#f5e4cc;color:#12294a}.rr-start:hover kbd{background:#12294a;color:#f5e4cc}
-.rr-wrap{position:relative;margin:16px auto 0;width:min(620px,92vw)}
+.rr-start{margin:18px auto 0;display:inline-flex;align-items:center;gap:10px;border:3px solid #f5e4cc;background:#f5e4cc;color:#12294a;border-radius:8px;padding:12px 20px;font:800 .95rem Figtree,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.rr-start svg{width:20px;height:20px}
+.rr-start kbd{font:800 .72rem Figtree,system-ui,sans-serif;letter-spacing:0;text-transform:none;border:2px solid #12294a;border-radius:5px;padding:2px 6px}
+.rr-start:hover{background:#12294a;color:#f5e4cc}.rr-start:hover kbd{border-color:#f5e4cc}
+.rr-wrap{position:relative;margin:14px auto 0;width:min(720px,95vw)}
 .rr-wrap[hidden]{display:none!important}
-#rr-cv{display:block;width:100%;height:auto;border:2px solid #f5e4cc;border-radius:12px;background:#0f2340;touch-action:none;cursor:pointer}
-.rr-top{display:flex;justify-content:space-between;margin:0 4px 6px;font:800 .9rem Figtree,system-ui,sans-serif;color:#f5e4cc;font-variant-numeric:tabular-nums}
-.rr-msg{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);text-align:center;color:#f5e4cc;font:800 1.15rem Figtree,system-ui,sans-serif;pointer-events:none;white-space:nowrap}
-.rr-msg small{display:block;font:700 .85rem Figtree,system-ui,sans-serif;opacity:.85;margin-top:4px}
-.rr-ready{margin:14px auto 0;border:0;border-radius:999px;background:#f5e4cc;color:#12294a;font:800 1.05rem Figtree,system-ui,sans-serif;padding:12px 22px;cursor:pointer}
+.rr-panel{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:linear-gradient(180deg,#d7dde6,#9aa4b4);border:3px solid #12294a;border-bottom:0;border-radius:8px 8px 0 0;padding:8px 12px}
+.rr-plate{display:inline-flex;align-items:center;gap:8px;background:#12294a;color:#f5e4cc;border-radius:4px;padding:6px 12px;font:800 .8rem Figtree,system-ui,sans-serif;letter-spacing:.22em}
+.rr-plate i{font-style:normal;background:#f5e4cc;color:#12294a;border-radius:3px;padding:1px 6px;letter-spacing:.05em}
+.rr-leds{display:inline-flex;gap:6px;margin-left:8px}.rr-leds i{width:10px;height:10px;border-radius:50%;background:#2d6a3a;border:2px solid #12294a}.rr-leds i.on{background:#7ac943}
+.rr-hud{display:flex;gap:8px;font:800 .9rem Figtree,system-ui,sans-serif;color:#12294a;font-variant-numeric:tabular-nums}
+.rr-hud span{display:inline-flex;align-items:center;gap:5px;background:#f5e4cc;border:2px solid #12294a;border-radius:4px;padding:3px 8px}
+.rr-hud svg{width:14px;height:14px}
+#rr-cv{display:block;width:100%;height:auto;border:3px solid #12294a;outline:3px solid #f5e4cc;border-radius:0 0 8px 8px;background:#f5e4cc;touch-action:none;cursor:pointer}
+.rr-pad{display:none;gap:8px;margin-top:12px}
+.rr-pad button{flex:1;border:3px solid #f5e4cc;background:#12294a;color:#f5e4cc;border-radius:6px;padding:12px 0;font:800 .9rem Figtree,system-ui,sans-serif;letter-spacing:.12em;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.rr-pad button.big{background:#f5e4cc;color:#12294a}
+.rr-pad button:active{transform:translateY(2px)}
+@media (hover:none),(max-width:700px){.rr-pad{display:flex}}
+.rr-keys{margin:10px 0 0;color:#f5e4cc;font:700 .82rem Figtree,system-ui,sans-serif;opacity:.85}
+@media (hover:none),(max-width:700px){.rr-keys{display:none}}
+.rr-ready{margin:14px auto 0;border:0;border-radius:8px;background:#f5e4cc;color:#12294a;font:800 1.05rem Figtree,system-ui,sans-serif;padding:12px 22px;cursor:pointer}
 .rr-ready[hidden]{display:none!important}
 .ng-frozen.rr-on .fz-gears,.ng-frozen.rr-on .fz-logo{display:none!important}
-.ng-frozen.rr-on .ngf-box h2{font-size:clamp(1.2rem,4vw,1.6rem)!important;margin:4px 0 6px!important}
+.ng-frozen.rr-on .ngf-box{max-width:760px!important}
+.ng-frozen.rr-on .ngf-box h2{font-size:clamp(1.1rem,4vw,1.45rem)!important;margin:2px 0 2px!important}
 </style>
 <script>
-/* Robo Runner: press Enter (or tap) on the fixing screen and run along the belt until the website is ready */
+/* Robo Runner: run along the NeshamaGazine belt until the website is ready.
+   Jump, flip (front and back), slide, dive. Banana peels and oil make you slip. Springs launch you to the stars. */
 (function(){
   var ov = document.getElementById('ng-frozen'); if (!ov) return;
   var box = ov.querySelector('.ngf-box') || ov, sign = box.querySelector('.fz-sign');
+  var coinI = '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="#e0b552" stroke="#12294a" stroke-width="1.6"/></svg>', starI = '<svg viewBox="0 0 16 16"><path d="M8 1l2.1 4.6 5 .5-3.8 3.3 1.1 4.9L8 11.8 3.6 14.3l1.1-4.9L.9 6.1l5-.5z" fill="#e0b552" stroke="#12294a" stroke-width="1.2"/></svg>';
   var start = document.createElement('button'); start.type = 'button'; start.className = 'rr-start';
-  start.innerHTML = 'Play Robo Runner while you wait <kbd>Enter</kbd>';
+  start.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 3v8M6.3 6.3a8 8 0 1 0 11.4 0"/></svg>Play Robo Runner <kbd>Enter</kbd>';
   var wrap = document.createElement('div'); wrap.className = 'rr-wrap'; wrap.hidden = true;
-  wrap.innerHTML = '<div class="rr-top"><span id="rr-sc">0</span><span id="rr-best"></span></div><canvas id="rr-cv" width="620" height="200" aria-label="Robo Runner game"></canvas><div class="rr-msg" id="rr-msg"></div>';
+  wrap.innerHTML = '<div class="rr-panel"><span><span class="rr-plate">NESHAMA ROBO <i>2.5</i></span><span class="rr-leds"><i class="on"></i><i></i></span></span>' +
+    '<div class="rr-hud"><span id="rr-sc">0</span><span>' + coinI + '<b id="rr-co">0</b></span><span>' + starI + '<b id="rr-st">0</b></span><span id="rr-best">Best 0</span></div></div>' +
+    '<canvas id="rr-cv" width="720" height="270" aria-label="Robo Runner game"></canvas>' +
+    '<div class="rr-pad"><button type="button" data-k="slide">SLIDE</button><button type="button" data-k="back">BACK FLIP</button><button type="button" class="big" data-k="jump">JUMP</button></div>' +
+    '<p class="rr-keys">Space or up: jump, press again in the air for a front flip. Left in the air: back flip. Down: slide, or dive from the air.</p>';
   var ready = document.createElement('button'); ready.type = 'button'; ready.className = 'rr-ready'; ready.hidden = true; ready.textContent = 'The website is ready! Open it';
   box.insertBefore(start, sign); box.insertBefore(wrap, sign); box.insertBefore(ready, sign);
   ready.onclick = function(){ location.reload(); };
-  window.NG_RR_READY = function(){ if (!playing && wrap.hidden) return false; ready.hidden = false; return true; };   // the update waits for the player
+  window.NG_RR_READY = function(){ if (wrap.hidden) return false; ready.hidden = false; return true; };   // the update waits for the player
 
-  var cv = wrap.querySelector('canvas'), g = cv.getContext('2d'), W = 620, H = 200, GROUND = 160, dpr = Math.min(2, window.devicePixelRatio || 1);
+  var cv = wrap.querySelector('canvas'), g = cv.getContext('2d'), W = 720, H = 270, GROUND = 206, RX = 90, dpr = Math.min(2, window.devicePixelRatio || 1);
   cv.width = W * dpr; cv.height = H * dpr; g.scale(dpr, dpr);
-  var B = '#f5e4cc', N = '#12294a', D = '#0f2340';
-  var playing = false, over = false, y = 0, vy = 0, obs = [], speed = 0, dist = 0, belt = 0, spawn = 0, last = 0, legs = 0, best = 0, raf = 0;
+  var NAV = '#12294a', BEI = '#f5e4cc', GOLD = '#e0b552', BOX1 = '#c69660', BOX2 = '#b98a55', HEAD = '"Bricolage Grotesque",Figtree,system-ui,sans-serif';
+  var covers = [].slice.call(document.querySelectorAll('#issue-list img')).map(function(im){ var i = new Image(); i.src = im.currentSrc || im.src; return i; }).filter(function(i){ return i.src; });
+  function cov(){ return covers.length ? covers[Math.floor(Math.random() * covers.length)] : null; }
+  var shelf = []; for (var q = 0; q < 14; q++) shelf.push(cov());
+  var S = {}, best = 0, raf = 0, last = 0, keyDown = false, blink = 0, banner = null;
   try { best = +localStorage.getItem('ng_rr_best') || 0; } catch(e){}
-  function bestUI(){ document.getElementById('rr-best').textContent = best ? 'Best ' + best : ''; }
-  bestUI();
   var ac = null;
-  function snd(f1, f2, d, v){ if (window.NG_SOUND && NG_SOUND.isMuted && NG_SOUND.isMuted()) return; try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); var o = ac.createOscillator(), gg = ac.createGain(), t = ac.currentTime; o.type = 'triangle'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + d); gg.gain.setValueAtTime(v || .05, t); gg.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(gg); gg.connect(ac.destination); o.start(t); o.stop(t + d + .02); } catch(e){} }
-  function msg(a, b){ document.getElementById('rr-msg').innerHTML = a ? a + (b ? '<small>' + b + '</small>' : '') : ''; }
-  function open(){ ov.classList.add('rr-on'); start.hidden = true; wrap.hidden = false; reset(); msg('Press Enter or tap to start', 'Space, Enter, the up arrow or a tap makes Robo jump'); draw(); }
-  function reset(){ y = 0; vy = 0; obs = []; speed = 260; dist = 0; spawn = 1.1; over = false; }
-  function go(){ if (!playing){ reset(); playing = true; msg(''); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(step); } }
-  function jump(){ if (wrap.hidden){ open(); return; } if (over || !playing){ go(); return; } if (y <= 0.5){ vy = 560; snd(300, 620, .16, .05); } }
-  // what comes down the belt: boxes, stacks of magazines, bolts and flying pages
-  function newObs(){ var r = Math.random(), k = r < .4 ? 'box' : r < .62 ? 'stack' : r < .8 ? 'bolt' : 'page';
-    var o = { k: k, x: W + 20 };
-    if (k === 'box'){ o.w = 34; o.h = 30; o.y = 0; } else if (k === 'stack'){ o.w = 30; o.h = 46; o.y = 0; } else if (k === 'bolt'){ o.w = 20; o.h = 20; o.y = 0; } else { o.w = 30; o.h = 22; o.y = 46 + Math.random() * 24; }
-    obs.push(o); }
-  function step(now){
-    var dt = Math.min(.04, (now - last) / 1000); last = now;
-    if (playing && !over){
-      speed = Math.min(620, speed + dt * 9); dist += speed * dt; belt += speed * dt; legs += dt * speed / 22;
-      vy -= 1700 * dt; y = Math.max(0, y + vy * dt); if (y === 0) vy = 0;
-      spawn -= dt; if (spawn <= 0){ newObs(); spawn = .75 + Math.random() * 1.05 - Math.min(.35, speed / 2400); }
-      obs.forEach(function(o){ o.x -= speed * dt; if (o.k === 'page') o.y += Math.sin(now / 160) * .4; });
-      obs = obs.filter(function(o){ return o.x > -60; });
-      var rx = 70, rw = 34, rh = 44, ry = GROUND - y - rh;   // Robo's box, a little forgiving
-      for (var i = 0; i < obs.length; i++){ var o = obs[i], oy = GROUND - o.y - o.h;
-        if (rx + 5 < o.x + o.w && rx + rw - 5 > o.x && ry + 6 < oy + o.h && ry + rh > oy + 4){ crash(); break; } }
-      document.getElementById('rr-sc').textContent = Math.floor(dist / 10);
-    }
-    draw(); if (playing) raf = requestAnimationFrame(step);
+  function snd(f1, f2, d, v, type){ if (window.NG_SOUND && NG_SOUND.isMuted && NG_SOUND.isMuted()) return; try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); var o = ac.createOscillator(), gg = ac.createGain(), t = ac.currentTime; o.type = type || 'triangle'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + d); gg.gain.setValueAtTime(v || .05, t); gg.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(gg); gg.connect(ac.destination); o.start(t); o.stop(t + d + .02); } catch(e){} }
+  function reset(){ S = { playing: false, over: false, y: 0, vy: 0, air: 0, rot: 0, spin: 0, flipDir: 0, slide: 0, slip: 0, dive: false, things: [], pops: [], speed: 290, dist: 0, belt: 0, spawn: 1.2, cspawn: .9, coins: 0, stars: 0, tricks: 0, leds: 0 }; hud(); }
+  function score(){ return Math.floor(S.dist / 10) + S.coins * 10 + S.stars * 50 + S.tricks; }
+  function hud(){ document.getElementById('rr-sc').textContent = score(); document.getElementById('rr-co').textContent = S.coins; document.getElementById('rr-st').textContent = S.stars; document.getElementById('rr-best').textContent = 'Best ' + best; }
+  function pop(x, y, s, big){ S.pops.push({ x: x, y: y, s: s, l: 1, big: big }); }
+  function say(t, sub){ banner = t ? { t: t, sub: sub || '' } : null; }
+  function open(){ ov.classList.add('rr-on'); start.hidden = true; wrap.hidden = false; reset(); say('PRESS ENTER OR TAP TO RUN', 'Jump the boxes, slide under the flying magazines, grab coins and stars'); draw(); }
+  function go(){ if (S.playing) return; reset(); S.playing = true; say(null); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(step); }
+  function onGround(){ return S.y <= 0.5; }
+  // ---- moves ----
+  function jump(){ if (wrap.hidden){ open(); return; } if (S.over || !S.playing){ go(); return; } if (S.slip > 0) return;
+    if (onGround()){ S.vy = 640; S.air = 1; S.slide = 0; snd(300, 640, .15, .05); }
+    else if (S.air === 1){ S.vy = 580; S.air = 2; flip(1); } }
+  function backflip(){ if (!S.playing){ jump(); return; } if (S.slip > 0) return; if (onGround()){ S.vy = 600; S.air = 2; flip(-1); } else if (S.air === 1){ S.vy = 560; S.air = 2; flip(-1); } }
+  function flip(dir){ S.flipDir = dir; S.spin = 0; snd(dir > 0 ? 500 : 700, dir > 0 ? 1000 : 350, .3, .05); }
+  function down(){ if (!S.playing){ jump(); return; } if (S.slip > 0) return; if (onGround()){ S.slide = .7; snd(180, 120, .25, .04, 'sawtooth'); } else { S.dive = true; S.vy = -1100; snd(800, 200, .2, .04); } }
+  // ---- things on the belt ----
+  function add(t){ t.x = t.x || W + 40; S.things.push(t); return t; }
+  function coinsArc(x, h0, n, amp){ for (var i = 0; i < n; i++) add({ k: 'coin', x: x + i * 30, y: h0 + Math.sin(i / Math.max(1, n - 1) * Math.PI) * amp, w: 20, h: 20 }); }
+  function addThing(){
+    var r = Math.random(), sp = S.speed;
+    if (r < .26) add({ k: 'box', w: 50, h: 58, y: 0, c: cov() });
+    else if (r < .38) add({ k: 'tall', w: 50, h: 118, y: 0, c: cov() });                    // needs a double jump
+    else if (r < .54) add({ k: 'mag', w: 52, h: 30, y: 46 });                               // flying magazine: slide under it
+    else if (r < .65) add({ k: 'bolt', w: 28, h: 28, y: 0 });
+    else if (r < .77) add({ k: 'peel', w: 34, h: 14, y: 0 });                                // banana peel: you slip
+    else if (r < .86) add({ k: 'oil', w: 54, h: 8, y: 0 });                                  // oil spill: you slip
+    else { add({ k: 'spring', w: 40, h: 18, y: 0 }); add({ k: 'star', x: W + 40 + sp * .55, y: 190, w: 28, h: 28 }); }   // spring: launches you up to a star
+    if (Math.random() < .5 && r < .38){ var last = S.things[S.things.length - 1]; coinsArc(last.x - 15, last.h + 30, 3, 22); }
   }
-  function crash(){ over = true; playing = false; snd(400, 70, .45, .07); var sc = Math.floor(dist / 10);
-    if (sc > best){ best = sc; try { localStorage.setItem('ng_rr_best', String(best)); } catch(e){} bestUI(); msg('New best: ' + sc + '!', 'Press Enter or tap to run again'); }
-    else msg('Crash! Score ' + sc, 'Press Enter or tap to run again'); }
+  function addTreats(){ if (Math.random() < .25) add({ k: 'star', y: 175 + Math.random() * 25, w: 28, h: 28 }); else coinsArc(W + 40, 30 + Math.random() * 70, 3 + Math.floor(Math.random() * 3), 30); }
+  // ---- the loop ----
+  function step(now){
+    var dt = Math.min(.04, (now - last) / 1000); last = now; blink += dt;
+    if (S.playing && !S.over){
+      var slow = S.slip > 0 ? .55 : 1;
+      S.speed = Math.min(660, S.speed + dt * 8); var v = S.speed * slow; S.dist += v * dt; S.belt += v * dt;
+      S.vy -= (S.dive ? 3200 : 1750) * dt; S.y = Math.max(0, S.y + S.vy * dt);
+      if (S.flipDir){ S.spin += dt * Math.PI * 2 / .55; if (S.spin >= Math.PI * 2){ S.spin = 0; S.flipDir = 0; S.tricks += 25; pop(RX + 10, GROUND - S.y - 90, 'FLIP! +25', true); snd(880, 1320, .15, .05); } }
+      if (S.y === 0){ if (S.air){ S.air = 0; if (S.dive){ S.dive = false; pop(RX, GROUND - 40, 'DIVE!'); snd(160, 90, .15, .07, 'square'); } if (S.flipDir){ S.flipDir = 0; S.spin = 0; } } S.vy = 0; }
+      if (S.slide > 0){ S.slide -= dt; if (S.slide <= 0 && keyDown) S.slide = .1; }
+      if (S.slip > 0) S.slip -= dt;
+      S.spawn -= dt; if (S.spawn <= 0){ addThing(); S.spawn = .9 + Math.random() * 1 - Math.min(.35, S.speed / 2200); }
+      S.cspawn -= dt; if (S.cspawn <= 0){ addTreats(); S.cspawn = 1.3 + Math.random() * 1.5; }
+      S.things.forEach(function(t){ t.x -= v * dt; }); S.things = S.things.filter(function(t){ return t.x > -80 && !t.got; });
+      var low = S.slide > 0 || S.slip > 0, rh = low ? 30 : 62, rw = 44, rx = RX, ry = GROUND - S.y - rh;
+      for (var i = 0; i < S.things.length; i++){ var t = S.things[i], ty = GROUND - t.y - t.h;
+        if (!(rx + 8 < t.x + t.w && rx + rw - 8 > t.x && ry + 6 < ty + t.h && ry + rh - 2 > ty + 3)) continue;
+        if (t.k === 'coin'){ t.got = true; S.coins++; snd(988, 1480, .1, .045, 'square'); pop(t.x, ty, '+10'); }
+        else if (t.k === 'star'){ t.got = true; S.stars++; [784, 988, 1318].forEach(function(f, j){ setTimeout(function(){ snd(f, f * 1.2, .14, .05); }, j * 70); }); pop(t.x, ty, 'STAR +50', true); }
+        else if (t.k === 'peel' || t.k === 'oil'){ if (S.y < 4 && S.slip <= 0 && !t.used){ t.used = true; S.slip = .9; S.slide = 0; snd(600, 140, .5, .06, 'sawtooth'); pop(t.x, ty - 30, t.k === 'peel' ? 'SLIP!' : 'OIL! WHOA!', true); } }
+        else if (t.k === 'spring'){ if (S.vy <= 0 && !t.used){ t.used = true; S.vy = 960; S.air = 1; S.dive = false; snd(200, 900, .35, .06); pop(t.x, ty - 30, 'BOING!', true); } }
+        else { crash(); break; } }
+      S.pops.forEach(function(p){ p.l -= dt * 1.2; p.y -= dt * 45; }); S.pops = S.pops.filter(function(p){ return p.l > 0; });
+      hud();
+    }
+    draw(); if (S.playing) raf = requestAnimationFrame(step);
+  }
+  function crash(){ S.over = true; S.playing = false; snd(420, 60, .5, .08, 'sawtooth'); var sc = score();
+    var sub = S.coins + ' coins   ' + S.stars + ' stars   ' + S.tricks + ' trick points';
+    if (sc > best){ best = sc; try { localStorage.setItem('ng_rr_best', String(best)); } catch(e){} say('NEW HIGH SCORE ' + sc, sub + '   |   Enter or tap to run again'); }
+    else say('CRASH! SCORE ' + sc, sub + '   |   Enter or tap to run again'); hud(); }
+  // ---- drawing ----
   function rr(x, yy, w, h, r){ g.beginPath(); g.moveTo(x + r, yy); g.arcTo(x + w, yy, x + w, yy + h, r); g.arcTo(x + w, yy + h, x, yy + h, r); g.arcTo(x, yy + h, x, yy, r); g.arcTo(x, yy, x + w, yy, r); g.closePath(); }
-  function robo(x, base){
-    var by = base - 44, bob = playing && y === 0 ? Math.sin(legs) * 1.5 : 0;
-    g.strokeStyle = B; g.lineWidth = 2.5; g.beginPath(); g.moveTo(x + 17, by - 8 + bob); g.lineTo(x + 17, by + 2 + bob); g.stroke(); g.fillStyle = B; g.beginPath(); g.arc(x + 17, by - 9 + bob, 3, 0, 7); g.fill();
-    g.fillStyle = B; rr(x + 3, by + 2 + bob, 28, 20, 5); g.fill();
-    g.fillStyle = N; rr(x + 8, by + 7 + bob, 18, 8, 3); g.fill(); g.fillStyle = B; g.fillRect(x + 18, by + 9 + bob, 5, 4);
-    g.fillStyle = B; rr(x + 6, by + 23 + bob, 22, 13, 3); g.fill(); g.fillStyle = N; g.font = '800 6px Figtree,sans-serif'; g.textAlign = 'center'; g.fillText('2.5', x + 17, by + 32 + bob);
-    var a = y > 0 ? 0 : Math.sin(legs) * 4;
-    g.fillStyle = B; g.fillRect(x + 9 + a, by + 36, 5, 8); g.fillRect(x + 20 - a, by + 36, 5, 8);
+  function cardboard(x, yy, w, h, c){
+    var cg = g.createLinearGradient(0, yy, 0, yy + h); cg.addColorStop(0, BOX1); cg.addColorStop(1, BOX2); g.fillStyle = cg; rr(x, yy, w, h, 3); g.fill();
+    g.fillStyle = 'rgba(0,0,0,.12)'; g.fillRect(x + w - 7, yy + 2, 5, h - 4);
+    if (c && c.complete && c.naturalWidth){ var cw = w - 12, ch = Math.min(h - 14, cw * 1.3); g.drawImage(c, x + 6, yy + 9, cw, ch); g.strokeStyle = NAV; g.lineWidth = 1.2; g.strokeRect(x + 6, yy + 9, cw, ch); }
+    g.fillStyle = 'rgba(255,250,235,.7)'; g.fillRect(x + w / 2 - 5, yy - 1, 10, 8);
+  }
+  function robo(){
+    var low = S.slide > 0 || S.slip > 0, base = GROUND - S.y;
+    g.save(); g.translate(RX + 22, base - (low ? 15 : 31));
+    if (S.flipDir) g.rotate(S.flipDir * S.spin);
+    if (S.slip > 0) g.rotate(Math.sin(S.slip * 22) * .5);
+    if (low && S.slip <= 0) g.scale(1.15, .5);
+    var x = -22, top = -31, h = 62, on = Math.floor(blink * 3) % 2 === 0;
+    g.fillStyle = '#2d343e'; rr(x + 2, top + h - 11, 40, 11, 5); g.fill(); g.fillStyle = '#c3cad3'; for (var i = 0; i < 4; i++){ g.beginPath(); g.arc(x + 9 + i * 9, top + h - 5.5, 2.6, 0, 7); g.fill(); }
+    var hg = g.createLinearGradient(0, top, 0, top + h - 11); hg.addColorStop(0, '#d7dde6'); hg.addColorStop(1, '#8a96a8'); g.fillStyle = hg; rr(x, top + 6, 44, h - 17, 7); g.fill(); g.strokeStyle = NAV; g.lineWidth = 2.8; g.stroke();
+    g.save(); rr(x, top + 6, 44, h - 17, 7); g.clip(); g.fillStyle = '#f2c230'; g.fillRect(x, top + h - 20, 44, 9); g.fillStyle = NAV; for (var k = -8; k < 50; k += 9){ g.beginPath(); g.moveTo(x + k, top + h - 11); g.lineTo(x + k + 4.5, top + h - 11); g.lineTo(x + k + 13.5, top + h - 20); g.lineTo(x + k + 9, top + h - 20); g.fill(); } g.restore();
+    g.fillStyle = on ? '#e4493c' : '#8a3a33'; g.beginPath(); g.arc(x + 11, top + 17, 4, 0, 7); g.fill();
+    g.fillStyle = NAV; g.font = '800 8px Figtree,sans-serif'; g.textAlign = 'center'; g.fillText('ROBO', x + 28, top + 19); g.font = '800 10px Figtree,sans-serif'; g.fillText('2.5', x + 22, top + 32);
+    g.strokeStyle = '#5b6678'; g.lineWidth = 3.5; g.beginPath(); g.moveTo(x + 22, top + 6); g.lineTo(x + 22, top - 2); g.stroke();
+    g.fillStyle = '#aab4c3'; g.strokeStyle = NAV; g.lineWidth = 1.6; [-1, 1].forEach(function(sd){ g.save(); g.translate(x + 22 + sd * 5, top - 2); g.rotate(sd * -.55); rr(-2.5, -11, 5, 11, 2); g.fill(); g.stroke(); g.restore(); });
+    g.restore();
+    if (S.slide > 0 && S.slip <= 0 && S.playing){ g.fillStyle = GOLD; for (var p = 0; p < 4; p++){ g.fillRect(RX - 6 - Math.random() * 18, GROUND - 3 - Math.random() * 8, 3, 2); } }
   }
   function draw(){
-    g.clearRect(0, 0, W, H); g.fillStyle = D; g.fillRect(0, 0, W, H);
-    // the belt
-    g.fillStyle = B; g.fillRect(0, GROUND, W, 3); g.fillStyle = 'rgba(245,228,204,.18)'; g.fillRect(0, GROUND + 3, W, 26);
-    g.fillStyle = 'rgba(245,228,204,.4)'; var o2 = belt % 36; for (var s = -36; s < W + 36; s += 36) g.fillRect(s - o2, GROUND + 9, 16, 3);
-    for (var w2 = 0; w2 < W; w2 += 62){ g.strokeStyle = 'rgba(245,228,204,.45)'; g.lineWidth = 2; g.beginPath(); g.arc(w2 + 20, GROUND + 30, 6, 0, 7); g.stroke(); }
-    obs.forEach(function(o){ var oy = GROUND - o.y - o.h;
-      if (o.k === 'box'){ g.fillStyle = B; rr(o.x, oy, o.w, o.h, 3); g.fill(); g.fillStyle = N; g.fillRect(o.x + o.w / 2 - 3, oy, 6, o.h); }
-      else if (o.k === 'stack'){ for (var k = 0; k < 4; k++){ g.fillStyle = k % 2 ? B : 'rgba(245,228,204,.75)'; g.fillRect(o.x + (k % 2 ? 2 : 0), oy + k * 11.5, o.w - 2, 10); } g.fillStyle = N; g.font = '800 7px Figtree,sans-serif'; g.textAlign = 'center'; g.fillText('NG', o.x + o.w / 2, oy + 8); }
-      else if (o.k === 'bolt'){ g.save(); g.translate(o.x + 10, oy + 10); g.rotate(belt / 30); g.fillStyle = B; g.beginPath(); for (var j = 0; j < 6; j++){ var an = j * Math.PI / 3; g.lineTo(Math.cos(an) * 10, Math.sin(an) * 10); } g.fill(); g.fillStyle = D; g.beginPath(); g.arc(0, 0, 3.5, 0, 7); g.fill(); g.restore(); }
-      else { g.save(); g.translate(o.x + o.w / 2, oy + o.h / 2); g.rotate(Math.sin(belt / 40) * .3); g.fillStyle = B; g.fillRect(-o.w / 2, -o.h / 2, o.w, o.h); g.fillStyle = 'rgba(18,41,74,.55)'; for (var l = 0; l < 3; l++) g.fillRect(-o.w / 2 + 5, -o.h / 2 + 5 + l * 5, o.w - 10, 2); g.restore(); }
+    g.fillStyle = BEI; g.fillRect(0, 0, W, H);
+    // the warehouse wall: shelves full of NeshamaGazine covers
+    var sx = (S.belt * .22) % 150;
+    for (var s = -150, n = 0; s < W + 150; s += 150, n++){ var bx = s - sx;
+      g.fillStyle = 'rgba(18,41,74,.16)'; g.fillRect(bx, 58, 132, 4); g.fillRect(bx, 122, 132, 4);
+      for (var b = 0; b < 4; b++){ [[34, 58], [98, 122]].forEach(function(row, ri){ var c = shelf[(n * 4 + b + ri * 3 + 14000) % shelf.length]; var cx = bx + 6 + b * 32, cy = row[1] - 34;
+        g.globalAlpha = .55; if (c && c.complete && c.naturalWidth) g.drawImage(c, cx, cy, 24, 33); else { g.fillStyle = BOX1; g.fillRect(cx, cy, 24, 33); } g.globalAlpha = 1; }); } }
+    g.fillStyle = NAV; g.globalAlpha = .2; g.font = '800 15px ' + HEAD; g.textAlign = 'left'; g.fillText('NESHAMAGAZINE WAREHOUSE', 16, 22); g.globalAlpha = 1;
+    // the conveyor belt, like the website
+    g.fillStyle = '#2d343e'; g.fillRect(0, GROUND, W, 24); g.fillStyle = '#4a5462'; var o2 = S.belt % 40; for (var r2 = -40; r2 < W + 40; r2 += 40) g.fillRect(r2 - o2 + 26, GROUND, 3, 24);
+    g.fillStyle = '#c3cad3'; g.fillRect(0, GROUND + 24, W, 3); g.fillStyle = '#8f99a6'; g.fillRect(0, GROUND + 27, W, 15); g.fillStyle = '#5b6573'; g.fillRect(0, GROUND + 42, W, 12); g.fillStyle = '#3a424d'; g.fillRect(0, GROUND + 54, W, 16);
+    for (var rv = 14 - o2; rv < W; rv += 40){ g.fillStyle = '#e3e7ec'; g.beginPath(); g.arc(rv, GROUND + 35, 2.6, 0, 7); g.fill(); }
+    S.things.forEach(function(t){ var ty = GROUND - t.y - t.h;
+      if (t.k === 'box') cardboard(t.x, ty, t.w, t.h, t.c);
+      else if (t.k === 'tall'){ cardboard(t.x, ty + 59, t.w, 59, t.c); cardboard(t.x + 3, ty, t.w - 6, 59, null); }
+      else if (t.k === 'bolt'){ g.save(); g.translate(t.x + 14, ty + 14); g.rotate(-S.belt / 25); g.fillStyle = '#8a96a8'; g.strokeStyle = NAV; g.lineWidth = 2.4; g.beginPath(); for (var j = 0; j < 6; j++){ var an = j * Math.PI / 3; g.lineTo(Math.cos(an) * 14, Math.sin(an) * 14); } g.closePath(); g.fill(); g.stroke(); g.fillStyle = BEI; g.beginPath(); g.arc(0, 0, 5, 0, 7); g.fill(); g.restore(); }
+      else if (t.k === 'mag'){ var fl = Math.sin(S.belt / 16) * 9; g.save(); g.translate(t.x + 26, ty + 16); g.fillStyle = '#fbf1e1'; g.strokeStyle = NAV; g.lineWidth = 2.4;
+        g.beginPath(); g.moveTo(0, 8); g.lineTo(-26, -6 - fl); g.lineTo(-23, 11 - fl); g.closePath(); g.fill(); g.stroke(); g.beginPath(); g.moveTo(0, 8); g.lineTo(26, -6 - fl); g.lineTo(23, 11 - fl); g.closePath(); g.fill(); g.stroke();
+        g.fillStyle = NAV; g.fillRect(-18, -1 - fl * .6, 11, 2.5); g.fillRect(7, -1 - fl * .6, 11, 2.5); g.font = '800 7px Figtree,sans-serif'; g.textAlign = 'center'; g.fillText('NG', -12, 6 - fl * .4); g.restore(); }
+      else if (t.k === 'peel'){ g.save(); g.translate(t.x + 17, ty + 10); g.fillStyle = '#e8c547'; g.strokeStyle = NAV; g.lineWidth = 2;
+        [-1, 0, 1].forEach(function(a){ g.save(); g.rotate(a * .9); g.beginPath(); g.ellipse(0, -2, 5, 12, 0, Math.PI, 0); g.fill(); g.stroke(); g.restore(); }); g.fillStyle = '#7a5a20'; g.fillRect(-2, -4, 4, 4); g.restore(); }
+      else if (t.k === 'oil'){ g.fillStyle = '#2d343e'; g.beginPath(); g.ellipse(t.x + 27, ty + 5, 27, 5, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(245,228,204,.35)'; g.beginPath(); g.ellipse(t.x + 20, ty + 3, 8, 1.5, 0, 0, 7); g.fill(); }
+      else if (t.k === 'spring'){ var sq = t.used ? 0 : 1; g.strokeStyle = NAV; g.lineWidth = 3; g.beginPath(); for (var z = 0; z < 5; z++){ g.moveTo(t.x + 6, ty + 16 - z * 3.5 * sq); g.lineTo(t.x + 34, ty + 14 - z * 3.5 * sq); } g.stroke(); g.fillStyle = '#e4493c'; rr(t.x, ty + (t.used ? 12 : 0), t.w, 6, 3); g.fill(); g.strokeStyle = NAV; g.lineWidth = 2; g.stroke(); }
+      else if (t.k === 'coin'){ var sw = Math.abs(Math.cos(S.belt / 28 + t.x / 40)); g.save(); g.translate(t.x + 10, ty + 10); g.scale(.3 + sw * .7, 1); g.fillStyle = GOLD; g.strokeStyle = NAV; g.lineWidth = 2.2; g.beginPath(); g.arc(0, 0, 10, 0, 7); g.fill(); g.stroke(); g.fillStyle = NAV; g.font = '800 8px Figtree,sans-serif'; g.textAlign = 'center'; g.fillText('NG', 0, 3); g.restore(); }
+      else if (t.k === 'star'){ g.save(); g.translate(t.x + 14, ty + 14); g.rotate(Math.sin(S.belt / 40) * .35); var sc2 = 1 + Math.sin(S.belt / 12) * .1; g.scale(sc2, sc2); g.fillStyle = GOLD; g.strokeStyle = NAV; g.lineWidth = 2.4; g.beginPath(); for (var qq = 0; qq < 10; qq++){ var a2 = -Math.PI / 2 + qq * Math.PI / 5, rad = qq % 2 ? 6.5 : 15; g.lineTo(Math.cos(a2) * rad, Math.sin(a2) * rad); } g.closePath(); g.fill(); g.stroke(); g.restore(); }
     });
-    robo(70, GROUND - y);
+    robo();
+    S.pops.forEach(function(p){ g.globalAlpha = Math.max(0, Math.min(1, p.l * 1.6)); g.fillStyle = NAV; g.font = '800 ' + (p.big ? 20 : 15) + 'px ' + HEAD; g.textAlign = 'center'; g.fillText(p.s, p.x + 12, p.y); g.globalAlpha = 1; });
+    if (banner){ g.fillStyle = 'rgba(245,228,204,.82)'; g.fillRect(0, 70, W, 84); g.fillStyle = NAV; g.fillRect(0, 70, W, 3); g.fillRect(0, 151, W, 3);
+      g.textAlign = 'center'; g.font = '800 30px ' + HEAD; g.fillText(banner.t, W / 2, 112); g.font = '700 13px Figtree,system-ui,sans-serif'; g.fillText(banner.sub, W / 2, 136); }
   }
   start.onclick = open;
-  cv.addEventListener('pointerdown', function(e){ e.preventDefault(); jump(); });
-  window.addEventListener('keydown', function(e){   // listens first, so nothing else can swallow Enter
-    if (ov.hidden || (e.target && e.target.closest && e.target.closest('#ngf-door'))) return;   // the fixing screen is on top, so keys go to the game (not to the owner box)
+  // touch: tap = jump, swipe down = slide/dive, swipe left = back flip
+  var sx0 = null, sy0 = null;
+  cv.addEventListener('pointerdown', function(e){ e.preventDefault(); sx0 = e.clientX; sy0 = e.clientY; if (!S.playing){ sx0 = null; jump(); } });
+  cv.addEventListener('pointerup', function(e){ if (sx0 == null) return; var dx = e.clientX - sx0, dy = e.clientY - sy0; sx0 = null; if (dy > 30 && Math.abs(dy) > Math.abs(dx)) down(); else if (dx < -40) backflip(); else jump(); });
+  var pad = wrap.querySelector('.rr-pad');
+  pad.addEventListener('pointerdown', function(e){ var b = e.target.closest('button'); if (!b) return; e.preventDefault(); var k = b.dataset.k; if (k === 'jump') jump(); else if (k === 'back') backflip(); else { keyDown = true; down(); } });
+  pad.addEventListener('pointerup', function(){ keyDown = false; }); pad.addEventListener('pointerleave', function(){ keyDown = false; });
+  window.addEventListener('keydown', function(e){   // listens first, so nothing else can swallow the keys
+    if (ov.hidden || (e.target && e.target.closest && e.target.closest('#ngf-door'))) return;
+    var k = e.key; if (!/^(Enter| |ArrowUp|ArrowDown|ArrowLeft)$/.test(k)) return;
     if (document.activeElement && document.activeElement !== document.body && !ov.contains(document.activeElement)) document.activeElement.blur();
-    var k = e.key;
-    if (k === 'Enter' || k === ' ' || k === 'ArrowUp'){ e.preventDefault(); e.stopPropagation(); if (e.repeat) return; if (wrap.hidden && k === 'Enter'){ open(); return; } if (!wrap.hidden) jump(); }
+    e.preventDefault(); e.stopPropagation();
+    if (k === 'ArrowDown'){ keyDown = true; if (!e.repeat) down(); return; }
+    if (e.repeat) return;
+    if (wrap.hidden){ if (k === 'Enter') open(); return; }
+    if (k === 'ArrowLeft') backflip(); else jump();
   }, true);
-  new MutationObserver(function(){ if (ov.hidden){ playing = false; cancelAnimationFrame(raf); } }).observe(ov, { attributes: true, attributeFilter: ['hidden'] });
+  window.addEventListener('keyup', function(e){ if (e.key === 'ArrowDown') keyDown = false; }, true);
+  new MutationObserver(function(){ if (ov.hidden){ S.playing = false; cancelAnimationFrame(raf); } }).observe(ov, { attributes: true, attributeFilter: ['hidden'] });
+  reset();
 })();
 </script>
 <!-- ===== END ROBO RUNNER ===== -->
