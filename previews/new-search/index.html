@@ -8301,7 +8301,7 @@ html.ed-dash-open body{overflow:hidden}
     for (var i = 0; i < el.children.length; i++) if (!/^(B|I|EM|STRONG|BR)$/.test(el.children[i].tagName)) return null;
     return el.textContent.trim() ? el : null;
   }
-  function onPage(){ return editing && !root.classList.contains('ed-dash-open'); }
+  function onPage(){ return editing && isOwner() && root.classList.contains('ng-editing') && !root.classList.contains('ed-dash-open'); }   // only blocks clicks while the owner is really editing
   var hovEl = null;   // the dotted line only shows on words you can really change
   document.addEventListener('mouseover', function(e){ var el = onPage() && !e.target.closest('[contenteditable="true"]') ? editable(e.target) : null; if (el === hovEl) return; if (hovEl) hovEl.classList.remove('ed-hov'); hovEl = el; if (el) el.classList.add('ed-hov'); });
   document.addEventListener('click', function(e){
