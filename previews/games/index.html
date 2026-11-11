@@ -1490,7 +1490,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
 </style>
 </head>
 <body>
-<script type="application/json" id="ng-config">{"emailjsService": "service_bxqaqrf", "emailjsTemplate": "template_l7jrme1", "emailjsKey": "Rx0eirUCwTvkK7CWd", "nextIssueDate": "2026-10-16T00:00", "nextIssueTitle": "The next issue drops in…", "teamProgress": 60, "announcement": "", "offers": [{"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "Want the next issue first?", "p": "Get an email the day a new issue is out.", "yes": "Notify me"}, {"t": "Don't miss an issue", "p": "We'll send you a short email when the next one is ready.", "yes": "Notify me"}, {"t": "New comics and stories", "p": "Get an email when we post something new.", "yes": "Notify me"}, {"t": "New issues by email", "p": "One short email when a new issue comes out. That's it.", "yes": "Notify me"}, {"t": "Stay in the loop", "p": "Get an email when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}], "videosLive": false, "videos": [], "tzedakaLive": true, "stripeLink": "https://www.paypal.com/donate/?hosted_button_id=JWML6XVRCWSJL", "teamDone": false, "teamMessage": "Neshama Robo 2.5 is still building this page. Soon you'll meet the kids who write, draw and make NeshamaGazine!", "teamMembers": [], "nextIssueCover": "", "announceSize": "normal", "announceColor": "sunset", "announceCustom": "#e4493c"}</script>
+<script type="application/json" id="ng-config">{"emailjsService": "service_bxqaqrf", "emailjsTemplate": "template_l7jrme1", "emailjsMsgTemplate": "", "emailjsKey": "Rx0eirUCwTvkK7CWd", "nextIssueDate": "2026-10-16T00:00", "nextIssueTitle": "The next issue drops in…", "teamProgress": 60, "announcement": "", "offers": [{"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "Want the next issue first?", "p": "Get an email the day a new issue is out.", "yes": "Notify me"}, {"t": "Don't miss an issue", "p": "We'll send you a short email when the next one is ready.", "yes": "Notify me"}, {"t": "New comics and stories", "p": "Get an email when we post something new.", "yes": "Notify me"}, {"t": "New issues by email", "p": "One short email when a new issue comes out. That's it.", "yes": "Notify me"}, {"t": "Stay in the loop", "p": "Get an email when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}], "videosLive": false, "videos": [], "tzedakaLive": true, "stripeLink": "https://www.paypal.com/donate/?hosted_button_id=JWML6XVRCWSJL", "teamDone": false, "teamMessage": "Neshama Robo 2.5 is still building this page. Soon you'll meet the kids who write, draw and make NeshamaGazine!", "teamMembers": [], "nextIssueCover": "", "announceSize": "normal", "announceColor": "sunset", "announceCustom": "#e4493c"}</script>
 <script>window.NG_CFG = JSON.parse(document.getElementById('ng-config').textContent);</script>
 <header>
   <div id="ng-announce" class="ng-announce" hidden></div>
@@ -10712,6 +10712,7 @@ html.ng-ch .tape{padding-top:70px!important}
 .ng-askbox .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .ng-askbox .row a,.ng-askbox .row button{border:2px solid #12294a;border-radius:10px;padding:8px 14px;font:700 .9rem Figtree,system-ui,sans-serif;cursor:pointer;text-decoration:none;background:#f5e4cc;color:#12294a}
 .ng-askbox .row .go{background:#12294a;color:#f5e4cc}
+.ng-askbox .sm{margin:10px 0 0;font-weight:700;font-size:.9rem}
 </style>
 <script>
 (function(){
@@ -10722,22 +10723,32 @@ html.ng-ch .tape{padding-top:70px!important}
     var body = 'Hello ' + first + ',\n\nIt\'s interesting that I saw you on the NeshamaGazine website. Could you explain what happened? How did you get in, and who gave you the link?\n\nThank you,\nLevi\nNeshamaGazine';
     var box = el('div', { 'class': 'ng-askbox', role: 'dialog', 'aria-label': 'Email a reader' }), inn = el('div', { 'class': 'in' });
     inn.appendChild(el('h3', null, 'Email ' + (nm || to)));
-    inn.appendChild(el('p', null, 'Change anything you want, then pick how to send it.'));
+    inn.appendChild(el('p', null, 'Change anything you want, then press Send.'));
     inn.appendChild(el('label', null, 'To')); var iT = el('input', { type: 'email' }); iT.value = to; inn.appendChild(iT);
     inn.appendChild(el('label', null, 'Subject')); var iS = el('input', { type: 'text' }); iS.value = sub; inn.appendChild(iS);
     inn.appendChild(el('label', null, 'Message')); var iB = el('textarea'); iB.value = body; inn.appendChild(iB);
-    var row = el('div', { 'class': 'row' });
-    var gm = el('a', { 'class': 'go', target: '_blank', rel: 'noopener' }, 'Send with Gmail');
+    var row = el('div', { 'class': 'row' }), C = window.NG_CFG || {}, auto = !!(C.emailjsService && C.emailjsMsgTemplate && C.emailjsKey);
+    var send = el('button', { type: 'button', 'class': 'go' }, 'Send'), sm = el('p', { 'class': 'sm' }, '');
+    var gm = el('a', { target: '_blank', rel: 'noopener' }, 'Send with Gmail');
     var ap = el('a', null, 'Send with my email app');
     var cp = el('button', { type: 'button' }, 'Copy message');
     var cl = el('button', { type: 'button' }, 'Close');
+    send.onclick = function(){
+      if (!auto){ sm.textContent = 'Automatic sending is not set up yet. Use Gmail or your email app for now.'; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(iT.value.trim())){ sm.textContent = 'That email does not look right.'; return; }
+      send.disabled = true; sm.textContent = 'Sending\u2026';
+      fetch('https://api.emailjs.com/api/v1.0/email/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ service_id: C.emailjsService, template_id: C.emailjsMsgTemplate, user_id: C.emailjsKey,
+        template_params: { to_email: iT.value.trim(), to_name: first, subject: iS.value, message: iB.value, from_name: 'Levi from NeshamaGazine', reply_to: 'levichekroun@ulyop.com' } }) })
+        .then(function(r){ if (!r.ok) return r.text().then(function(t){ throw new Error(t || ('error ' + r.status)); }); sm.textContent = 'Sent to ' + iT.value.trim() + '.'; send.textContent = 'Sent'; cl.textContent = 'Done'; })
+        .catch(function(e){ send.disabled = false; sm.textContent = 'It did not send: ' + e.message; });
+    };
     function links(){ gm.href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(iT.value) + '&su=' + encodeURIComponent(iS.value) + '&body=' + encodeURIComponent(iB.value);
       ap.href = 'mailto:' + encodeURIComponent(iT.value) + '?subject=' + encodeURIComponent(iS.value) + '&body=' + encodeURIComponent(iB.value); }
     [iT, iS, iB].forEach(function(i){ i.addEventListener('input', links); }); links();
     cp.onclick = function(){ var t = iB.value; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ cp.textContent = 'Copied'; }, function(){ iB.select(); cp.textContent = 'Press Ctrl+C'; }); };
     cl.onclick = function(){ box.remove(); };
     box.addEventListener('click', function(e){ if (e.target === box) box.remove(); });
-    [gm, ap, cp, cl].forEach(function(b){ row.appendChild(b); }); inn.appendChild(row); box.appendChild(inn); document.body.appendChild(box); iB.focus();
+    (auto ? [send, cl] : [send, gm, ap, cp, cl]).forEach(function(b){ row.appendChild(b); }); inn.appendChild(row); inn.appendChild(sm); box.appendChild(inn); document.body.appendChild(box); iB.focus();
   }
   document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('.ng-ask'); if (!b) return; e.preventDefault(); e.stopPropagation(); if (b.dataset.to) open(b.dataset.to, b.dataset.nm); }, true);
   window.NG_ASK = open;
