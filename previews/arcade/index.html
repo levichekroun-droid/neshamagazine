@@ -4868,7 +4868,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     var first = (name || '').trim().split(/\s+/)[0] || 'there';
     return fetch('https://api.emailjs.com/api/v1.0/email/send', { method:'POST', headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ service_id: C.emailjsService, template_id: C.emailjsTemplate, user_id: C.emailjsKey,
-        template_params: { name: first, email: em, to_email: em, to_name: first } }) })
+        template_params: { name: first, email: em, to_email: em, to_name: first, from_name: 'NeshamaGazine', reply_to: 'neshamagazine@gmail.com' } }) })
       .then(function(r){ return r.ok; }).catch(function(){ return false; });
   }
   function realEmail(em){
@@ -10720,7 +10720,7 @@ html.ng-ch .tape{padding-top:70px!important}
   function open(to, nm){
     var first = (nm || to.split('@')[0]).split(' ')[0];
     var sub = 'Hello from NeshamaGazine';
-    var body = 'Hello ' + first + ',\n\nIt\'s interesting that I saw you on the NeshamaGazine website. Could you explain what happened? How did you get in, and who gave you the link?\n\nThank you,\nLevi\nNeshamaGazine';
+    var body = 'Hello ' + first + ',\n\nIt\'s interesting that I saw you on the NeshamaGazine website. Could you explain what happened? How did you get in, and who gave you the link?\n\nThank you,\nNeshamaGazine';
     var box = el('div', { 'class': 'ng-askbox', role: 'dialog', 'aria-label': 'Email a reader' }), inn = el('div', { 'class': 'in' });
     inn.appendChild(el('h3', null, 'Email ' + (nm || to)));
     inn.appendChild(el('p', null, 'Change anything you want, then press Send.'));
@@ -10738,7 +10738,7 @@ html.ng-ch .tape{padding-top:70px!important}
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(iT.value.trim())){ sm.textContent = 'That email does not look right.'; return; }
       send.disabled = true; sm.textContent = 'Sending\u2026';
       fetch('https://api.emailjs.com/api/v1.0/email/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ service_id: C.emailjsService, template_id: C.emailjsMsgTemplate, user_id: C.emailjsKey,
-        template_params: { to_email: iT.value.trim(), to_name: first, subject: iS.value, message: iB.value, from_name: 'Levi from NeshamaGazine', reply_to: 'levichekroun@ulyop.com' } }) })
+        template_params: { to_email: iT.value.trim(), to_name: first, subject: iS.value, message: iB.value, from_name: 'NeshamaGazine', reply_to: 'neshamagazine@gmail.com' } }) })
         .then(function(r){ if (!r.ok) return r.text().then(function(t){ throw new Error(t || ('error ' + r.status)); }); sm.textContent = 'Sent to ' + iT.value.trim() + '.'; send.textContent = 'Sent'; cl.textContent = 'Done'; })
         .catch(function(e){ send.disabled = false; sm.textContent = 'It did not send: ' + e.message; });
     };
