@@ -4530,7 +4530,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       var len = +r.headers.get('content-length') || 0, zip = r.headers.get('content-encoding'), total = zip || !len ? guess : len, got = 0, rd = r.body && r.body.getReader && r.body.getReader();
       if (!rd) return r.text();
       return (function pump(){ return rd.read().then(function(x){ if (x.done) return; got += x.value.length; at(Math.min(99, Math.floor(got / total * 100))); return pump(); }); })();
-    }).then(function(){ at(100); setTimeout(function(){ location.reload(); }, 500); }, function(){ location.reload(); });
+    }).then(function(){ at(100); if (window.NG_RR_READY && NG_RR_READY()) return; setTimeout(function(){ location.reload(); }, 500); }, function(){ if (window.NG_RR_READY && NG_RR_READY()) return; location.reload(); });
   }
   window.NG_FIXING_SCREEN = fixing;
   check(); setInterval(check, 30000);
@@ -4654,7 +4654,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     var ov = $('ng-frozen'), bar = $('ng-frozen-bar');
     $('ngf-msg').textContent = (fmsg || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, '').trim() || "We're fixing something. Back very soon!";
     var parts = partsOf(), whole = frozen && parts.indexOf('all') > -1;
-    ov.hidden = !whole || isOwner(); bar.hidden = !(frozen && isOwner());
+    ov.hidden = !(whole || window.NG_FIX_DEMO) || isOwner(); bar.hidden = !(frozen && isOwner());
     var bt = bar.querySelector('.fzb-txt'); if (bt) bt.textContent = whole ? 'The whole website is frozen. Visitors see the technician screen. Only you can use it.' : partNames(parts) + (parts.length > 1 ? ' are' : ' is') + ' frozen. Visitors see "We\'re fixing something." Only you can see ' + (parts.length > 1 ? 'them' : 'it') + '.';
     freezeParts(frozen && !whole && !isOwner() ? parts : []);
     var peek = false; try { peek = isOwner() && sessionStorage.getItem('ng_soon_peek') === '1'; } catch(e){}
@@ -9877,7 +9877,7 @@ html.ng-ch .tape{padding-top:70px!important}
   var gears = ov.querySelector('.fz-gears'), t = null;
   function down(e){ if (!gears) return; e.preventDefault(); gears.classList.add('ngf-hold'); clearTimeout(t); t = setTimeout(function(){ gears.classList.remove('ngf-hold'); openDoor(); }, 3000); }
   function up(){ clearTimeout(t); if (gears) gears.classList.remove('ngf-hold'); }
-  if (gears){ gears.addEventListener('pointerdown', down); ['pointerup', 'pointerleave', 'pointercancel'].forEach(function(ev){ gears.addEventListener(ev, up); }); gears.addEventListener('contextmenu', function(e){ e.preventDefault(); }); }
+  [gears, ov.querySelector('.fz-kick')].forEach(function(el){ if (!el) return; el.style.touchAction = 'none'; el.addEventListener('pointerdown', function(e){ e.preventDefault(); clearTimeout(t); if (gears) gears.classList.add('ngf-hold'); t = setTimeout(function(){ up(); openDoor(); }, 3000); }); ['pointerup', 'pointerleave', 'pointercancel'].forEach(function(ev){ el.addEventListener(ev, up); }); el.addEventListener('contextmenu', function(e){ e.preventDefault(); }); });
   var typed = '';
   document.addEventListener('keydown', function(e){ if (ov.hidden || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return; typed = (typed + (e.key || '')).slice(-7).toLowerCase(); if (typed === 'neshama') openDoor(); }, true);
   door.addEventListener('submit', function(e){
@@ -9892,6 +9892,110 @@ html.ng-ch .tape{padding-top:70px!important}
 })();
 </script>
 <!-- ===== END OWNER SECRET DOOR ===== -->
+
+<!-- ===== ROBO RUNNER (a game on the fixing screen) ===== -->
+<style id="ng-rr">
+.rr-start{margin:18px auto 0;display:inline-flex;align-items:center;gap:10px;border:2px solid #f5e4cc;background:none;color:#f5e4cc;border-radius:999px;padding:11px 20px;font:800 1rem Figtree,system-ui,sans-serif;cursor:pointer}
+.rr-start kbd{font:800 .8rem Figtree,system-ui,sans-serif;background:#f5e4cc;color:#12294a;border-radius:6px;padding:3px 7px}
+.rr-start:hover{background:#f5e4cc;color:#12294a}.rr-start:hover kbd{background:#12294a;color:#f5e4cc}
+.rr-wrap{position:relative;margin:16px auto 0;width:min(620px,92vw)}
+.rr-wrap[hidden]{display:none!important}
+#rr-cv{display:block;width:100%;height:auto;border:2px solid #f5e4cc;border-radius:12px;background:#0f2340;touch-action:none;cursor:pointer}
+.rr-top{display:flex;justify-content:space-between;margin:0 4px 6px;font:800 .9rem Figtree,system-ui,sans-serif;color:#f5e4cc;font-variant-numeric:tabular-nums}
+.rr-msg{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);text-align:center;color:#f5e4cc;font:800 1.15rem Figtree,system-ui,sans-serif;pointer-events:none;white-space:nowrap}
+.rr-msg small{display:block;font:700 .85rem Figtree,system-ui,sans-serif;opacity:.85;margin-top:4px}
+.rr-ready{margin:14px auto 0;border:0;border-radius:999px;background:#f5e4cc;color:#12294a;font:800 1.05rem Figtree,system-ui,sans-serif;padding:12px 22px;cursor:pointer}
+.rr-ready[hidden]{display:none!important}
+.ng-frozen.rr-on .fz-gears,.ng-frozen.rr-on .fz-logo{display:none!important}
+.ng-frozen.rr-on .ngf-box h2{font-size:clamp(1.2rem,4vw,1.6rem)!important;margin:4px 0 6px!important}
+</style>
+<script>
+/* Robo Runner: press Enter (or tap) on the fixing screen and run along the belt until the website is ready */
+(function(){
+  var ov = document.getElementById('ng-frozen'); if (!ov) return;
+  var box = ov.querySelector('.ngf-box') || ov, sign = box.querySelector('.fz-sign');
+  var start = document.createElement('button'); start.type = 'button'; start.className = 'rr-start';
+  start.innerHTML = 'Play Robo Runner while you wait <kbd>Enter</kbd>';
+  var wrap = document.createElement('div'); wrap.className = 'rr-wrap'; wrap.hidden = true;
+  wrap.innerHTML = '<div class="rr-top"><span id="rr-sc">0</span><span id="rr-best"></span></div><canvas id="rr-cv" width="620" height="200" aria-label="Robo Runner game"></canvas><div class="rr-msg" id="rr-msg"></div>';
+  var ready = document.createElement('button'); ready.type = 'button'; ready.className = 'rr-ready'; ready.hidden = true; ready.textContent = 'The website is ready! Open it';
+  box.insertBefore(start, sign); box.insertBefore(wrap, sign); box.insertBefore(ready, sign);
+  ready.onclick = function(){ location.reload(); };
+  window.NG_RR_READY = function(){ if (!playing && wrap.hidden) return false; ready.hidden = false; return true; };   // the update waits for the player
+
+  var cv = wrap.querySelector('canvas'), g = cv.getContext('2d'), W = 620, H = 200, GROUND = 160, dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = W * dpr; cv.height = H * dpr; g.scale(dpr, dpr);
+  var B = '#f5e4cc', N = '#12294a', D = '#0f2340';
+  var playing = false, over = false, y = 0, vy = 0, obs = [], speed = 0, dist = 0, belt = 0, spawn = 0, last = 0, legs = 0, best = 0, raf = 0;
+  try { best = +localStorage.getItem('ng_rr_best') || 0; } catch(e){}
+  function bestUI(){ document.getElementById('rr-best').textContent = best ? 'Best ' + best : ''; }
+  bestUI();
+  var ac = null;
+  function snd(f1, f2, d, v){ if (window.NG_SOUND && NG_SOUND.isMuted && NG_SOUND.isMuted()) return; try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); var o = ac.createOscillator(), gg = ac.createGain(), t = ac.currentTime; o.type = 'triangle'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + d); gg.gain.setValueAtTime(v || .05, t); gg.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(gg); gg.connect(ac.destination); o.start(t); o.stop(t + d + .02); } catch(e){} }
+  function msg(a, b){ document.getElementById('rr-msg').innerHTML = a ? a + (b ? '<small>' + b + '</small>' : '') : ''; }
+  function open(){ ov.classList.add('rr-on'); start.hidden = true; wrap.hidden = false; reset(); msg('Press Enter or tap to start', 'Space, Enter, the up arrow or a tap makes Robo jump'); draw(); }
+  function reset(){ y = 0; vy = 0; obs = []; speed = 260; dist = 0; spawn = 1.1; over = false; }
+  function go(){ if (!playing){ reset(); playing = true; msg(''); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(step); } }
+  function jump(){ if (wrap.hidden){ open(); return; } if (over || !playing){ go(); return; } if (y <= 0.5){ vy = 560; snd(300, 620, .16, .05); } }
+  // what comes down the belt: boxes, stacks of magazines, bolts and flying pages
+  function newObs(){ var r = Math.random(), k = r < .4 ? 'box' : r < .62 ? 'stack' : r < .8 ? 'bolt' : 'page';
+    var o = { k: k, x: W + 20 };
+    if (k === 'box'){ o.w = 34; o.h = 30; o.y = 0; } else if (k === 'stack'){ o.w = 30; o.h = 46; o.y = 0; } else if (k === 'bolt'){ o.w = 20; o.h = 20; o.y = 0; } else { o.w = 30; o.h = 22; o.y = 46 + Math.random() * 24; }
+    obs.push(o); }
+  function step(now){
+    var dt = Math.min(.04, (now - last) / 1000); last = now;
+    if (playing && !over){
+      speed = Math.min(620, speed + dt * 9); dist += speed * dt; belt += speed * dt; legs += dt * speed / 22;
+      vy -= 1700 * dt; y = Math.max(0, y + vy * dt); if (y === 0) vy = 0;
+      spawn -= dt; if (spawn <= 0){ newObs(); spawn = .75 + Math.random() * 1.05 - Math.min(.35, speed / 2400); }
+      obs.forEach(function(o){ o.x -= speed * dt; if (o.k === 'page') o.y += Math.sin(now / 160) * .4; });
+      obs = obs.filter(function(o){ return o.x > -60; });
+      var rx = 70, rw = 34, rh = 44, ry = GROUND - y - rh;   // Robo's box, a little forgiving
+      for (var i = 0; i < obs.length; i++){ var o = obs[i], oy = GROUND - o.y - o.h;
+        if (rx + 5 < o.x + o.w && rx + rw - 5 > o.x && ry + 6 < oy + o.h && ry + rh > oy + 4){ crash(); break; } }
+      document.getElementById('rr-sc').textContent = Math.floor(dist / 10);
+    }
+    draw(); if (playing) raf = requestAnimationFrame(step);
+  }
+  function crash(){ over = true; playing = false; snd(400, 70, .45, .07); var sc = Math.floor(dist / 10);
+    if (sc > best){ best = sc; try { localStorage.setItem('ng_rr_best', String(best)); } catch(e){} bestUI(); msg('New best: ' + sc + '!', 'Press Enter or tap to run again'); }
+    else msg('Crash! Score ' + sc, 'Press Enter or tap to run again'); }
+  function rr(x, yy, w, h, r){ g.beginPath(); g.moveTo(x + r, yy); g.arcTo(x + w, yy, x + w, yy + h, r); g.arcTo(x + w, yy + h, x, yy + h, r); g.arcTo(x, yy + h, x, yy, r); g.arcTo(x, yy, x + w, yy, r); g.closePath(); }
+  function robo(x, base){
+    var by = base - 44, bob = playing && y === 0 ? Math.sin(legs) * 1.5 : 0;
+    g.strokeStyle = B; g.lineWidth = 2.5; g.beginPath(); g.moveTo(x + 17, by - 8 + bob); g.lineTo(x + 17, by + 2 + bob); g.stroke(); g.fillStyle = B; g.beginPath(); g.arc(x + 17, by - 9 + bob, 3, 0, 7); g.fill();
+    g.fillStyle = B; rr(x + 3, by + 2 + bob, 28, 20, 5); g.fill();
+    g.fillStyle = N; rr(x + 8, by + 7 + bob, 18, 8, 3); g.fill(); g.fillStyle = B; g.fillRect(x + 18, by + 9 + bob, 5, 4);
+    g.fillStyle = B; rr(x + 6, by + 23 + bob, 22, 13, 3); g.fill(); g.fillStyle = N; g.font = '800 6px Figtree,sans-serif'; g.textAlign = 'center'; g.fillText('2.5', x + 17, by + 32 + bob);
+    var a = y > 0 ? 0 : Math.sin(legs) * 4;
+    g.fillStyle = B; g.fillRect(x + 9 + a, by + 36, 5, 8); g.fillRect(x + 20 - a, by + 36, 5, 8);
+  }
+  function draw(){
+    g.clearRect(0, 0, W, H); g.fillStyle = D; g.fillRect(0, 0, W, H);
+    // the belt
+    g.fillStyle = B; g.fillRect(0, GROUND, W, 3); g.fillStyle = 'rgba(245,228,204,.18)'; g.fillRect(0, GROUND + 3, W, 26);
+    g.fillStyle = 'rgba(245,228,204,.4)'; var o2 = belt % 36; for (var s = -36; s < W + 36; s += 36) g.fillRect(s - o2, GROUND + 9, 16, 3);
+    for (var w2 = 0; w2 < W; w2 += 62){ g.strokeStyle = 'rgba(245,228,204,.45)'; g.lineWidth = 2; g.beginPath(); g.arc(w2 + 20, GROUND + 30, 6, 0, 7); g.stroke(); }
+    obs.forEach(function(o){ var oy = GROUND - o.y - o.h;
+      if (o.k === 'box'){ g.fillStyle = B; rr(o.x, oy, o.w, o.h, 3); g.fill(); g.fillStyle = N; g.fillRect(o.x + o.w / 2 - 3, oy, 6, o.h); }
+      else if (o.k === 'stack'){ for (var k = 0; k < 4; k++){ g.fillStyle = k % 2 ? B : 'rgba(245,228,204,.75)'; g.fillRect(o.x + (k % 2 ? 2 : 0), oy + k * 11.5, o.w - 2, 10); } g.fillStyle = N; g.font = '800 7px Figtree,sans-serif'; g.textAlign = 'center'; g.fillText('NG', o.x + o.w / 2, oy + 8); }
+      else if (o.k === 'bolt'){ g.save(); g.translate(o.x + 10, oy + 10); g.rotate(belt / 30); g.fillStyle = B; g.beginPath(); for (var j = 0; j < 6; j++){ var an = j * Math.PI / 3; g.lineTo(Math.cos(an) * 10, Math.sin(an) * 10); } g.fill(); g.fillStyle = D; g.beginPath(); g.arc(0, 0, 3.5, 0, 7); g.fill(); g.restore(); }
+      else { g.save(); g.translate(o.x + o.w / 2, oy + o.h / 2); g.rotate(Math.sin(belt / 40) * .3); g.fillStyle = B; g.fillRect(-o.w / 2, -o.h / 2, o.w, o.h); g.fillStyle = 'rgba(18,41,74,.55)'; for (var l = 0; l < 3; l++) g.fillRect(-o.w / 2 + 5, -o.h / 2 + 5 + l * 5, o.w - 10, 2); g.restore(); }
+    });
+    robo(70, GROUND - y);
+  }
+  start.onclick = open;
+  cv.addEventListener('pointerdown', function(e){ e.preventDefault(); jump(); });
+  window.addEventListener('keydown', function(e){   // listens first, so nothing else can swallow Enter
+    if (ov.hidden || (e.target && e.target.closest && e.target.closest('#ngf-door'))) return;   // the fixing screen is on top, so keys go to the game (not to the owner box)
+    if (document.activeElement && document.activeElement !== document.body && !ov.contains(document.activeElement)) document.activeElement.blur();
+    var k = e.key;
+    if (k === 'Enter' || k === ' ' || k === 'ArrowUp'){ e.preventDefault(); e.stopPropagation(); if (e.repeat) return; if (wrap.hidden && k === 'Enter'){ open(); return; } if (!wrap.hidden) jump(); }
+  }, true);
+  new MutationObserver(function(){ if (ov.hidden){ playing = false; cancelAnimationFrame(raf); } }).observe(ov, { attributes: true, attributeFilter: ['hidden'] });
+})();
+</script>
+<!-- ===== END ROBO RUNNER ===== -->
 
 </body>
 </html>
