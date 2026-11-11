@@ -4663,6 +4663,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   function readStatus(){
     return api('GET', DB + '/site/status').then(function(j){
       var f = j && j.fields || {}; frozen = !!(f.frozen && f.frozen.booleanValue); fmsg = f.msg && f.msg.stringValue || '';
+      var fAt = f.at && f.at.timestampValue ? Date.parse(f.at.timestampValue) : 0; if (frozen && fAt < Date.parse('2026-11-11T00:45:21Z')) frozen = false;   // a freeze left on from before this reset no longer counts
       soon = !!(f.soon && f.soon.booleanValue); smsg = f.soonMsg && f.soonMsg.stringValue || ''; theme = f.theme && f.theme.stringValue || 'none'; statusKnown = true; show(); freezeUI();
       if (!window.NG_YT_LOCAL && window.NG_YT_APPLY) NG_YT_APPLY('auto');
     }).catch(function(){ statusKnown = true; wall(); });
