@@ -5107,7 +5107,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       var docs = (j && j.documents || []).map(function(d){ var f = d.fields || {}; return { email: f.email && f.email.stringValue || '', name: f.name && f.name.stringValue || '', place: f.place && f.place.stringValue || '', cc: f.cc && f.cc.stringValue || '', n: num(f.visits), t: f.lastSeen && f.lastSeen.timestampValue || '' }; });
       docs.sort(function(a, b){ return a.t < b.t ? 1 : -1; });
       function ago(t){ var s = (Date.now() - new Date(t).getTime()) / 1000; return !t ? '' : s < 3600 ? Math.max(1, Math.round(s / 60)) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago'; }
-      pl.innerHTML = docs.length ? docs.slice(0, 60).map(function(d){ return '<li><b>' + esc(d.name || d.email.split('@')[0]) + '</b> <span>' + esc(d.email) + '</span><small>' + FLAG(d.cc) + ' ' + esc(d.place || 'Unknown place') + ' · ' + d.n + ' visit' + (d.n === 1 ? '' : 's') + ' · ' + ago(d.t) + '</small></li>'; }).join('') + '<li class="op-tip">' + docs.length + ' people signed in so far.</li>' : '<li class="op-tip">Nobody signed in yet.</li>';
+      pl.innerHTML = docs.length ? docs.slice(0, 60).map(function(d){ return '<li><b>' + esc(d.name || d.email.split('@')[0]) + '</b> <span>' + esc(d.email) + '</span><small>' + FLAG(d.cc) + ' ' + esc(d.place || 'Unknown place') + ' · ' + d.n + ' visit' + (d.n === 1 ? '' : 's') + ' · ' + ago(d.t) + '</small>' + '<button type="button" class="ng-ask" data-to="' + esc(d.email) + '" data-nm="' + esc(d.name || '') + '">Email</button>' + '</li>'; }).join('') + '<li class="op-tip">' + docs.length + ' people signed in so far.</li>' : '<li class="op-tip">Nobody signed in yet.</li>';
     }).catch(function(e){ pl.innerHTML = '<li class="op-msg"> ' + e.message + '</li>'; });
   }
   if ($('vs-refresh')) $('vs-refresh').addEventListener('click', loadStats);
@@ -5287,7 +5287,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   function showPin(s){
     var box = $('vm-pin'), now = Date.now();
     box.innerHTML = '<button type="button" class="vm-x" onclick="this.parentNode.hidden=true">✕</button><b>' + flag(s.people[0].cc) + ' ' + esc(s.people[0].place || 'Unknown place') + '</b>' +
-      s.people.map(function(x){ return '<div class="vm-prow' + (now - x.t < 150000 ? ' live' : '') + '"><span class="vm-dot"></span>' + esc(x.name || x.email.split('@')[0]) + ' <small>' + esc(x.email) + ' · ' + (now - x.t < 150000 ? 'ONLINE NOW' : ago(x.t)) + '</small></div>'; }).join('');
+      s.people.map(function(x){ return '<div class="vm-prow' + (now - x.t < 150000 ? ' live' : '') + '"><span class="vm-dot"></span>' + esc(x.name || x.email.split('@')[0]) + ' <small>' + esc(x.email) + ' · ' + (now - x.t < 150000 ? 'ONLINE NOW' : ago(x.t)) + '</small>' + '<button type="button" class="ng-ask" data-to="' + esc(x.email) + '" data-nm="' + esc(x.name || '') + '">Email</button>' + '</div>'; }).join('');
     box.hidden = false;
     globe.pointOfView({ lat: s.lat, lng: s.lng, altitude: 0.6 }, 1200);
   }
@@ -8529,7 +8529,7 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   function drawLogins(){
     var el = $('rd-log'); if (!el || !window.NG_VM_PEOPLE) return;
     var p = NG_VM_PEOPLE().filter(function(x){ return x.t && Date.now() - x.t < 7 * 864e5; }).sort(function(a, b){ return b.t - a.t; });
-    el.innerHTML = p.length ? p.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.name || (x.email || '').split('@')[0]) + '</b> logged in<br><small>' + esc(x.email) + (x.place ? ' \u00b7 ' + esc(x.place) : '') + '</small></span><small>' + ago(x.t) + '</small></div>'; }).join('') : '<p class="rd-tip">No logins this week yet.</p>';
+    el.innerHTML = p.length ? p.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.name || (x.email || '').split('@')[0]) + '</b> logged in<br><small>' + esc(x.email) + (x.place ? ' \u00b7 ' + esc(x.place) : '') + '</small></span><small>' + ago(x.t) + '</small>' + '<button type="button" class="ng-ask" data-to="' + esc(x.email || '') + '" data-nm="' + esc(x.name || '') + '">Email</button>' + '</div>'; }).join('') : '<p class="rd-tip">No logins this week yet.</p>';
   }
   window.NG_RADAR_TAB = function(v, fromLoad){ if (v === 'log') drawLogins(); if (v === 'flag' && !fromLoad && $('sec-load')) $('sec-load').click(); };
   // "Tell me when someone logs in"
@@ -8586,7 +8586,7 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   function drawNew(){
     var wk = Date.now() - 7 * 864e5, list = people().filter(function(p){ var f = p.f && p.f.firstSeen; return f && new Date(f.timestampValue).getTime() > wk; })
       .map(function(p){ return [p, new Date(p.f.firstSeen.timestampValue).getTime()]; }).sort(function(a, b){ return b[1] - a[1]; });
-    $('rd-new').innerHTML = '<div class="rd-big"><div><b>' + list.length + '</b><span>new readers this week</span></div></div>' + (list.length ? list.map(function(x){ var p = x[0]; return '<div class="rd-logrow"><span><b>' + esc(p.name || p.email.split('@')[0]) + '</b><br><small>' + esc(p.email) + (p.place ? ' \u00b7 ' + esc(p.place) : '') + '</small></span><small>' + ago(x[1]) + '</small></div>'; }).join('') : '<p class="rd-tip">Counting starts now, so new readers show up from today on.</p>');
+    $('rd-new').innerHTML = '<div class="rd-big"><div><b>' + list.length + '</b><span>new readers this week</span></div></div>' + (list.length ? list.map(function(x){ var p = x[0]; return '<div class="rd-logrow"><span><b>' + esc(p.name || p.email.split('@')[0]) + '</b><br><small>' + esc(p.email) + (p.place ? ' \u00b7 ' + esc(p.place) : '') + '</small></span><small>' + ago(x[1]) + '</small>' + '<button type="button" class="ng-ask" data-to="' + esc(p.email) + '" data-nm="' + esc(p.name || '') + '">Email</button>' + '</div>'; }).join('') : '<p class="rd-tip">Counting starts now, so new readers show up from today on.</p>');
   }
   function drawDev(){
     var mo = Date.now() - 30 * 864e5, ph = 0, pc = 0; people().forEach(function(p){ if (p.t < mo) return; if (p.dev === 'phone') ph++; else if (p.dev) pc++; });
@@ -10672,5 +10672,49 @@ html.ng-ch .tape{padding-top:70px!important}
 </script>
 <!-- ===== END ARCADE ===== -->
 
+<!-- ===== EMAIL A READER (ask how they got in) ===== -->
+<style>
+.ng-ask{margin-left:8px;flex:none;border:2px solid #12294a;background:#f5e4cc;color:#12294a;border-radius:8px;padding:3px 10px;font:700 .78rem Figtree,system-ui,sans-serif;cursor:pointer;vertical-align:middle}
+.ng-ask:hover{background:#12294a;color:#f5e4cc}
+.ng-askbox{position:fixed;inset:0;z-index:2147483000;background:rgba(18,41,74,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.ng-askbox .in{width:min(520px,100%);background:#f5e4cc;color:#12294a;border:3px solid #12294a;border-radius:16px;padding:20px;font-family:Figtree,system-ui,sans-serif}
+.ng-askbox h3{margin:0 0 4px;font-size:1.3rem}.ng-askbox p{margin:0 0 10px;font-size:.9rem}
+.ng-askbox label{display:block;font-weight:700;font-size:.8rem;margin:8px 0 3px}
+.ng-askbox input,.ng-askbox textarea{width:100%;box-sizing:border-box;border:2px solid #12294a;border-radius:8px;background:#fffaf0;color:#12294a;padding:8px;font:inherit;font-size:.95rem}
+.ng-askbox textarea{min-height:150px;resize:vertical}
+.ng-askbox .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ng-askbox .row a,.ng-askbox .row button{border:2px solid #12294a;border-radius:10px;padding:8px 14px;font:700 .9rem Figtree,system-ui,sans-serif;cursor:pointer;text-decoration:none;background:#f5e4cc;color:#12294a}
+.ng-askbox .row .go{background:#12294a;color:#f5e4cc}
+</style>
+<script>
+(function(){
+  function el(t, a, h){ var e = document.createElement(t); if (a) for (var k in a) e.setAttribute(k, a[k]); if (h != null) e.textContent = h; return e; }
+  function open(to, nm){
+    var first = (nm || to.split('@')[0]).split(' ')[0];
+    var sub = 'Hello from NeshamaGazine';
+    var body = 'Hello ' + first + ',\n\nIt\'s interesting that I saw you on the NeshamaGazine website. Could you explain what happened? How did you get in, and who gave you the link?\n\nThank you,\nLevi\nNeshamaGazine';
+    var box = el('div', { 'class': 'ng-askbox', role: 'dialog', 'aria-label': 'Email a reader' }), inn = el('div', { 'class': 'in' });
+    inn.appendChild(el('h3', null, 'Email ' + (nm || to)));
+    inn.appendChild(el('p', null, 'Change anything you want, then pick how to send it.'));
+    inn.appendChild(el('label', null, 'To')); var iT = el('input', { type: 'email' }); iT.value = to; inn.appendChild(iT);
+    inn.appendChild(el('label', null, 'Subject')); var iS = el('input', { type: 'text' }); iS.value = sub; inn.appendChild(iS);
+    inn.appendChild(el('label', null, 'Message')); var iB = el('textarea'); iB.value = body; inn.appendChild(iB);
+    var row = el('div', { 'class': 'row' });
+    var gm = el('a', { 'class': 'go', target: '_blank', rel: 'noopener' }, 'Send with Gmail');
+    var ap = el('a', null, 'Send with my email app');
+    var cp = el('button', { type: 'button' }, 'Copy message');
+    var cl = el('button', { type: 'button' }, 'Close');
+    function links(){ gm.href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(iT.value) + '&su=' + encodeURIComponent(iS.value) + '&body=' + encodeURIComponent(iB.value);
+      ap.href = 'mailto:' + encodeURIComponent(iT.value) + '?subject=' + encodeURIComponent(iS.value) + '&body=' + encodeURIComponent(iB.value); }
+    [iT, iS, iB].forEach(function(i){ i.addEventListener('input', links); }); links();
+    cp.onclick = function(){ var t = iB.value; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ cp.textContent = 'Copied'; }, function(){ iB.select(); cp.textContent = 'Press Ctrl+C'; }); };
+    cl.onclick = function(){ box.remove(); };
+    box.addEventListener('click', function(e){ if (e.target === box) box.remove(); });
+    [gm, ap, cp, cl].forEach(function(b){ row.appendChild(b); }); inn.appendChild(row); box.appendChild(inn); document.body.appendChild(box); iB.focus();
+  }
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('.ng-ask'); if (!b) return; e.preventDefault(); e.stopPropagation(); if (b.dataset.to) open(b.dataset.to, b.dataset.nm); }, true);
+  window.NG_ASK = open;
+})();
+</script>
 </body>
 </html>
