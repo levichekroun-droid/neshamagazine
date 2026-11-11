@@ -9450,6 +9450,19 @@ html body #finder#finder *, html body #belt-panel#belt-panel#belt-panel, html bo
 <style id="ng-chanukah">
 .ch-band{background:#12294a;color:#f5e4cc;padding:34px max(16px,env(safe-area-inset-left,0px)) 30px;text-align:center;position:relative;overflow:hidden}
 .ch-band[hidden],.ch-sign[hidden],.ch-card[hidden]{display:none!important}
+html.ng-ch #countdown .cd-card{background:#f5e4cc!important;color:#12294a!important}
+html.ng-ch #countdown .cd-card *:not(img):not(.cd-thumb){color:#12294a!important;-webkit-text-stroke-color:#12294a!important}
+html.ng-ch #countdown .cd-card::after{background:#12294a!important}
+html.ng-ch #countdown #cd-read{background:#12294a!important;color:#f5e4cc!important;border-color:#12294a!important}
+html.ng-ch #countdown .cd-thumb{outline:3px solid #12294a}
+.ch-band.ch-wait{visibility:hidden}
+.ch-own{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin:18px auto 0;padding:10px 12px;max-width:640px;border:2px solid rgba(245,228,204,.6);border-radius:12px}
+.ch-own b{font:800 .78rem Figtree,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;opacity:.8;flex-basis:100%}
+.ch-own button{border:2px solid #f5e4cc;background:none;color:#f5e4cc;border-radius:999px;padding:7px 14px;font:800 .88rem Figtree,system-ui,sans-serif;cursor:pointer}
+.ch-own button.off{background:#f5e4cc;color:#12294a}
+.ch-own .ch-n{font:800 1.1rem Figtree,system-ui,sans-serif;min-width:2ch}
+.ch-own i{flex-basis:100%;font:600 .85rem Figtree,system-ui,sans-serif;font-style:normal;min-height:1.2em;opacity:.9}
+.ch-band.ch-hid>*:not(.ch-own){opacity:.35}
 .ch-kick{margin:0 0 4px;font:800 .82rem Figtree,system-ui,sans-serif;letter-spacing:.28em;text-transform:uppercase;opacity:.8}
 .ch-band h2{margin:0;font:800 clamp(1.8rem,4.4vw,2.8rem)/1.1 "Bricolage Grotesque",Figtree,system-ui,sans-serif;color:#f5e4cc;text-wrap:balance}
 .ch-sub{margin:8px auto 0;max-width:560px;font:600 1.02rem/1.45 Figtree,system-ui,sans-serif;opacity:.88}
@@ -9514,7 +9527,13 @@ html.ng-ch .tape{padding-top:70px!important}
       if (now >= st && now < end) return Math.min(8, Math.floor((now - st) / 864e5) + 1); }
     return 0;
   }
-  var N = night(); if (!N) return;
+  var N0 = night(); if (!N0) return; var N = N0;
+  var KEY = 'AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', DB = 'https://firestore.googleapis.com/v1/projects/neshamagazine/databases/(default)/documents';
+  var CFG = { menorah: true, music: true, snow: true, candles: null };   // the owner can change these for everyone
+  function isOwner(){ return !!(window.NG_IS_OWNER && NG_IS_OWNER()); }
+  var cfgP = fetch(DB + '/site/chanukah?key=' + KEY, { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){ if (d && d.fields && d.fields.data) try { var j = JSON.parse(d.fields.data.stringValue); for (var k in CFG) if (k in j) CFG[k] = j[k]; } catch(e){} }).catch(function(){});
+  var cfgReady = Promise.race([cfgP, new Promise(function(ok){ setTimeout(ok, 2500); })]);
   window.NG_CHANUKAH_NIGHT = N; document.documentElement.classList.add('ng-ch');
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function $(id){ return document.getElementById(id); }
@@ -9544,11 +9563,11 @@ html.ng-ch .tape{padding-top:70px!important}
   var ac = null;
   function actx(){ if (!ac){ try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} } if (ac && ac.state === 'suspended') ac.resume(); return ac; }
   function muted(){ return window.NG_SOUND && NG_SOUND.isMuted && NG_SOUND.isMuted(); }
-  function ding(f, d, vol){ if (muted()) return; var a = actx(); if (!a) return; var o = a.createOscillator(), g = a.createGain(), t = a.currentTime; o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(vol || .06, t); g.gain.exponentialRampToValueAtTime(.0001, t + (d || .5)); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + (d || .5) + .05); }
+  function ding(f, d, vol){ if (muted()) return; var a = actx(); if (!a) return; duck(); var o = a.createOscillator(), g = a.createGain(), t = a.currentTime; o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(vol || .06, t); g.gain.exponentialRampToValueAtTime(.0001, t + (d || .5)); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + (d || .5) + .05); }
   function chime(){ [784, 988, 1175, 1568].forEach(function(f, i){ setTimeout(function(){ ding(f, .45, .05); }, i * 90); }); }
 
   // ---- the menorah band in the middle of the page ----
-  var band = document.createElement('section'); band.className = 'ch-band'; band.id = 'ch-band'; band.setAttribute('aria-label', 'Chanukah');
+  var band = document.createElement('section'); band.className = 'ch-band ch-wait'; band.id = 'ch-band'; band.setAttribute('aria-label', 'Chanukah');
   var X = [58, 112, 166, 220, 300, 354, 408, 462], SX = 260;
   var m = '<svg id="ch-menorah" viewBox="0 0 520 300" aria-hidden="true"><defs><radialGradient id="chg"><stop offset="0" stop-color="#f2c230" stop-opacity=".55"/><stop offset="1" stop-color="#f2c230" stop-opacity="0"/></radialGradient></defs>';
   // arms
@@ -9563,15 +9582,32 @@ html.ng-ch .tape{padding-top:70px!important}
   m += cand(SX, 40, 'chs', 46);
   m += '</svg>';
   var music = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M9 17.5a3 3 0 1 1-2-2.83V5l12-2v11.5a3 3 0 1 1-2-2.83V6.3L9 7.6z"/></svg>';
-  band.innerHTML = '<p class="ch-kick">Happy Chanukah</p><h2>Night ' + N + ' of Chanukah</h2>' + m +
-    '<p class="ch-sub">' + (N === 8 ? 'All eight candles are lit tonight!' : 'A new candle lights up by itself every night. Tonight ' + N + (N > 1 ? ' candles are' : ' candle is') + ' lit.') + '</p>' +
+  band.innerHTML = '<p class="ch-kick">Happy Chanukah</p><h2 id="ch-h">Night ' + N + ' of Chanukah</h2>' + m +
+    '<p class="ch-sub" id="ch-subt"></p>' +
     '';
   var fin = $('finder'); if (fin) fin.parentNode.insertBefore(band, fin); else document.body.appendChild(band);
-  function lightUp(){
-    var order = ['chs']; for (var i = 8 - N; i < 8; i++) order.push('chc' + i);
-    order.forEach(function(id, k){ setTimeout(function(){ $(id).classList.add('on'); $(id + 'g').classList.add('on'); if (k) ding(660 + k * 60, .35, .03); }, reduce ? 0 : 500 + k * 380); });
+  function subText(){ $('ch-h').textContent = N ? 'Night ' + N + ' of Chanukah' : 'Happy Chanukah'; $('ch-subt').textContent = N === 8 ? 'All eight candles are lit tonight!' : N ? 'A new candle lights up by itself every night. Tonight ' + N + (N > 1 ? ' candles are' : ' candle is') + ' lit.' : 'The candles light up at sunset.'; }
+  function fire(){   // a soft match "fwoosh" with a little crackle
+    if (muted()) return; var a = actx(); if (!a || a.state !== 'running') return; duck();
+    var len = a.sampleRate * .9, buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0); for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (Math.random() < .004 ? 3 : 1);
+    var src = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain(), t = a.currentTime; src.buffer = buf; bp.type = 'bandpass'; bp.Q.value = .8;
+    bp.frequency.setValueAtTime(500, t); bp.frequency.exponentialRampToValueAtTime(2600, t + .12); bp.frequency.exponentialRampToValueAtTime(700, t + .8);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.22, t + .05); g.gain.exponentialRampToValueAtTime(.05, t + .3); g.gain.exponentialRampToValueAtTime(.0001, t + .85);
+    src.connect(bp); bp.connect(g); g.connect(a.destination); src.start(t); src.stop(t + .9);
   }
-  if ('IntersectionObserver' in window){ var io = new IntersectionObserver(function(es){ if (es[0].isIntersecting){ io.disconnect(); lightUp(); } }, { threshold: .4 }); io.observe(band); } else lightUp();
+  var lit = {};
+  function setLit(n, animate){
+    var want = ['chs']; for (var i = 8 - n; i < 8; i++) want.push('chc' + i);
+    var k = 0; ['chs', 'chc0', 'chc1', 'chc2', 'chc3', 'chc4', 'chc5', 'chc6', 'chc7'].forEach(function(id){ var on = n > 0 && want.indexOf(id) > -1;
+      if (on === !!lit[id]) return; lit[id] = on;
+      if (!on){ $(id).classList.remove('on'); $(id + 'g').classList.remove('on'); return; }
+      var delay = animate && !reduce ? 400 + (k++) * 520 : 0; setTimeout(function(){ if (!lit[id]) return; $(id).classList.add('on'); $(id + 'g').classList.add('on'); if (animate) fire(); }, delay); });
+  }
+  var shown = false;
+  function lightUp(){ shown = true; setLit(N, true); }
+  cfgReady.then(function(){ if (CFG.candles != null) N = CFG.candles; subText(); apply(); band.classList.remove('ch-wait');
+    if ('IntersectionObserver' in window){ var io = new IntersectionObserver(function(es){ if (es[0].isIntersecting){ io.disconnect(); lightUp(); } }, { threshold: .4 }); io.observe(band); } else lightUp(); });
+
 
   // ---- the sign above the belt ----
   var firstTape = document.querySelector('.tape');
@@ -9643,16 +9679,31 @@ html.ng-ch .tape{padding-top:70px!important}
   $('ch-card').addEventListener('click', function(e){ if (e.target === this) closeCard(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('ch-card').hidden) closeCard(); });
 
+  // ---- what the owner turned on or off ----
+  function apply(){
+    var own = isOwner();
+    band.hidden = !CFG.menorah && !own; band.classList.toggle('ch-hid', !CFG.menorah && own);
+    if (!CFG.music && typeof halt === 'function') halt();
+    ownUI();
+  }
   // ---- snow ----
   var cv = document.createElement('canvas'); cv.id = 'ch-snow'; cv.setAttribute('aria-hidden', 'true'); document.body.appendChild(cv);
   var g = cv.getContext('2d'), flakes = [], snowOn = true, dpr = Math.min(2, devicePixelRatio || 1);
-  function size(){ cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; var n = Math.round(Math.min(110, innerWidth / 13) * (reduce ? .3 : 1)); while (flakes.length < n) flakes.push(flake(true)); flakes.length = n; }
-  function flake(any){ return { x: Math.random() * innerWidth, y: any ? Math.random() * innerHeight : -10, r: 1.4 + Math.random() * 2.8, v: 18 + Math.random() * 36, w: Math.random() * 6.28, s: .5 + Math.random() }; }
+  function sprite(r){ var c = document.createElement('canvas'), d = Math.ceil(r * 2 + 2); c.width = c.height = d; var x = c.getContext('2d'), gr = x.createRadialGradient(d / 2, d / 2, 0, d / 2, d / 2, r);
+    gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.45, 'rgba(250,252,255,.9)'); gr.addColorStop(.75, 'rgba(214,225,240,.45)'); gr.addColorStop(1, 'rgba(214,225,240,0)'); x.fillStyle = gr; x.fillRect(0, 0, d, d); return c; }
+  var SPR = [1.6, 2.4, 3.4, 4.6, 6].map(sprite);
+  function size(){ cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; var n = Math.round(Math.min(150, innerWidth / 9) * (reduce ? .3 : 1)); while (flakes.length < n) flakes.push(flake(true)); flakes.length = n; }
+  function flake(any){ var z = Math.random(), sz = z < .45 ? 0 : z < .7 ? 1 : z < .87 ? 2 : z < .96 ? 3 : 4; return { x: Math.random() * innerWidth, y: any ? Math.random() * innerHeight : -12, s: sz, z: .35 + sz * .17, v: 14 + sz * 11 + Math.random() * 10, w: Math.random() * 6.28, ws: .4 + Math.random() * 1.1, a: .45 + sz * .12 }; }
   size(); addEventListener('resize', size);
-  var lastT = performance.now();
+  var lastT = performance.now(), wind = 0, gust = 0;
   (function fall(now){ var dt = Math.min(.05, (now - lastT) / 1000); lastT = now;
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, innerWidth, innerHeight);
-    if (snowOn && !document.hidden){ flakes.forEach(function(f){ f.y += f.v * dt * (reduce ? .4 : 1); f.w += dt * f.s; f.x += Math.sin(f.w) * 12 * dt; if (f.y > innerHeight + 6){ var n = flake(false); f.x = n.x; f.y = -6; } g.beginPath(); g.arc(f.x, f.y, f.r, 0, 6.29); g.fillStyle = '#ffffff'; g.fill(); g.lineWidth = .8; g.strokeStyle = 'rgba(18,41,74,.28)'; g.stroke(); }); }
+    if (snowOn && CFG.snow && !document.hidden){
+      gust += (Math.random() - .5) * dt * 30; gust *= Math.pow(.6, dt); wind = Math.sin(now / 9000) * 14 + Math.sin(now / 3100) * 6 + gust;
+      flakes.forEach(function(f){ f.y += f.v * dt * (reduce ? .4 : 1); f.w += dt * f.ws; f.x += (Math.sin(f.w) * 9 + wind * f.z) * dt;
+        if (f.y > innerHeight + 10 || f.x < -20 || f.x > innerWidth + 20){ var n = flake(false); n.x = Math.random() * innerWidth; for (var k in n) f[k] = n[k]; }
+        var sp = SPR[f.s]; g.globalAlpha = f.a; g.drawImage(sp, f.x - sp.width / 2, f.y - sp.height / 2); });
+      g.globalAlpha = 1; }
     requestAnimationFrame(fall); })(lastT);
 
   // ---- Chanukah music: real piano notes, from sheet music. It starts by itself after the first tap on the page ----
@@ -9691,13 +9742,41 @@ html.ng-ch .tape{padding-top:70px!important}
     clearTimeout(songT); songT = setTimeout(function(){ playSong(songI + 1); }, (total + 1.6) * 1000);   // the next song comes by itself
   }
   function begin(){
-    if (started || muted()) return; started = true;
+    if (started || muted() || !CFG.music) return; started = true;
     load().then(function(){ if (!started) return; master = ac.createGain(); master.gain.value = 0; master.gain.setTargetAtTime(.32, ac.currentTime, .4); master.connect(ac.destination); playSong(songI); });
   }
+  var MUSIC_VOL = .32, duckT = null;
+  function duck(){ if (!master || !ac) return; master.gain.setTargetAtTime(.1, ac.currentTime, .08); clearTimeout(duckT); duckT = setTimeout(function(){ if (master) master.gain.setTargetAtTime(MUSIC_VOL, ac.currentTime, .5); }, 1400); }
   function halt(){ started = false; clearTimeout(songT); if (master){ var m0 = master; m0.gain.setTargetAtTime(0, ac.currentTime, .15); setTimeout(function(){ try { m0.disconnect(); } catch(e){} }, 800); master = null; } }
   ['pointerdown', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ actx(); begin(); }, { capture: true, passive: true }); });
   setInterval(function(){ if (muted() && started) halt(); }, 800);   // the sound switch in Settings still turns it off
   document.addEventListener('visibilitychange', function(){ if (master && ac) master.gain.setTargetAtTime(document.hidden ? 0 : .32, ac.currentTime, .2); });
+  function tokenP(){
+    var rt = ls('ng_fb_rt'); if (!rt) return Promise.reject(new Error('Open the Owner Panel and connect first.'));
+    return fetch('https://securetoken.googleapis.com/v1/token?key=' + KEY, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(rt) })
+      .then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error('Please connect again in the Owner Panel.'); if (j.refresh_token) ls('ng_fb_rt', j.refresh_token); return j.id_token; }); });
+  }
+  function save(){
+    var m = band.querySelector('.ch-own i'); if (m) m.textContent = 'Saving\u2026';
+    return tokenP().then(function(t){ return fetch(DB + '/site/chanukah?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(CFG) } } }) }); })
+      .then(function(r){ if (!r.ok) throw new Error('Could not save. Try again.'); if (m) m.textContent = 'Saved. Everyone sees this now.'; })
+      .catch(function(e){ if (m) m.textContent = e.message; });
+  }
+  function ownUI(){
+    var box = band.querySelector('.ch-own');
+    if (!isOwner()){ if (box) box.remove(); return; }
+    if (!box){ box = document.createElement('div'); box.className = 'ch-own'; band.appendChild(box);
+      box.addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; var a = b.dataset.a;
+        if (a === 'menorah' || a === 'music' || a === 'snow'){ CFG[a] = !CFG[a]; if (a === 'music'){ if (CFG.music){ started = false; begin(); } else halt(); } }
+        else if (a === 'minus' || a === 'plus'){ N = Math.max(0, Math.min(8, N + (a === 'plus' ? 1 : -1))); CFG.candles = N; setLit(N, true); subText(); }
+        else if (a === 'auto'){ CFG.candles = null; N = N0; setLit(N, true); subText(); }
+        apply(); save(); }); }
+    function sw(k, label){ return '<button type="button" data-a="' + k + '" class="' + (CFG[k] ? '' : 'off') + '">' + label + ': ' + (CFG[k] ? 'on' : 'paused') + '</button>'; }
+    box.innerHTML = '<b>Only you see this</b>' + sw('menorah', 'Menorah') + sw('music', 'Music') + sw('snow', 'Snow') +
+      '<button type="button" data-a="minus" aria-label="One less candle">&minus; candle</button><span class="ch-n">' + N + '</span><button type="button" data-a="plus" aria-label="One more candle">+ candle</button>' +
+      (CFG.candles != null ? '<button type="button" data-a="auto">Back to automatic</button>' : '') + '<i>' + (!CFG.menorah ? 'The menorah is hidden for visitors.' : '') + '</i>';
+  }
+  document.addEventListener('ng:owner', function(){ apply(); });
   window.NG_CH_TEST = { grab: grab, drop: drop, card: showCard, music: function(){ return { started: started, notes: Object.keys(bufs).length, playing: !!master, song: songI }; } };
 })();
 </script>
