@@ -1491,6 +1491,8 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
 </head>
 <body>
 <script type="application/json" id="ng-config">{"emailjsService": "service_bxqaqrf", "emailjsTemplate": "template_l7jrme1", "emailjsMsgTemplate": "template_i8llobo", "emailjsKey": "Rx0eirUCwTvkK7CWd", "nextIssueDate": "2026-10-16T00:00", "nextIssueTitle": "The next issue drops in…", "teamProgress": 60, "announcement": "", "offers": [{"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "Want the next issue first?", "p": "Get an email the day a new issue is out.", "yes": "Notify me"}, {"t": "Don't miss an issue", "p": "We'll send you a short email when the next one is ready.", "yes": "Notify me"}, {"t": "New comics and stories", "p": "Get an email when we post something new.", "yes": "Notify me"}, {"t": "New issues by email", "p": "One short email when a new issue comes out. That's it.", "yes": "Notify me"}, {"t": "Stay in the loop", "p": "Get an email when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}], "videosLive": false, "videos": [], "tzedakaLive": true, "stripeLink": "https://www.paypal.com/donate/?hosted_button_id=JWML6XVRCWSJL", "teamDone": false, "teamMessage": "Neshama Robo 2.5 is still building this page. Soon you'll meet the kids who write, draw and make NeshamaGazine!", "teamMembers": [], "nextIssueCover": "", "announceSize": "normal", "announceColor": "sunset", "announceCustom": "#e4493c"}</script>
+<style>html.ng-working body > *:not(#ng-frozen),html.ng-frozen-lock body > *:not(#ng-frozen){display:none!important}html.ng-working #ng-frozen,html.ng-frozen-lock #ng-frozen{display:flex!important;position:fixed;inset:0;z-index:2147483646}html.ng-working,html.ng-working body,html.ng-frozen-lock,html.ng-frozen-lock body{overflow:hidden!important}</style>
+<script>try { if (localStorage.getItem('ng_fixing') === '1' && sessionStorage.getItem('ng_work_pass') !== '1') document.documentElement.classList.add('ng-working'); } catch(e){}</script>
 <script>window.NG_CFG = JSON.parse(document.getElementById('ng-config').textContent);
 window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.dataset.sure === '1'){ delete b.dataset.sure; clearTimeout(b._sureT); if (b.dataset.t0 != null) b.textContent = b.dataset.t0; return true; }
   b.dataset.t0 = b.textContent; b.dataset.sure = '1'; b.textContent = label || 'Press again to confirm'; b._sureT = setTimeout(function(){ if (b.dataset.sure){ delete b.dataset.sure; b.textContent = b.dataset.t0; } }, 4000); return false; };</script>
@@ -4544,8 +4546,17 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   // while the technicians (Claude) are working on the site, everyone sees the technician screen; when the work is done it loads the new version
   var base = location.pathname.indexOf('/neshamagazine/') > -1 ? location.pathname.slice(0, location.pathname.indexOf('/neshamagazine/') + 15) : '/', working = false, stepT = 0;
   var STEPS = ['The technician team is working', 'Tightening the bolts', 'Oiling the conveyor belt', 'Checking every page', 'Testing the games', 'Almost there'];
+  function pass(){ try { return sessionStorage.getItem('ng_work_pass') === '1'; } catch(e){ return false; } }
+  var ovRef = null;
+  function lockOn(){ if (!working || pass()) return; var R = document.documentElement, ov = ovRef = document.getElementById('ng-frozen') || ovRef; if (!R.classList.contains('ng-working')) R.classList.add('ng-working'); if (ov){ if (ov.hidden) ov.hidden = false; if (ov.style.display === 'none') ov.style.display = 'flex'; if (ov.parentNode !== document.body) document.body.appendChild(ov); } }
+  document.addEventListener('DOMContentLoaded', function(){ ovRef = document.getElementById('ng-frozen'); });
+  new MutationObserver(lockOn).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('DOMContentLoaded', function(){ new MutationObserver(lockOn).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'style', 'class'] }); });
+  setInterval(lockOn, 1000);
   function showWork(msg){
-    var ov = document.getElementById('ng-frozen'); if (!ov) return; working = true; window.NG_UPDATING = true; ov.classList.add('ng-updating');
+    try { localStorage.setItem('ng_fixing', '1'); } catch(e){}
+    if (pass()){ working = true; return; }
+    var ov = document.getElementById('ng-frozen'); if (!ov) return; working = true; document.documentElement.classList.add('ng-working'); window.NG_UPDATING = true; ov.classList.add('ng-updating');
     var m = document.getElementById('ngf-msg'), st = document.getElementById('fz-step'), bar = ov.querySelector('.fz-prog i'), lg = ov.querySelector('.fz-logo'), any = document.querySelector('a[aria-label="NeshamaGazine home"] img');
     if (lg && !lg.getAttribute('src') && any) lg.src = any.src;
     if (m) m.textContent = msg || "We're fixing something right now. Back very soon!";
@@ -4556,10 +4567,11 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   function work(){
     fetch(base + 'status.json?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
       if (j && j.fixing){ if (!working) showWork(j.msg); }
-      else if (working){ working = false; clearInterval(stepT); try { sessionStorage.setItem('ng_upd_last', String(Date.now())); } catch(e){} fixing(true); }
+      else if (!working && document.documentElement.classList.contains('ng-working')){ try { localStorage.removeItem('ng_fixing'); } catch(e){} document.documentElement.classList.remove('ng-working'); }
+      else if (working){ working = false; try { localStorage.removeItem('ng_fixing'); sessionStorage.removeItem('ng_work_pass'); } catch(e){} document.documentElement.classList.remove('ng-working'); clearInterval(stepT); try { sessionStorage.setItem('ng_upd_last', String(Date.now())); } catch(e){} fixing(true); }
     }).catch(function(){});
   }
-  work(); setInterval(work, 15000); document.addEventListener('visibilitychange', function(){ if (!document.hidden) work(); });
+  work(); setInterval(work, 5000); document.addEventListener('visibilitychange', function(){ if (!document.hidden) work(); });
   check(); setInterval(check, 30000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
 })();
@@ -4682,6 +4694,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     $('ngf-msg').textContent = (fmsg || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, '').trim() || "We're fixing something. Back very soon!";
     var parts = partsOf(), whole = frozen && parts.indexOf('all') > -1;
     if (!window.NG_UPDATING) ov.hidden = !(whole || window.NG_FIX_DEMO) || isOwner(); bar.hidden = !(frozen && isOwner());
+    document.documentElement.classList.toggle('ng-frozen-lock', !!(whole && !isOwner()));
     var bt = bar.querySelector('.fzb-txt'); if (bt) bt.textContent = whole ? 'The whole website is frozen. Visitors see the technician screen. Only you can use it.' : partNames(parts) + (parts.length > 1 ? ' are' : ' is') + ' frozen. Visitors see "We\'re fixing something." Only you can see ' + (parts.length > 1 ? 'them' : 'it') + '.';
     freezeParts(frozen && !whole && !isOwner() ? parts : []);
     var peek = false; try { peek = isOwner() && sessionStorage.getItem('ng_soon_peek') === '1'; } catch(e){}
@@ -4796,7 +4809,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   if ($('cs-go')){
     $('cs-go').addEventListener('click', function(){
       var want = !soon, m = $('cs-msg').value.trim();
-      if (want && !NG_SURE(this, 'Press again: show it to everyone')) return;
+      
       $('cs-status').textContent = want ? 'Turning on…' : 'Turning off…';
       patchStatus(want ? { soon:true, soonMsg: m } : { soon:false }).then(function(){ $('cs-status').textContent = ''; }).catch(function(e){ $('cs-status').textContent = ' ' + e.message; });
     });
@@ -4827,10 +4840,14 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
       var pick = Array.prototype.filter.call($('fz-what').querySelectorAll('input'), function(i){ return i.checked; }).map(function(i){ return i.value; });
       if (pick.indexOf('all') > -1) pick = ['all'];
       if (want && !pick.length){ $('fz-status').textContent = 'Pick what to freeze first.'; return; }
-      if (want && !NG_SURE(this, 'Press again: freeze ' + partNames(pick))) return;
+      
       $('fz-status').textContent = want ? 'Freezing…' : 'Unfreezing…';
       patchStatus({ frozen: want, msg: want ? msg : '', theme: want ? 'freeze:' + pick.join(',') : '' })
-        .then(function(){ if (window.NG && NG.toast) NG.toast(want ? ' The website is frozen for visitors.' : ' The website is open again!'); })
+        .then(function(){ return api('GET', DB + '/site/status'); })
+        .then(function(j){ var on = !!(j && j.fields && j.fields.frozen && j.fields.frozen.booleanValue);
+          if (on !== want){ $('fz-status').textContent = 'It did not save. Connect Firebase in the Owner Panel and try again.'; return; }
+          $('fz-status').textContent = want ? 'FROZEN for everyone now. Visitors see it within 10 seconds.' : 'Open for everyone again.';
+          if (window.NG && NG.toast) NG.toast(want ? 'Frozen for everyone. Visitors see it within 10 seconds.' : 'The website is open again!'); })
         .catch(function(e){ $('fz-status').textContent = ' ' + e.message; });
     });
   }
@@ -9976,7 +9993,7 @@ html.ng-ch .tape{padding-top:70px!important}
     if (!window.NG_OWNER_CHECK){ m.textContent = 'One second, still loading.'; return; }
     m.textContent = 'Checking…';
     NG_OWNER_CHECK(em, pw).then(function(r){
-      if (r === 'owner'){ m.textContent = ''; door.hidden = true; document.getElementById('ngf-pw').value = ''; window.NG_UPDATING = false; ov.classList.remove('ng-updating'); ov.hidden = true; ov.style.display = ''; }
+      if (r === 'owner'){ try { sessionStorage.setItem('ng_work_pass', '1'); } catch(e){} document.documentElement.classList.remove('ng-working'); m.textContent = ''; door.hidden = true; document.getElementById('ngf-pw').value = ''; window.NG_UPDATING = false; ov.classList.remove('ng-updating'); ov.hidden = true; ov.style.display = ''; }
       else m.textContent = r === 'locked' ? 'Too many wrong tries. Locked for 15 minutes.' : 'That is not the owner.';
     });
   });
