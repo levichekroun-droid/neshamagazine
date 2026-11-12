@@ -4556,14 +4556,25 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     function line(){ var sec = Math.floor((Date.now() - t0) / 1000); if (st) st.textContent = STEPS[k] + '\u2026  (working for ' + Math.floor(sec / 60) + ':' + ('0' + sec % 60).slice(-2) + ')'; }
     clearInterval(stepT); stepT = setInterval(function(){ if (!working) return clearInterval(stepT); if (Math.floor((Date.now() - t0) / 1000) % 5 === 0) k = (k + 1) % STEPS.length; line(); }, 1000); line();
   }
+  var ghTag = '', ghVal = null, ghOff = 0;
+  function readSwitch(){
+    var slow = function(){ return fetch(base + 'status.json?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }); };
+    if (Date.now() < ghOff) return slow();
+    var h = { Accept: 'application/vnd.github.raw+json' }; if (ghTag) h['If-None-Match'] = ghTag;
+    return fetch('https://api.github.com/repos/levichekroun-droid/neshamagazine/contents/status.json?ref=main', { headers: h, cache: 'no-store' }).then(function(r){
+      if (r.status === 304 && ghVal) return ghVal;
+      if (!r.ok) throw new Error('gh');
+      ghTag = r.headers.get('ETag') || ''; return r.json().then(function(j){ ghVal = j; return j; });
+    }).catch(function(){ ghOff = Date.now() + 10 * 60000; return slow(); });
+  }
   function work(){
-    fetch(base + 'status.json?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+    readSwitch().then(function(j){
       if (j && j.fixing){ if (!working) showWork(j.msg); }
       else if (!working && document.documentElement.classList.contains('ng-working')){ try { localStorage.removeItem('ng_fixing'); } catch(e){} document.documentElement.classList.remove('ng-working'); }
       else if (working){ working = false; try { localStorage.removeItem('ng_fixing'); sessionStorage.removeItem('ng_work_pass'); } catch(e){} document.documentElement.classList.remove('ng-working'); clearInterval(stepT); try { sessionStorage.setItem('ng_upd_last', String(Date.now())); } catch(e){} fixing(true); }
     }).catch(function(){});
   }
-  work(); setInterval(work, 5000); document.addEventListener('visibilitychange', function(){ if (!document.hidden) work(); });
+  work(); setInterval(work, 3000); document.addEventListener('visibilitychange', function(){ if (!document.hidden) work(); });
   check(); setInterval(check, 30000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
 })();
@@ -4806,7 +4817,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
       patchStatus(want ? { soon:true, soonMsg: m } : { soon:false }).then(function(){ $('cs-status').textContent = ''; }).catch(function(e){ $('cs-status').textContent = ' ' + e.message; });
     });
   }
-  readStatus(); setInterval(readStatus, 10000);
+  readStatus(); setInterval(readStatus, 10000); window.NG_STATUS_PING = readStatus;
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) readStatus(); });
   document.addEventListener('ng:owner', show);
   // which parts are frozen ("theme" holds them now, since the Yom Tov picker is gone)
@@ -5045,7 +5056,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     function loadFB(){
       if (fbP) return fbP;
       function add(u){ return new Promise(function(ok, no){ var t = document.createElement('script'); t.src = u; t.onload = ok; t.onerror = no; document.head.appendChild(t); }); }
-      fbP = add('https://www.gstatic.com/firebasejs/' + FBV + '/firebase-app-compat.js').then(function(){ return add('https://www.gstatic.com/firebasejs/' + FBV + '/firebase-auth-compat.js'); })
+      fbP = (window.firebase && firebase.initializeApp ? Promise.resolve() : add('https://www.gstatic.com/firebasejs/' + FBV + '/firebase-app-compat.js')).then(function(){ return add('https://www.gstatic.com/firebasejs/' + FBV + '/firebase-auth-compat.js'); })
         .then(function(){ if (!firebase.apps.length) firebase.initializeApp({ apiKey: KEY, authDomain: 'neshamagazine.firebaseapp.com', projectId: 'neshamagazine' }); return firebase; })
         .catch(function(e){ fbP = null; throw e; });
       return fbP;
@@ -6474,7 +6485,7 @@ document.getElementById('cp').addEventListener('click',function(){
         if (b){ ban(b.note || ''); return; }
         if (rs && rs > (+ls('ng_sec_reset_' + k) || 0)){ ls('ng_sec_reset_' + k, rs); ls('ng_sec_' + k, null); var dd = devRec(); if (!dd.email || dd.email === em) ls('ng_sec_dev', null); checked = ''; banned = false; unblockScreen(); return; }
         if (banned) unban(); }).catch(function(){}); }
-  setTimeout(banPoll, 1500); setInterval(banPoll, 15000); document.addEventListener('ng:login', banPoll);
+  setTimeout(banPoll, 1500); setInterval(banPoll, 15000); window.NG_BAN_PING = banPoll; document.addEventListener('ng:login', banPoll);
   check(); setInterval(check, 3000);
   document.addEventListener('ng:owner', check);
 
@@ -10056,7 +10067,7 @@ html.ng-ch .tape{padding-top:70px!important}
     keys: function(){ return open ? keys : null; },
     loggedIn: function(){ return !!who(); }
   };
-  document.addEventListener('ng:login', function(){ cache = {}; migrate(); pull(); });
+  document.addEventListener('ng:login', function(){ cache = {}; migrate(); if (window.NG_WALLET_CHANGED) NG_WALLET_CHANGED(); pull(); });
   setTimeout(function(){ migrate(); pull(); }, 1500);
 })();
 </script>
@@ -10103,16 +10114,16 @@ html.ng-ch .tape{padding-top:70px!important}
   var SAVE = NG_WALLET.load();
   var WK = NG_WALLET.keys();
   function save(){ if (WK) WK.save(SAVE); }
-  window.NG_WALLET_CHANGED = function(){ SAVE = NG_WALLET.load(); };
+  window.NG_WALLET_CHANGED = function(){ SAVE = NG_WALLET.load(); SAVE.own.steel = 1; };
   SAVE.own.steel = 1;
   var SKINS = [
     { id: 'steel', name: 'Classic Steel', cost: 0, a: '#d7dde6', b: '#8a96a8', stripe: '#f2c230', power: 'No power. The original.' },
-    { id: 'gold', name: 'Golden Robo', cost: 120, a: '#f6dc8a', b: '#c89a3a', stripe: NAV, power: 'MIDAS TOUCH: every coin counts double.', pw: ['midas'] },
-    { id: 'navy', name: 'Midnight Navy', cost: 200, a: '#3a5a8a', b: '#12294a', stripe: BEI, power: 'NIGHT SHIELD: a 15-second shield at the start of every level.', pw: ['night'] },
-    { id: 'paper', name: 'Newsprint', cost: 250, a: '#fbf1e1', b: '#d9c6a4', stripe: NAV, print: true, power: 'PAPER GLIDE: hold JUMP in the air to float down slowly.', pw: ['glide'] },
-    { id: 'spy', name: 'Secret Agent', cost: 300, a: '#4a5462', b: '#1f2630', stripe: GOLD, shades: true, power: 'LASER PROOF: lasers, drones and paper planes cannot touch you.', pw: ['agent'] },
-    { id: 'fire', name: 'Fire Bot', cost: 400, a: '#f08a2c', b: '#b8352b', stripe: '#f6dc8a', fire: true, power: 'TURBO ROCKET: the rocket fills twice as fast and flies longer.', pw: ['turbo'] },
-    { id: 'legend', name: 'NeshamaGazine Legend', cost: 600, a: '#1d3a64', b: '#0b1a30', stripe: GOLD, crown: true, power: 'ALL THE POWERS: double coins, night shield, glide, laser proof and turbo rocket.', pw: ['midas', 'night', 'glide', 'agent', 'turbo'] }
+    { id: 'gold', name: 'Golden Robo', cost: 120, a: '#f6dc8a', b: '#c89a3a', stripe: NAV, power: 'MIDAS TOUCH: every coin is worth 2, and coins fly to you by themselves.', pw: ['midas'] },
+    { id: 'navy', name: 'Midnight Navy', cost: 200, a: '#3a5a8a', b: '#12294a', stripe: BEI, power: 'GHOST MODE: go right through anything that would crash you. Charges again every 8 seconds.', pw: ['ghost'] },
+    { id: 'paper', name: 'Newsprint', cost: 250, a: '#fbf1e1', b: '#d9c6a4', stripe: NAV, print: true, power: 'PAPER PLANE: 4 jumps, and hold JUMP in the air to fly like a paper plane.', pw: ['glide'] },
+    { id: 'spy', name: 'Secret Agent', cost: 300, a: '#4a5462', b: '#1f2630', stripe: GOLD, shades: true, power: 'LASER PROOF: lasers, drones, planes and swinging hooks go right through you.', pw: ['agent'] },
+    { id: 'fire', name: 'Fire Bot', cost: 400, a: '#f08a2c', b: '#b8352b', stripe: '#f6dc8a', fire: true, power: 'FIRE SMASH: you burn right through boxes, forklifts and gears. The rocket also fills twice as fast.', pw: ['smash', 'turbo'] },
+    { id: 'legend', name: 'NeshamaGazine Legend', cost: 600, a: '#1d3a64', b: '#0b1a30', stripe: GOLD, crown: true, power: 'THE KING: every power at once. Double coins, ghost mode, paper plane, laser proof and fire smash.', pw: ['midas', 'ghost', 'glide', 'agent', 'smash', 'turbo'] }
   ];
   function P(id){ var sk = skin(); return !!(sk.pw && sk.pw.indexOf(id) > -1); }
   var previewSkin = null, gTab = 'skins', gSel = null;
@@ -10146,7 +10157,7 @@ html.ng-ch .tape{padding-top:70px!important}
     S = { lv: lv, dist: (lv - 1) * LV_LEN * 10, lvStart: (lv - 1) * LV_LEN * 10, speed: 320 + (lv - 1) * 28, y: 0, vy: 0, air: 0, maxAir: SAVE.own.triple ? 3 : 2, rot: 0, spin: 0, flipDir: 0, slide: 0, slip: 0, dive: false,
       things: [], parts: [], pops: [], spawn: 1, cspawn: .8, coins: 0, stars: 0, mags: 0, tricks: 0, pts: 0, chain: 0, chainT: 0, mult: 1,
       meter: 0, rocket: 0, chute: 0, shield: SAVE.own.shield ? 20 : 0, magnet: 0, inv: 0, squash: 0, banner: null, wind: 0, bolt: 0 };
-    S.count = 2.2; levelBanner(); if (P('night')) S.shield = Math.max(S.shield, 15);
+    S.count = 2.2; levelBanner(); S.ghost = P('ghost') ? 8 : 0; if (P('glide')) S.maxAir += 2;
   }
   function levelBanner(){ var L = LEVELS[Math.min(S.lv, LEVELS.length) - 1]; S.banner = { t: 'LEVEL ' + S.lv, s: S.lv > LEVELS.length ? 'ENDLESS RUN' : L.name, tip: S.lv > LEVELS.length ? 'How far can you go?' : L.tip, life: 2.6 }; }
   function lvInfo(){ return LEVELS[Math.min(S.lv, LEVELS.length) - 1]; }
@@ -10243,27 +10254,29 @@ html.ng-ch .tape{padding-top:70px!important}
     S.speed = Math.min(S.speed + dt * 6, 320 + (S.lv - 1) * 28 + 160); S.dist += v * dt;
     // next level
     var lvNow = Math.floor(S.dist / (LV_LEN * 10)) + 1;
-    if (lvNow > S.lv){ S.lv = lvNow; S.speed += 24; if (S.lv > SAVE.maxLv){ SAVE.maxLv = S.lv; save(); } levelBanner(); if (P('night')){ S.shield = Math.max(S.shield, 15); pop(RX, GROUND - 130, 'NIGHT SHIELD!', true); } tune([659, 784, 988, 1318], 90); burst(W / 2, H / 3, 60, BEI); burst(W / 2, H / 3, 40, GOLD); }
+    if (lvNow > S.lv){ S.lv = lvNow; S.speed += 24; if (S.lv > SAVE.maxLv){ SAVE.maxLv = S.lv; save(); } levelBanner(); tune([659, 784, 988, 1318], 90); burst(W / 2, H / 3, 60, BEI); burst(W / 2, H / 3, 40, GOLD); }
     // the robot
     if (S.rocket > 0){
       S.rocket -= dt; S.vy += (hold ? 1500 : -900) * dt; S.vy = Math.max(-420, Math.min(420, S.vy)); S.y = Math.max(0, Math.min(GROUND - 70, S.y + S.vy * dt)); if (S.y === 0 && S.vy < 0) S.vy = 0;
       S.parts.push({ x: RX + 6, y: GROUND - S.y - 14, vx: -260 - Math.random() * 80, vy: (Math.random() - .5) * 60, l: .35, c: Math.random() < .5 ? GOLD : '#e4493c', s: 4 + Math.random() * 4, g: 0 });
-      if (S.rocket <= 0){ S.chute = 1; S.inv = 1.4; S.vy = 0; S.air = 1; pop(RX, GROUND - S.y - 60, 'OUT OF FUEL!', true); }
+      if (S.rocket <= 0){ S.chute = 1; S.inv = .3; S.vy = 0; S.air = 1; S.shield = Math.max(S.shield, 6); pop(RX, GROUND - S.y - 60, 'EJECT! SHIELD ON', true); snd(500, 1200, .25, .05, 'triangle'); }
     } else {
-      S.vy -= (S.dive ? 3300 : S.chute ? 500 : 1800) * dt; if (P('glide') && hold === true && S.vy < -150 && !S.dive) S.vy = -150; if (S.chute && S.vy < -120) S.vy = -120;
+      S.vy -= (S.dive ? 3300 : S.chute ? 500 : 1800) * dt; if (P('glide') && hold === true && S.air && S.vy < -60 && !S.dive){ S.vy = -60; S.gliding = .15; } if (S.chute && S.vy < -120) S.vy = -120;
       S.y = Math.max(0, S.y + S.vy * dt);
     }
     if (S.flipDir){ S.spin += dt * Math.PI * 2 / .5; if (S.spin >= Math.PI * 2){ S.spin = 0; S.flipDir = 0; S.tricks += 25; gain(25, RX, GROUND - S.y - 100, S.air > 2 ? 'TRIPLE FLIP!' : 'FLIP!'); snd(880, 1320, .14, .05); } }
     if (S.y === 0 && S.rocket <= 0){ if (S.air || S.chute){ if (S.dive){ shake = 7; dust(RX + 20, GROUND, 14); pop(RX, GROUND - 60, 'GROUND POUND!', true); snd(160, 80, .2, .08, 'square'); } else dust(RX + 20, GROUND, 6); S.squash = .3; S.air = 0; S.dive = false; S.chute = 0; if (S.flipDir){ S.flipDir = 0; S.spin = 0; } } S.vy = 0; }
     S.squash *= Math.pow(.001, dt);
     if (S.slide > 0){ S.slide -= dt; if (S.slide <= 0 && hold === 'down') S.slide = .1; if (Math.random() < .5) S.parts.push({ x: RX + 4, y: GROUND - 2, vx: -200, vy: -60 * Math.random(), l: .25, c: GOLD, s: 2.5, g: 300 }); }
+    if (S.gliding > 0) S.gliding -= dt; if (S.phase > 0) S.phase -= dt;
+    if (P('ghost') && S.ghost < 8){ S.ghost += dt; if (S.ghost >= 8){ S.ghost = 8; pop(RX, GROUND - S.y - 110, 'GHOST READY', false); snd(700, 1100, .12, .04, 'triangle'); } }
     if (S.slip > 0) S.slip -= dt; if (S.inv > 0) S.inv -= dt; if (S.magnet > 0) S.magnet -= dt; if (S.shield > 0){ S.shield -= dt; if (S.shield <= 0){ S.shield = 0; S.inv = .8; pop(RX, GROUND - 120, 'SHIELD GONE', false); snd(600, 200, .25, .05, 'triangle'); } } if (S.chainT > 0){ S.chainT -= dt; if (S.chainT <= 0){ S.chain = 0; S.mult = 1; } }
     // spawn
     if (S.rocket > 0){ S.spawn -= dt; if (S.spawn <= 0){ spawnAir(); S.spawn = .45 + Math.random() * .5; } }
     else { S.spawn -= dt; if (S.spawn <= 0){ spawnGround(); S.spawn = Math.max(.6, 1.05 + Math.random() * .9 - S.lv * .04); } S.cspawn -= dt; if (S.cspawn <= 0){ spawnTreats(); S.cspawn = 1.2 + Math.random() * 1.4; } }
     if (S.lv === 8 || S.lv === 18){ S.wind += dt; if (Math.random() < dt * .25){ flash = .5; snd(120, 40, .6, .06, 'sawtooth'); } }
     // move things
-    var rh = (S.slide > 0 || S.slip > 0) ? 34 : 66, rw = 48, rx = RX, ry = GROUND - S.y - rh, mag = S.magnet > 0 ? (SAVE.own.magnet ? 300 : 170) : 0;
+    var rh = (S.slide > 0 || S.slip > 0) ? 34 : 66, rw = 48, rx = RX, ry = GROUND - S.y - rh, mag = S.magnet > 0 ? (SAVE.own.magnet ? 300 : 170) : P('midas') ? 140 : 0;
     S.things.forEach(function(t){
       t.x -= v * dt + (t.extra || 0) * dt;
       if (t.fly){ t.x += t.fly.vx * dt; t.y += t.fly.vy * dt; t.fly.vy -= 1100 * dt; t.fly.rot += t.fly.spin * dt; return; }
@@ -10277,14 +10290,16 @@ html.ng-ch .tape{padding-top:70px!important}
       if (t.k === 'gap'){ if (S.y <= 0.5 && S.rocket <= 0 && rx + 14 > tx && rx + rw - 14 < tx + tw){ S.vy = -300; S.y = -1; hit(t); if (mode !== 'play') return; } continue; }
       if (t.k === 'laser'){ t.on = ((time + t.ph) % 1.8) < 1.1; if (!t.on) continue; }
       if (!(rx + 8 < tx + tw && rx + rw - 8 > tx && ry + 6 < ty + th && ry + rh - 3 > ty + 3)) continue;
-      if (t.k === 'coin'){ t.got = true; S.coins += P('midas') ? 2 : 1; fill(1); gain(P('midas') ? 20 : 10, tx, ty); burst(tx + 10, ty + 10, 6); snd(988 + S.mult * 60, 1480, .09, .04, 'square'); }
+      if (t.k === 'coin'){ t.got = true; S.coins += P('midas') ? 2 : 1; fill(1); gain(P('midas') ? 20 : 10, tx, ty); burst(tx + 10, ty + 10, P('midas') ? 14 : 6, P('midas') ? GOLD : undefined); snd(988 + S.mult * 60, 1480, .09, .04, 'square'); }
       else if (t.k === 'star'){ t.got = true; S.stars++; fill(6); gain(50, tx, ty, 'STAR'); burst(tx + 16, ty + 16, 18); tune([784, 988, 1318], 60); }
       else if (t.k === 'mag'){ t.got = true; S.mags++; fill(5); gain(100, tx, ty, 'ISSUE'); burst(tx + 15, ty + 20, 22, BEI); tune([659, 880, 1175, 1568], 60); }
       else if (t.k === 'fuel'){ t.got = true; S.rocket += 1.6; pop(tx, ty, 'FUEL +1.6s', true); snd(400, 900, .2, .05); }
       else if (t.k === 'pow'){ t.got = true; if (t.p === 'magnet'){ S.magnet = SAVE.own.magnet ? 10 : 6; pop(tx, ty, 'MAGNET!', true); } else { S.shield = 60; pop(tx, ty, 'SHIELD 1 MINUTE!', true); } tune([523, 784, 1046], 70); }
       else if (t.k === 'peel' || t.k === 'oil'){ if (S.y < 4 && S.slip <= 0 && !t.used){ t.used = true; S.slip = 1.3; S.slide = 0; if (t.k === 'peel') t.fly = { vx: 260, vy: 520, rot: 0, spin: 14 }; snd(620, 140, .5, .06, 'sawtooth'); pop(tx, ty - 34, t.k === 'peel' ? 'SLIIIP!' : 'WHOA, INK!', true); shake = 4; } }
       else if (t.k === 'spring'){ if (S.vy <= 0 && !t.used){ t.used = true; S.vy = 1050; S.air = 1; S.dive = false; S.chute = 0; snd(200, 950, .35, .06); pop(tx, ty - 34, 'BOING!', true); } }
-      else if (P('agent') && (t.k === 'laser' || t.k === 'drone' || t.k === 'plane')){ if (!t.dodged){ t.dodged = 1; pop(tx, ty - 24, 'CAN\'T TOUCH ME', false); } }
+      else if (P('agent') && (t.k === 'laser' || t.k === 'drone' || t.k === 'plane' || t.k === 'swing' || t.k === 'sign')){ if (!t.dodged){ t.dodged = 1; pop(tx, ty - 24, 'CAN\'T TOUCH ME', false); snd(1200, 1600, .06, .03, 'square'); } }
+      else if (P('smash') && /^(box|tall|fork|drop|gear|bolt|ink)$/.test(t.k)){ t.dead = true; t.fly = { vx: 700 + Math.random() * 300, vy: 600 + Math.random() * 200, rot: 0, spin: 12 }; burst(tx + tw / 2, ty + th / 2, 26, '#f08a2c'); burst(tx + tw / 2, ty + th / 2, 14, GOLD); shake = 5; S.pts += 30; pop(tx, ty - 20, 'FIRE SMASH +30', true); snd(180, 60, .2, .08, 'sawtooth'); }
+      else if (P('ghost') && S.ghost >= 8 && S.shield <= 0 && S.inv <= 0 && t.k !== 'gap'){ S.ghost = 0; S.phase = 1; S.inv = 1; t.dodged = 1; pop(tx, ty - 24, 'GHOST!', true); snd(900, 300, .3, .05, 'sine'); }
       else hit(t);
       if (mode !== 'play') return;
     }
@@ -10353,7 +10368,8 @@ html.ng-ch .tape{padding-top:70px!important}
     g.save(); g.translate(x + 24, base - (low ? 17 : 33)); g.rotate(rot);
     if (low) g.scale(1.2, .52); else g.scale(1 + sq * .4, 1 - sq * .4);
     var X = -24, T = -33, Hh = 66;
-    if (S && S.inv > 0 && Math.floor(time * 16) % 2) g.globalAlpha = .45;
+    if (S && S.phase > 0) g.globalAlpha = .35; else if (S && S.inv > 0 && Math.floor(time * 16) % 2) g.globalAlpha = .45;
+    if (S && S.gliding > 0){ g.fillStyle = '#fbf1e1'; g.strokeStyle = NAV; g.lineWidth = 2; g.beginPath(); g.moveTo(X - 30, T + 26); g.lineTo(X + 24, T + 10); g.lineTo(X + 78, T + 26); g.lineTo(X + 24, T + 34); g.closePath(); g.fill(); g.stroke(); g.beginPath(); g.moveTo(X + 24, T + 10); g.lineTo(X + 24, T + 34); g.stroke(); }
     // tank tread
     g.fillStyle = '#20262e'; rr(X + 1, T + Hh - 13, 46, 13, 6); g.fill(); g.fillStyle = '#c3cad3'; for (var i = 0; i < 4; i++){ g.beginPath(); g.arc(X + 9 + i * 10, T + Hh - 6.5, 3, 0, 7); g.fill(); }
     g.fillStyle = '#4a5462'; var to = (scroll / 4) % 8; for (var j = 0; j < 7; j++) g.fillRect(X + 3 + ((j * 8 + 8 - to) % 46), T + Hh - 13, 2, 2);
@@ -10430,6 +10446,8 @@ html.ng-ch .tape{padding-top:70px!important}
     if (!t.tag || t.x < RX + 70) return;
     var cx = t.x + t.w / 2, top = GROUND - t.y - t.h - 14 + Math.sin(time * 6) * 2; if (t.k === 'gap') top = GROUND - 30; if (t.k === 'sign' || t.k === 'laser' && !t.low) top = Math.min(top, GROUND - t.y - t.h - 14);
     if (S.shield > 0 && !/^(coin|star|mag|fuel|spring|magnet|shield|gap)$/.test(key)) T = [T[0], 'SHIELD ON: SMASH IT!'];
+    else if (P('smash') && /^(box|tall|fork|drop|gear|bolt|ink)/.test(key)) T = [T[0], 'FIRE SMASH IT!'];
+    else if (P('agent') && /^(laser|drone|plane|swing|sign)/.test(key)) T = [T[0], 'LASER PROOF: GO!'];
     g.font = '13px ' + FONT; var w1 = g.measureText(T[0]).width; g.font = '10px ' + FONT; var w2 = g.measureText(T[1]).width; var bw = Math.max(w1, w2) + 16, bh = 32, bx = Math.max(4, Math.min(W - bw - 4, cx - bw / 2)), by = Math.max(70, top - bh);
     g.fillStyle = NAV; rr(bx, by, bw, bh, 7); g.fill(); g.strokeStyle = BEI; g.lineWidth = 2; g.stroke();
     g.fillStyle = NAV; g.beginPath(); g.moveTo(cx - 6, by + bh - 1); g.lineTo(cx + 6, by + bh - 1); g.lineTo(cx, by + bh + 7); g.closePath(); g.fill();
@@ -10473,6 +10491,9 @@ html.ng-ch .tape{padding-top:70px!important}
     txt(fly ? 'FUEL' : f > .8 && Math.sin(time * 10) > 0 ? 'ALMOST!' : 'ROCKET', mx + (mw - 8) / 2, my + 16, 10, BEI);
     if (S.shield > 0) txt('SHIELD ' + (S.shield >= 60 ? '1:00' : '0:' + ('0' + Math.ceil(S.shield)).slice(-2)), mx + mw / 2 - 13, my + 40, 14, '#bfe9ff');
     if (S.magnet > 0) txt('MAGNET ' + Math.ceil(S.magnet), mx + mw / 2 - 13, my + (S.shield > 0 ? 56 : 40), 12, GOLD);
+    var skn = skin(); if (skn.pw){ var pyy = y0 + 42, pl = skn.crown ? 'KING' : skn.power.split(':')[0]; g.font = '12px ' + FONT; var pww = Math.max(120, g.measureText(pl).width + 30); pill(10, pyy, pww, 22);
+      if (P('ghost')){ var gf = S.ghost / 8; g.fillStyle = gf >= 1 ? 'rgba(191,233,255,.45)' : 'rgba(245,228,204,.18)'; rr(12, pyy + 2, Math.max(6, (pww - 4) * gf), 18, 9); g.fill(); }
+      txt(pl + (P('ghost') ? (S.ghost >= 8 ? ' READY' : '') : ''), 10 + pww / 2, pyy + 16, 12, skn.crown ? GOLD : BEI); }
     if (S.mult > 1){ var cs = 1 + Math.max(0, S.chainT - 1) * .6; g.save(); g.translate(W / 2, y0 + 58); g.scale(cs, cs); g.rotate(-.05); txt('COMBO x' + S.mult, 0, 0, 20, GOLD); g.restore(); }
   }
   function screenTitle(){
@@ -10598,7 +10619,7 @@ html.ng-ch .tape{padding-top:70px!important}
     if (k === 'ArrowLeft') backflip(); else { hold = true; jump(); }
   }, true);
   window.addEventListener('keyup', function(e){ if (/^( |ArrowUp|Enter|ArrowDown)$/.test(e.key)) hold = false; }, true);
-  window.NG_RR = { garage: function(){ mode = 'garage'; }, paused: function(){ return paused; }, pause: setPause, state: function(){ return location.protocol === 'file:' ? S : null; }, mode: function(){ return mode; }, go: go, launch: function(){ launch(); } };
+  window.NG_RR = { garage: function(){ mode = 'garage'; }, paused: function(){ return paused; }, pause: setPause, state: function(){ return location.protocol === 'file:' ? S : null; }, testSkin: function(id){ if (location.protocol !== 'file:') return; previewSkin = SKINS.filter(function(k){ return k.id === id; })[0] || null; }, mode: function(){ return mode; }, go: go, launch: function(){ launch(); } };
   fit(); requestAnimationFrame(function(n){ last = n; step(n); });
 })();
 </script>
@@ -11312,5 +11333,23 @@ html body #finder.fx2 .finder-msg:empty,html body #finder.fx2 .finder-chips:empt
 #vm .vm-back:hover{background:#f5e4cc;color:#12294a}
 @media (max-width:640px){#vm .vm-back{padding:5px 10px 5px 6px;font-size:.8rem}}
 </style>
+<script>
+/* Instant switches: the moment the owner freezes the site or blocks someone, every open page hears it (no waiting) */
+(function(){
+  var V = '10.12.2';
+  function add(u){ return new Promise(function(ok, no){ var t = document.createElement('script'); t.src = u; t.onload = ok; t.onerror = no; document.head.appendChild(t); }); }
+  function start(){
+    (window.firebase && firebase.initializeApp ? Promise.resolve() : add('https://www.gstatic.com/firebasejs/' + V + '/firebase-app-compat.js'))
+      .then(function(){ return firebase.firestore ? null : add('https://www.gstatic.com/firebasejs/' + V + '/firebase-firestore-compat.js'); })
+      .then(function(){
+        if (!firebase.apps.length) firebase.initializeApp({ apiKey: 'AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', authDomain: 'neshamagazine.firebaseapp.com', projectId: 'neshamagazine' });
+        var db = firebase.firestore(), first = { s: 1, b: 1 };
+        db.doc('site/status').onSnapshot(function(){ if (first.s){ first.s = 0; return; } if (window.NG_STATUS_PING) NG_STATUS_PING(); }, function(){});
+        db.doc('site/bans').onSnapshot(function(){ if (first.b){ first.b = 0; return; } if (window.NG_BAN_PING) NG_BAN_PING(); }, function(){});
+      }).catch(function(){});
+  }
+  if (document.readyState === 'complete') setTimeout(start, 800); else window.addEventListener('load', function(){ setTimeout(start, 800); });
+})();
+</script>
 </body>
 </html>
