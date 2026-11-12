@@ -2117,7 +2117,8 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     if (u && (!u.start || Date.now() - u.start > SESSION_MS)){ memUser = null; try { sessionStorage.removeItem('ng_sess'); } catch(e){} updateNav(); return null; }
     return u || null;
   }
-  function setUser(u){ if (u && !u.start) u.start = Date.now(); memUser = u || null; try { if (u) sessionStorage.setItem('ng_sess', JSON.stringify(u)); else sessionStorage.removeItem('ng_sess'); } catch(e){} updateNav(); }
+  function setUser(u){ var was = getUser(); if (u && !u.start) u.start = Date.now(); memUser = u || null; try { if (u) sessionStorage.setItem('ng_sess', JSON.stringify(u)); else sessionStorage.removeItem('ng_sess'); } catch(e){} updateNav();
+    if (u && u.email && (!was || was.email !== u.email)) setTimeout(function(){ try { document.dispatchEvent(new Event('ng:login')); } catch(e){} }, 0); }
 
   function updateNav(){
     var u = getUser();
@@ -2542,6 +2543,15 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
             if (x >= Math.max(r.left, 0) - 30 && x <= Math.min(r.right, W) + 30){ hit = a; hitRow = ri; }
           });
         });
+        if (!hit && now - startT > 2000){   // still not found after 2 seconds: take the closest box and make it the right issue
+          var near = null, nd = 1e9;
+          rows.forEach(function(row, ri){ [].forEach.call(row.querySelectorAll('.arch'), function(a){ if (a.style.visibility === 'hidden') return; var r = a.getBoundingClientRect();
+            if (r.left < 30 || r.right > W - 60 || r.bottom < topLimit + 90 || r.top > H - 70) return;
+            var d = Math.abs(r.left + r.width / 2 - x) + Math.abs(ri - rowIdx) * 400; if (d < nd){ nd = d; near = a; hitRow = ri; } }); });
+          if (near){ var im2 = near.querySelector('img'), si = src && src.querySelector('img'); if (im2 && si) im2.src = si.src; near.title = src.title;
+            var b1 = near.querySelector('.arch-badge'); if (b1) b1.remove(); var sb = src.querySelector('.arch-badge'); if (sb && im2) near.insertBefore(sb.cloneNode(true), im2);
+            if (src.getAttribute('data-link')) near.setAttribute('data-link', src.getAttribute('data-link')); hit = near; }
+        }
         if (hit){
           target = hit; state = 'drop';
           claw.classList.add('locked');
@@ -3783,7 +3793,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   <p class="op-cloud-ok" id="ow-cloud-ok" hidden> Connected <button type="button" class="ngx-link" id="ow-disconnect">disconnect</button></p>
 
   <button type="button" id="pf-build" class="ed-start" onclick="var b=this.querySelector('span');window.NG_BUILD_PAGE_INDEX&amp;&amp;NG_BUILD_PAGE_INDEX(true,function(t){b.textContent=t})"><b>Update page search</b><span>Reads every page of every magazine so readers can search inside them. It also runs by itself.</span></button>
-  <button type="button" id="vm-open" class="vm-open ed-start"><b>Neshama Radar</b><span>Who’s on the site, where they are, flagged pictures and logins.</span></button>
+  <button type="button" id="vm-open" class="vm-open ed-start"><b>Neshama Radar</b><span>Who’s on the site, logins, sign-ups, flagged pictures and blocking.</span></button>
 
   <details class="op-sec op-keep"><summary> Next-issue checklist</summary>
     <label>Issue<input id="ck-issue" placeholder="Issue 14 Noach"></label>
@@ -3793,19 +3803,8 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <button type="button" class="op-see" id="ck-reset"> Start a new issue</button>
   </details>
 
-  <details class="op-sec op-keep"><summary> Idea notebook</summary>
-    <textarea id="idea-text" rows="3" placeholder="Write your idea…"></textarea>
-    <div class="ck-add"><select id="idea-kind"><option> Story</option><option> Comic</option><option> Riddle</option><option> Joke</option><option> Cover</option><option> Other</option></select><button type="button" id="idea-add" class="op-flip nb-add">Save idea</button></div>
-    <ul class="nb-list" id="idea-list"></ul>
-  </details>
 
 
-  <details class="op-sec op-keep op-soon"><summary> Coming soon mode</summary>
-    <p class="op-tip">Turn this on and everyone (you too) sees an exciting "coming soon" screen with previews of the website. To turn it off, tap the NeshamaGazine logo 3 times fast, then type your email and code.</p>
-    <label>Big message (optional)<input id="cs-msg" placeholder="Something AMAZING is coming…"></label>
-    <button type="button" id="cs-go" class="fz-btn cs-btn"> Turn on coming soon</button>
-    <p class="op-msg" id="cs-status"></p>
-  </details>
 
   <details class="op-sec op-keep op-danger"><summary> Emergency freeze</summary>
     <p class="op-tip">Something wrong on the site? Freeze it. Everyone sees your message instead of the website (within about 30 seconds) until you unfreeze it. You can still get in: tap the NeshamaGazine logo 3 times fast, then type your email and code.</p>
@@ -3826,22 +3825,14 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
 
   <details class="op-sec op-keep" id="sec-box"><summary>Security</summary>
     <p class="op-tip">Readers who try to screenshot, record or print get a warning first, then 1 week blocked, then 1 month, then forever. Every page shows their email and a reader code.</p>
-    <button type="button" class="op-see" id="sec-load">Show blocked readers</button>
+    <button type="button" class="op-see" id="sec-load">Show who tried</button>
     <ul class="nb-list" id="sec-list"></ul>
     <label>Found a leaked picture? Type the NG- code on it<input id="sec-code" placeholder="NG-1A2B3C4D"></label>
     <button type="button" class="op-see" id="sec-find">Find who took it</button>
     <p class="op-msg" id="sec-msg"></p>
   </details>
 
-  <p class="op-label">Quick links</p>
-  <nav class="op-links">
-    <a href="https://drive.google.com/drive/folders/1vYJaBebvh1LZad_ZM7D4HN4SnpwEWELZ?usp=drive_link" target="_blank" rel="noopener"> Magazine Drive folder</a>
-    <a href="https://mail.google.com/mail/u/?authuser=levichekroun@ulyop.com#search/web3forms" target="_blank" rel="noopener"> Sign-up emails</a>
-    <a href="https://www.canva.com/" target="_blank" rel="noopener"> Canva</a>
-    <button type="button" id="op-flip" class="op-flip"> Make a flipbook</button>
-  </nav>
   <input id="op-src" type="file" accept=".html,text/html" hidden>
-  <button type="button" id="op-signout" class="btn op-out">Lock it again </button>
 </aside>
 <script>
 // ---- Owner Panel tools: edit the site settings, add new issues, then download the updated site ----
@@ -4380,7 +4371,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   document.getElementById('op-close').addEventListener('click', closePanel);
   document.getElementById('og-close').addEventListener('click', closeGate);
   gate.addEventListener('click', function(e){ if (e.target === gate) closeGate(); });
-  document.getElementById('op-signout').addEventListener('click', function(){ setOwner(false); });
+
   document.getElementById('og-check').addEventListener('click', check);
   codeIn.addEventListener('keydown', function(e){ if (e.key === 'Enter') check(); });
   function dots(){ var n = codeIn.value.length, f = n ? (n - 1) % 3 + 1 : 0; gate.querySelectorAll('.og-dots i').forEach(function(d, i){ d.classList.toggle('on', i < f); d.classList.toggle('pop', i === f - 1); }); }
@@ -4451,7 +4442,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     plate = document.createElement('div'); plate.className = 'own-plate';
     plate.innerHTML = '<span class="op-seal" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><path d="M12 24l3-9 5 5 5-5 3 9z"/></svg></span><span class="op-name"><b>' + OWNER_FULL + '</b><small>' + OWNER_TITLE + ' · Editor in Chief</small></span><button type="button" class="op-lock" title="Lock owner mode" aria-label="Lock owner mode"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Lock</button>';
     document.body.appendChild(plate);
-    plate.querySelector('.op-lock').onclick = function(){ var so = document.getElementById('op-signout'); if (so) so.click(); };
+    var lk = plate.querySelector('.op-lock'); if (lk) lk.remove();
   }
   function showBanner(){ build(); var hd = document.querySelector('header'); banner.style.top = (hd ? Math.max(0, hd.getBoundingClientRect().bottom) : 0) + 'px'; document.getElementById('own-greet').textContent = greet() + ', ' + OWNER_NAME; banner.classList.remove('show'); void banner.offsetWidth; banner.classList.add('show'); clearTimeout(banner.__t); banner.__t = setTimeout(function(){ banner.classList.remove('show'); }, 7000); }
   function sweep(){ var sw = document.createElement('div'); sw.className = 'own-sweep'; document.body.appendChild(sw); setTimeout(function(){ sw.remove(); }, 1700); }
@@ -4751,7 +4742,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   // owner unlock on the frozen screen: you get in and can use the site (the bar at the bottom lets you unfreeze or lock)
   $('ngf-key').onclick = function(){ ownerThen(function(){ show(); if (window.NG && NG.toast) NG.toast(' You\'re in. The site is still frozen for visitors.'); }); };
   $('fzb-un').onclick = function(){ if (!ls('ng_fb_rt')) return needConnect(); patchStatus({ frozen:false, msg:'', theme:'' }).then(function(){ NG.toast(' The website is open again!'); }).catch(function(e){ NG.toast(' ' + e.message); }); };
-  $('fzb-lock').onclick = function(){ var o = $('op-signout'); if (o) o.click(); };
+  if ($('fzb-lock')) $('fzb-lock').remove();
   $('cs-key').onclick = function(){
     if (!isOwner()) return ownerThen(function(){ show(); });   // after logging in, the screen shows the owner buttons
     if (!ls('ng_fb_rt')){ try { sessionStorage.setItem('ng_soon_peek', '1'); } catch(e){} show(); return needConnect(); }
@@ -4877,7 +4868,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   // ----------  sign-in wall: readers sign in before reading ----------
   function geoPlace(){
     try { var c = sessionStorage.getItem('ng_geo'); if (c) return Promise.resolve(JSON.parse(c)); } catch(e){}
-    return Promise.race([fetch('https://get.geojs.io/v1/ip/geo.json').then(function(r){ return r.json(); }), new Promise(function(ok){ setTimeout(function(){ ok({}); }, 4000); })])
+    return Promise.race([fetch('https://get.geojs.io/v1/ip/geo.json').then(function(r){ return r.json(); }).catch(function(){ return {}; }), new Promise(function(ok){ setTimeout(function(){ ok({}); }, 4000); })])
       .then(function(g){ g = g || {}; var o = { cc: g.country_code || '', region: g.region || '', city: g.city || '', lat: g.latitude ? Math.round(+g.latitude * 10) / 10 : null, lon: g.longitude ? Math.round(+g.longitude * 10) / 10 : null }; try { sessionStorage.setItem('ng_geo', JSON.stringify(o)); } catch(e){} return o; }).catch(function(){ return {}; });
   }
   function wall(){
@@ -4961,14 +4952,14 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     return fbAuth('sendOobCode', body).catch(function(e){ if (body.continueUrl){ delete body.continueUrl; return fbAuth('sendOobCode', body); } throw e; });
   }
   function enter(u, isNew, how){
-    window.NG_ENTER_HOW = how || (isNew ? 'signup' : 'login');
+    window.NG_ENTER_HOW = how || (isNew ? 'signup' : 'login'); window.NG_ENTER_NEW = !!isNew;
     showVerify(false); pend = null;
     if (u.email && !/^levichekroun@ulyop\.com$/i.test(u.email) && window.NG_OWNER_OFF) NG_OWNER_OFF();   // someone else logged in on the owner's computer: count them like any reader
     NG.setUser({ name: u.name || '', email: u.email, uid: u.uid, via: 'password' });
     try { sessionStorage.removeItem('ng_counted_p'); } catch(e){}
     $('ngw-pass').value = ''; $('ngw-pass2').value = '';
     var w = $('ng-wall'); w.classList.remove('force'); $('ngw-x').hidden = true;
-    wall(); logPerson();
+    wall();
     if (isNew){ sendWelcome(u.name, u.email); if (NG.sendEmail) NG.sendEmail('New sign-up', { name: u.name, email: u.email, via: 'password' }); }
     if (window.NG_SFX) NG_SFX('login');
     if (NG.toast) NG.toast((isNew ? 'Welcome to NeshamaGazine' : 'Welcome back') + (u.name ? ', ' + u.name : '') + '!');
@@ -5108,7 +5099,9 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
       var dev = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'phone' : 'computer';
       var f = { email:{ stringValue: u.email }, name:{ stringValue: u.name || '' }, place:{ stringValue: place }, cc:{ stringValue: g.cc || '' }, dev:{ stringValue: dev }, did:{ stringValue: devId() }, odev:{ booleanValue: ownerDev() }, how:{ stringValue: window.NG_ENTER_HOW || '' }, lastSeen:{ timestampValue: new Date().toISOString() } };
       if (g.lat != null && g.lon != null){ f.lat = { doubleValue: g.lat }; f.lon = { doubleValue: g.lon }; }
-      return commit({ update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/visitors/' + pkey(u.email), fields: f }, updateMask:{ fieldPaths: Object.keys(f) }, updateTransforms:[{ fieldPath:'visits', increment:{ integerValue:'1' } }] })
+      var did = devId(); if (/^levichekroun@ulyop\.com$/i.test(u.email) && !ownerDev() && /^[a-z0-9]+$/.test(did)) f['sess.' + did] = { mapValue:{ fields:{ place:{ stringValue: place }, dev:{ stringValue: dev }, t:{ timestampValue: new Date().toISOString() } } } };
+      var mask = Object.keys(f); if (f['sess.' + did]){ f.sess = { mapValue:{ fields:{} } }; f.sess.mapValue.fields[did] = f['sess.' + did]; delete f['sess.' + did]; mask = Object.keys(f).filter(function(x){ return x !== 'sess'; }).concat(['sess.' + did]); }
+      return commit({ update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/visitors/' + pkey(u.email), fields: f }, updateMask:{ fieldPaths: mask }, updateTransforms:[{ fieldPath:'visits', increment:{ integerValue:'1' } }] })
         .then(function(r){ if (!r.ok && test) return r.json().then(function(j){ throw new Error((j.error && j.error.message) || 'error'); }); });
     }).catch(function(e){ if (test) throw e; });
   }
@@ -5119,6 +5112,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   }
   window.NG_TEST_PERSON = function(){ return logPerson(true); };
   setTimeout(logPerson, 1800);
+  document.addEventListener('ng:login', function(){ try { sessionStorage.removeItem('ng_counted_p'); } catch(e){} setTimeout(logPerson, 400); });
   setInterval(beat, 60000);
   setTimeout(function(){ if (!statusKnown){ statusKnown = true; wall(); } }, 2500);
   document.addEventListener('ng:owner', wall);
@@ -5156,7 +5150,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     api('GET', DB + '/visitors?pageSize=300', null, true).then(function(j){
       var docs = (j && j.documents || []).map(function(d){ var f = d.fields || {}; return { email: f.email && f.email.stringValue || '', name: f.name && f.name.stringValue || '', place: f.place && f.place.stringValue || '', cc: f.cc && f.cc.stringValue || '', n: num(f.visits), t: f.lastSeen && f.lastSeen.timestampValue || '' }; });
       docs.sort(function(a, b){ return a.t < b.t ? 1 : -1; });
-      function ago(t){ var s = (Date.now() - new Date(t).getTime()) / 1000; return !t ? '' : s < 3600 ? Math.max(1, Math.round(s / 60)) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago'; }
+      function ago(t){ var s = (Date.now() - new Date(t).getTime()) / 1000; return !t ? '' : s < 3600 ? Math.max(1, Math.round(s / 60)) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : (Math.round(s / 86400) === 1 ? '1 day ago' : Math.round(s / 86400) + ' days ago'); }
       pl.innerHTML = docs.length ? docs.slice(0, 60).map(function(d){ return '<li><b>' + esc(d.name || d.email.split('@')[0]) + '</b> <span>' + esc(d.email) + '</span><small>' + FLAG(d.cc) + ' ' + esc(d.place || 'Unknown place') + ' · ' + d.n + ' visit' + (d.n === 1 ? '' : 's') + ' · ' + ago(d.t) + '</small>' + '<button type="button" class="ng-ask" data-to="' + esc(d.email) + '" data-nm="' + esc(d.name || '') + '">Email</button><button type="button" class="ng-blk" data-to="' + esc(d.email) + '" data-nm="' + esc(d.name || '') + '">Block</button>' + '</li>'; }).join('') + '<li class="op-tip">' + docs.length + ' people signed in so far.</li>' : '<li class="op-tip">Nobody signed in yet.</li>';
     }).catch(function(e){ pl.innerHTML = '<li class="op-msg"> ' + e.message + '</li>'; });
   }
@@ -5201,8 +5195,8 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     function addStep(){ var t = $('ck-new').value.trim(); if (!t) return; N.steps.push({ t:t, d:false }); $('ck-new').value = ''; drawCk(); save(); }
     $('ck-add').addEventListener('click', addStep); $('ck-new').addEventListener('keydown', function(e){ if (e.key === 'Enter') addStep(); });
     $('ck-reset').addEventListener('click', function(){ if (!NG_SURE(this, 'Press again to clear')) return; N.issue = ''; N.steps.forEach(function(x){ x.d = false; }); drawCk(); save(); });
-    $('idea-add').addEventListener('click', function(){ var t = $('idea-text').value.trim(); if (!t) { $('idea-text').focus(); return; } N.ideas.unshift({ t:t, k:$('idea-kind').value, at:new Date().toLocaleDateString(), used:false }); $('idea-text').value = ''; drawNb(); save(); });
-    $('idea-list').addEventListener('click', function(e){ var u = e.target.getAttribute('data-u'), d = e.target.getAttribute('data-del');
+    if ($('idea-add')) $('idea-add').addEventListener('click', function(){ var t = $('idea-text').value.trim(); if (!t) { $('idea-text').focus(); return; } N.ideas.unshift({ t:t, k:$('idea-kind').value, at:new Date().toLocaleDateString(), used:false }); $('idea-text').value = ''; drawNb(); save(); });
+    if ($('idea-list')) $('idea-list').addEventListener('click', function(e){ var u = e.target.getAttribute('data-u'), d = e.target.getAttribute('data-del');
       if (u != null){ N.ideas[+u].used = !N.ideas[+u].used; drawNb(); save(); }
       if (d != null && NG_SURE(e.target, 'Sure?')){ N.ideas.splice(+d, 1); drawNb(); save(); } });
   }
@@ -5226,11 +5220,9 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   </div>
   <nav class="vm-tabs">
     <button type="button" class="on" data-v="who">Who’s here</button>
-    <button type="button" data-v="where">Map</button>
     <button type="button" data-v="flag">Flagged pictures</button>
     <button type="button" data-v="log">Logins</button>
     <button type="button" data-v="read">Most read</button>
-    <button type="button" data-v="new">Sign-ups</button>
     <button type="button" data-v="dev">Phones vs computers</button>
     <button type="button" data-v="alert">Alerts</button>
     <button type="button" data-v="ban">Block</button>
@@ -5248,20 +5240,13 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <div class="vm-list" id="vm-list"></div>
   </section>
   <section class="vm-view" id="vm-flag" hidden><div class="rd-pad"><h3>Flagged pictures</h3><p class="rd-tip">Everyone who tried to take a screenshot, record or print. You can let them back in.</p><div id="rd-flag-tools"></div></div></section>
-  <section class="vm-view" id="vm-log" hidden><div class="rd-pad"><h3>Logins</h3><label class="rd-sw"><input type="checkbox" id="rd-notify"> Tell me when someone logs in (while I’m on the site)</label><div class="vm-list" id="rd-log"></div></div></section>
+  <section class="vm-view" id="vm-log" hidden><div class="rd-pad"><h3>Logins</h3><label class="rd-sw"><input type="checkbox" id="rd-notify"> Tell me when someone logs in (while I’m on the site)</label><div id="rd-mine"></div><h4 class="rd-h4">Logins this week</h4><div class="vm-list" id="rd-log"></div><h4 class="rd-h4">New sign-ups this week</h4><div id="rd-new"></div></div></section>
   <section class="vm-view" id="vm-read" hidden><div class="rd-pad"><h3>Most read</h3><p class="rd-tip">How many times each issue was opened (counting starts now).</p><div id="rd-read"></div></div></section>
-  <section class="vm-view" id="vm-new" hidden><div class="rd-pad"><h3>Sign-ups</h3><p class="rd-tip">New readers in the last 7 days.</p><div id="rd-new"></div></div></section>
   <section class="vm-view" id="vm-dev" hidden><div class="rd-pad"><h3>Phones vs computers</h3><p class="rd-tip">What readers used this month.</p><div id="rd-dev"></div></div></section>
   <section class="vm-view" id="vm-qr" hidden><div class="rd-pad"><h3>QR codes</h3><p class="rd-tip">How many people scanned the QR codes in the printed magazine, and how many of them became readers.</p><div id="rd-qr"></div></div></section>
   <section class="vm-view" id="vm-fb" hidden><div class="rd-pad"><h3>Feedback</h3><p class="rd-tip">What readers wrote on the feedback page (the QR code in the printed magazine). Newest first.</p><div id="rd-fb"></div></div></section>
   <section class="vm-view" id="vm-ban" hidden><div class="rd-pad"><h3>Block someone</h3><p class="rd-tip">A blocked reader hears a siren, the gate rolls down and they see "You are blocked". It happens within 15 seconds, even if they are reading right now.</p><form id="rd-banf" class="rd-banf" novalidate><input id="rd-bane" type="search" placeholder="Type a name or an email" autocomplete="off"><button type="submit">Block this email</button></form><label class="rd-notel" for="rd-bannote">Message they will see (you can leave it empty)</label><textarea id="rd-bannote" class="rd-bannote" maxlength="500" placeholder="Hello, I see that you are doing something you should not. You have been blocked."></textarea><div id="rd-banpick"></div><h4 class="rd-h4">Everyone at once</h4><p class="rd-tip" id="rd-allst">Blocks every reader on the website (not you), with the message above.</p><div class="rd-when"><button type="button" id="rd-allon">Block everyone</button><button type="button" id="rd-alloff">Unblock everyone</button></div><h4 class="rd-h4">Blocked now</h4><div id="rd-banlist"></div><h4 class="rd-h4">Everyone who came on</h4><div class="rd-when" id="rd-when"><button type="button" data-w="1" class="on">Today</button><button type="button" data-w="7">Past week</button><button type="button" data-w="30">Past month</button><button type="button" data-w="0">Forever</button></div><div id="rd-everyone"></div></div></section>
   <section class="vm-view" id="vm-alert" hidden><div class="rd-pad"><h3>Alerts</h3><p class="rd-tip">Every screenshot, recording or print try, newest first.</p><div id="rd-alert"></div></div></section>
-  <section class="vm-view" id="vm-where" hidden>
-    <div class="vm-globe" id="vm-globe"></div>
-    <div class="vm-gbtns"><button type="button" data-z="world"> World</button><button type="button" data-z="us"> USA</button><button type="button" data-z="il"> Israel</button><button type="button" data-z="eu"> Europe</button></div>
-    <div class="vm-pin" id="vm-pin" hidden></div>
-    <p class="vm-note">Places are approximate (based on the internet connection, usually the right city or area).</p>
-  </section>
   <p class="vm-msg" id="vm-msg"></p>
 </div>
 <script>
@@ -5274,7 +5259,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   function esc(x){ return String(x || '').replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
   function flag(cc){ return /^[A-Z]{2}$/.test(cc || '') ? String.fromCodePoint.apply(null, cc.split('').map(function(c){ return 127397 + c.charCodeAt(0); })) : ''; }
   function num(v){ return v ? +(v.integerValue || v.doubleValue || 0) : 0; }
-  function ago(t){ var s = (Date.now() - t) / 1000; return s < 150 ? 'now' : s < 3600 ? Math.round(s / 60) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago'; }
+  function ago(t){ var s = (Date.now() - t) / 1000; return s < 150 ? 'now' : s < 3600 ? Math.round(s / 60) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : (Math.round(s / 86400) === 1 ? '1 day ago' : Math.round(s / 86400) + ' days ago'); }
   var tok = null, exp = 0;
   function token(){
     var rt = ls('ng_fb_rt'); if (!rt) return Promise.reject(new Error('Not connected to Firebase yet. Unlock with your email + code, or use  Connect.'));
@@ -5297,7 +5282,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
         return { f: f, email:S('email'), name:S('name'), place:S('place'), cc:S('cc'), dev:S('dev'), did:S('did'), how:S('how'), odev: !!(f.odev && f.odev.booleanValue), n:num(f.visits), t: f.lastSeen ? new Date(f.lastSeen.timestampValue).getTime() : 0, lat: f.lat ? num(f.lat) : null, lon: f.lon ? num(f.lon) : null }; })
         .sort(function(a, b){ return b.t - a.t; });
       var now = Date.now(), sod = new Date(); sod.setHours(0, 0, 0, 0);
-      var c = function(fn){ return people.filter(fn).length; };
+      var c = function(fn){ return people.filter(function(x){ return !/^levichekroun@ulyop\.com$/i.test(x.email || ''); }).filter(fn).length; };
       var byDev = {}; people.forEach(function(x){ if (x.did) (byDev[x.did] = byDev[x.did] || []).push(x); });
       people.forEach(function(x){ x.same = x.did ? (byDev[x.did] || []).filter(function(y){ return y !== x; }) : []; });
       $('vm-now').textContent = c(function(x){ return now - x.t < 150000; });
@@ -5671,7 +5656,7 @@ window.NGFlipbook = function(host, pages, opts){
     var o = document.createElement('option'); o.value = el.title; o.textContent = el.title.replace(/&#39;/g, "'"); issueSel.appendChild(o);
   });
   var other = document.createElement('option'); other.value = ''; other.textContent = 'Another / new issue'; issueSel.appendChild(other);
-  document.getElementById('op-flip').addEventListener('click', function(){ modal.hidden = false; msg.textContent = ''; bar.hidden = true; });
+  if (document.getElementById('op-flip')) document.getElementById('op-flip').addEventListener('click', function(){ modal.hidden = false; msg.textContent = ''; bar.hidden = true; });
   document.getElementById('fbm-close').addEventListener('click', function(){ modal.hidden = true; });
   modal.addEventListener('click', function(e){ if (e.target === modal) modal.hidden = true; });
   var PDF_SOURCES = [
@@ -6478,9 +6463,9 @@ document.getElementById('cp').addEventListener('click',function(){
   ['pointerdown', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ if (banned && !sirenNodes) try { siren(0); } catch(e){} }, true); });
   function unban(){ if (!banned) return; banned = false; root.classList.remove('ng-banned'); seqT.forEach(clearTimeout); seqUntil = 0; try { stopSiren(); } catch(e){} $('sx-modal').hidden = true; root.classList.remove('ng-blocked', 'ng-black'); gateUp(); }
   function unblockScreen(){ try { stopSiren(); } catch(e){} seqT.forEach(clearTimeout); seqUntil = 0; var m = $('sx-modal'); if (m) m.hidden = true; root.classList.remove('ng-blocked', 'ng-black', 'ng-banned'); try { gateUp(); } catch(e){} }
-  function banPoll(){ var em = email(); if (!em || owner()){ if (banned) unban(); return; } var k = pkey(em);
+  function banPoll(){ var em = email(), did = ''; try { did = localStorage.getItem('ng_did') || ''; } catch(e){} if (owner() || (!em && !did)){ if (banned) unban(); return; } var k = em ? pkey(em) : '-';
     fetch(DOCS + '/site/bans?key=' + KEY, { cache: 'no-store' }).then(function(r){ if (r.status === 404) return { bans: {}, resets: {} }; if (!r.ok) throw new Error('no'); return r.json().then(function(j){ var d = {}; try { d = JSON.parse(j.fields.data.stringValue) || {}; } catch(e){} return d; }); })
-      .then(function(d){ var b = (d.bans || {})[k] || d.all, rs = Math.max(+((d.resets || {})[k] || 0), +(d.resetAll || 0));
+      .then(function(d){ var b = (em && (d.bans || {})[k]) || (did && (d.devs || {})[did]) || (em && d.all), rs = Math.max(+((d.resets || {})[k] || 0), +(d.resetAll || 0));
         if (b){ ban(b.note || ''); return; }
         if (rs && rs > (+ls('ng_sec_reset_' + k) || 0)){ ls('ng_sec_reset_' + k, rs); ls('ng_sec_' + k, null); var dd = devRec(); if (!dd.email || dd.email === em) ls('ng_sec_dev', null); checked = ''; banned = false; unblockScreen(); return; }
         if (banned) unban(); }).catch(function(){}); }
@@ -6592,9 +6577,10 @@ document.getElementById('cp').addEventListener('click',function(){
     var ul = $('sec-list'); if (!ul) return; msg('Loading...');
     api('GET', DOCS + '/blocks?pageSize=300').then(function(j){
       var d = (j.documents || []).map(function(x){ var f = x.fields || {}; return { id: x.name.split('/').pop(), email: str(f, 'email'), name: str(f, 'name'), strikes: +str(f, 'strikes') || 0, until: +str(f, 'until') || 0, what: str(f, 'what'), code: str(f, 'code') }; });
+      d = d.filter(function(p){ return p.strikes > 0 && !/unblock|owner|test/i.test(p.what || ''); });
       d.sort(function(a, b){ return b.strikes - a.strikes; });
       ul.innerHTML = d.map(function(p){ var st = p.until === -1 ? 'Blocked forever' : p.until > Date.now() ? 'Blocked until ' + when(p.until) : p.strikes === 1 ? 'Warned once' : 'Block is over';
-        return '<li class="sec-p"><b>' + esc(p.name || p.email) + '</b><span>' + esc(p.email) + ' · ' + esc(p.code) + '</span><span>' + p.strikes + (p.strikes === 1 ? ' strike' : ' strikes') + ' · ' + esc(st) + (p.what ? ' · ' + esc(p.what) : '') + '</span><button type="button" class="op-try sec-un" data-id="' + esc(p.id) + '" data-em="' + esc(p.email) + '">Unblock</button></li>'; }).join('') || '<li>Nobody is blocked.</li>';
+        return '<li class="sec-p"><b>' + esc(p.name || p.email) + '</b><span>' + esc(p.email) + ' · ' + esc(p.code) + '</span><span>' + p.strikes + (p.strikes === 1 ? ' strike' : ' strikes') + ' · ' + esc(st) + (p.what ? ' · ' + esc(p.what) : '') + '</span><button type="button" class="op-try sec-un" data-id="' + esc(p.id) + '" data-em="' + esc(p.email) + '">Unblock</button></li>'; }).join('') || '<li>Nobody tried to take a picture.</li>';
       msg('');
     }).catch(function(e){ msg(e.message); });
   }
@@ -8584,7 +8570,7 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
 (function(){
   var $ = function(id){ return document.getElementById(id); };
   function esc(x){ return String(x || '').replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
-  function ago(t){ var s = (Date.now() - t) / 1000; return s < 150 ? 'just now' : s < 3600 ? Math.round(s / 60) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago'; }
+  function ago(t){ var s = (Date.now() - t) / 1000; return s < 150 ? 'just now' : s < 3600 ? Math.round(s / 60) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : (Math.round(s / 86400) === 1 ? '1 day ago' : Math.round(s / 86400) + ' days ago'); }
   // the blocked-readers tools move from the owner panel into the Radar
   var tools = $('rd-flag-tools'), box = $('sec-box');
   if (tools && box){ ['sec-load', 'sec-list'].forEach(function(id){ var e = $(id); if (e) tools.appendChild(e); });
@@ -8593,8 +8579,19 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
     box.hidden = true; }
   function drawLogins(){
     var el = $('rd-log'); if (!el || !window.NG_VM_PEOPLE) return;
-    var p = NG_VM_PEOPLE().filter(function(x){ return x.t && Date.now() - x.t < 7 * 864e5; }).sort(function(a, b){ return b.t - a.t; });
-    el.innerHTML = p.length ? p.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.name || (x.email || '').split('@')[0]) + '</b> logged in<br><small>' + esc(x.email) + (x.place ? ' \u00b7 ' + esc(x.place) : '') + '</small></span><small>' + ago(x.t) + '</small>' + '<button type="button" class="ng-ask" data-to="' + esc(x.email || '') + '" data-nm="' + esc(x.name || '') + '">Email</button><button type="button" class="ng-blk" data-to="' + esc(x.email || '') + '" data-nm="' + esc(x.name || '') + '">Block</button>' + '</div>'; }).join('') : '<p class="rd-tip">No logins this week yet.</p>';
+    var OWN = /^levichekroun@ulyop\.com$/i, all = NG_VM_PEOPLE();
+    var p = all.filter(function(x){ return x.t && Date.now() - x.t < 7 * 864e5 && !OWN.test(x.email || ''); }).sort(function(a, b){ return b.t - a.t; });
+    el.innerHTML = p.length ? p.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.name || (x.email || '').split('@')[0]) + '</b>' + (x.how === 'google' ? ' <em class="rd-how">Google</em>' : '') + '<br><small>' + esc(x.email) + (x.place ? ' \u00b7 ' + esc(x.place) : '') + (x.dev ? ' \u00b7 ' + esc(x.dev) : '') + '</small></span><small class="rd-when2">' + ago(x.t) + '</small><span class="rd-act"><button type="button" class="ng-ask" data-to="' + esc(x.email || '') + '" data-nm="' + esc(x.name || '') + '">Email</button><button type="button" class="ng-blk" data-to="' + esc(x.email || '') + '" data-nm="' + esc(x.name || '') + '">Block</button></span></div>'; }).join('') : '<p class="rd-tip">No logins this week yet.</p>';
+    // the owner's own account, used on a computer or phone that is not his
+    var mine = $('rd-mine'), ss = [], bd = (window.NG_BANS && NG_BANS.devs) || {};
+    all.filter(function(x){ return OWN.test(x.email || ''); }).forEach(function(x){
+      var m = x.f && x.f.sess && x.f.sess.mapValue && x.f.sess.mapValue.fields || {};
+      Object.keys(m).forEach(function(did){ var f = m[did].mapValue && m[did].mapValue.fields || {}, S = function(k){ return f[k] && f[k].stringValue || ''; };
+        ss.push({ did: did, place: S('place'), dev: S('dev'), t: f.t ? new Date(f.t.timestampValue).getTime() : 0 }); });
+      if (x.did && !x.odev && !m[x.did]) ss.push({ did: x.did, place: x.place, dev: x.dev, t: x.t });
+    });
+    ss.sort(function(a, b){ return b.t - a.t; });
+    if (mine) mine.innerHTML = ss.length ? '<h4 class="rd-h4">Your account on other devices</h4><p class="rd-tip">Times you logged in with your email on a computer or phone that is not yours. Block the device and nobody can use the site on it.</p>' + ss.map(function(x){ var on = !!bd[x.did]; return '<div class="rd-logrow"><span><b>' + esc(x.dev === 'phone' ? 'A phone' : x.dev ? 'A computer' : 'A device') + '</b><br><small>' + esc(x.place || 'Unknown place') + ' \u00b7 device ' + esc(x.did.slice(0, 6)) + '</small></span><small class="rd-when2">' + (x.t ? ago(x.t) : '') + '</small><span class="rd-act"><button type="button" class="ng-blk rd-devb' + (on ? ' is-on' : '') + '" data-did="' + esc(x.did) + '" data-lab="' + esc((x.dev || 'device') + (x.place ? ', ' + x.place : '')) + '">' + (on ? 'Unblock device' : 'Block this device') + '</button></span></div>'; }).join('') : '';
   }
   window.NG_RADAR_TAB = function(v, fromLoad){ if (v === 'log') drawLogins(); if (v === 'flag' && !fromLoad && $('sec-load')) $('sec-load').click(); };
   // "Tell me when someone logs in"
@@ -8617,7 +8614,7 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   var KEY = 'AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', PROJ = 'neshamagazine', DB = 'https://firestore.googleapis.com/v1/projects/' + PROJ + '/databases/(default)/documents';
   var $ = function(id){ return document.getElementById(id); };
   function esc(x){ return String(x || '').replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
-  function ago(t){ var s = (Date.now() - t) / 1000; return s < 150 ? 'just now' : s < 3600 ? Math.round(s / 60) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago'; }
+  function ago(t){ var s = (Date.now() - t) / 1000; return s < 150 ? 'just now' : s < 3600 ? Math.round(s / 60) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : (Math.round(s / 86400) === 1 ? '1 day ago' : Math.round(s / 86400) + ' days ago'); }
   function me(){ return (window.NG && NG.getUser && NG.getUser()) || window.NG_READER; }
   function owner(){ return !!(window.NG_IS_OWNER && NG_IS_OWNER()); }
   function pkey(em){ return em.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 120); }
@@ -8626,8 +8623,9 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
     var w = { update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/visitors/' + pkey(u.email), fields: fields }, updateMask:{ fieldPaths: mask } }; if (tr) w.updateTransforms = tr;
     fetch(DB.replace(/\/documents$/, '/documents') + ':commit?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ writes:[w] }) }).catch(function(){}); }
   // first visit on this device = the day they signed up (for "Sign-ups")
-  setTimeout(function(){ var u = me(); if (!u || !u.email || owner()) return; var k = 'ng_fs_' + pkey(u.email); try { if (localStorage.getItem(k)) return; localStorage.setItem(k, '1'); } catch(e){ return; }
-    commit({ firstSeen:{ timestampValue: new Date().toISOString() } }, ['firstSeen']); }, 4000);
+  function firstSeen(){ var u = me(); if (!u || !u.email || owner()) return; var k = 'ng_fs_' + pkey(u.email); try { if (localStorage.getItem(k)) return; localStorage.setItem(k, '1'); } catch(e){ return; }
+    commit({ firstSeen:{ timestampValue: new Date().toISOString() } }, ['firstSeen']); }
+  setTimeout(firstSeen, 4000); document.addEventListener('ng:login', function(){ if (window.NG_ENTER_NEW) setTimeout(firstSeen, 1500); });
   // readers who came from the QR code in the printed magazine
   setTimeout(function(){ var u = me(); if (!u || !u.email || owner()) return; var src = ''; try { src = localStorage.getItem('ng_src') || ''; } catch(e){}
     if (src !== 'qr') return; var k = 'ng_srcsent_' + pkey(u.email); try { if (localStorage.getItem(k)) return; localStorage.setItem(k, '1'); } catch(e){ return; }
@@ -8649,9 +8647,9 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
     bars($('rd-read'), Object.keys(tot).map(function(k){ return [names[k] || k.replace(/_/g, ' '), tot[k]]; }).sort(function(a, b){ return b[1] - a[1]; }));
   }
   function drawNew(){
-    var wk = Date.now() - 7 * 864e5, list = people().filter(function(p){ var f = p.f && p.f.firstSeen; return f && new Date(f.timestampValue).getTime() > wk; })
+    var wk = Date.now() - 7 * 864e5, list = people().filter(function(p){ var f = p.f && p.f.firstSeen; if (/^levichekroun@ulyop\.com$/i.test(p.email || '')) return false; return f && new Date(f.timestampValue).getTime() > wk; })
       .map(function(p){ return [p, new Date(p.f.firstSeen.timestampValue).getTime()]; }).sort(function(a, b){ return b[1] - a[1]; });
-    $('rd-new').innerHTML = '<div class="rd-big"><div><b>' + list.length + '</b><span>new readers this week</span></div></div>' + (list.length ? list.map(function(x){ var p = x[0]; return '<div class="rd-logrow"><span><b>' + esc(p.name || p.email.split('@')[0]) + '</b><br><small>' + esc(p.email) + (p.place ? ' \u00b7 ' + esc(p.place) : '') + '</small></span><small>' + ago(x[1]) + '</small>' + '<button type="button" class="ng-ask" data-to="' + esc(p.email) + '" data-nm="' + esc(p.name || '') + '">Email</button><button type="button" class="ng-blk" data-to="' + esc(p.email) + '" data-nm="' + esc(p.name || '') + '">Block</button>' + '</div>'; }).join('') : '<p class="rd-tip">Counting starts now, so new readers show up from today on.</p>');
+    $('rd-new').innerHTML = '<div class="rd-big"><div><b>' + list.length + '</b><span>new readers this week</span></div></div>' + (list.length ? list.map(function(x){ var p = x[0]; return '<div class="rd-logrow"><span><b>' + esc(p.name || p.email.split('@')[0]) + '</b><br><small>' + esc(p.email) + (p.place ? ' \u00b7 ' + esc(p.place) : '') + '</small></span><small class="rd-when2">' + ago(x[1]) + '</small><span class="rd-act"><button type="button" class="ng-ask" data-to="' + esc(p.email) + '" data-nm="' + esc(p.name || '') + '">Email</button><button type="button" class="ng-blk" data-to="' + esc(p.email) + '" data-nm="' + esc(p.name || '') + '">Block</button></span></div>'; }).join('') : '<p class="rd-tip">Counting starts now, so new readers show up from today on.</p>');
   }
   function drawDev(){
     var mo = Date.now() - 30 * 864e5, ph = 0, pc = 0; people().forEach(function(p){ if (p.t < mo) return; if (p.dev === 'phone') ph++; else if (p.dev) pc++; });
@@ -8668,13 +8666,13 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
     var el = $('rd-alert'); el.innerHTML = '<p class="rd-tip">Loading\u2026</p>';
     token().then(function(t){ return fetch(DB + '/blocks?pageSize=300&key=' + KEY, { headers:{ Authorization:'Bearer ' + t }, cache:'no-store' }); }).then(function(r){ return r.json(); }).then(function(j){
       var rows = (j.documents || []).map(function(d){ var f = d.fields || {}, S = function(k){ return f[k] ? (f[k].stringValue || f[k].integerValue || '') : ''; };
-        return { em: S('email'), nm: S('name'), what: S('what') || 'screenshot', n: +S('strikes') || 1, t: f.last ? new Date(f.last.timestampValue).getTime() : 0 }; }).sort(function(a, b){ return b.t - a.t; });
+        return { em: S('email'), nm: S('name'), what: S('what') || 'screenshot', n: +S('strikes') || 0, t: f.last ? new Date(f.last.timestampValue).getTime() : 0 }; }).filter(function(x){ return x.n > 0 && !/unblock|owner|test/i.test(x.what); }).sort(function(a, b){ return b.t - a.t; });
       el.innerHTML = rows.length ? rows.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.nm || x.em.split('@')[0]) + '</b> tried a ' + esc(x.what) + ' (time ' + x.n + ')<br><small>' + esc(x.em) + '</small></span><small>' + (x.t ? ago(x.t) : '') + '</small></div>'; }).join('') : '<p class="rd-tip">No alerts. Nobody tried anything.</p>';
     }).catch(function(e){ el.innerHTML = '<p class="rd-tip">' + esc(e.message) + '</p>'; });
   }
   var prev = window.NG_RADAR_TAB;
   window.NG_RADAR_TAB = function(v, fromLoad){ if (prev) prev(v, fromLoad);
-    if (v === 'read') drawRead(); if (v === 'new') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'qr' && !fromLoad) drawQR(); if (v === 'ban' && !fromLoad) drawBan(); };
+    if (v === 'read') drawRead(); if (v === 'log') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'qr' && !fromLoad) drawQR(); if (v === 'ban' && !fromLoad) drawBan(); };
   function bansGet(t){
     return fetch(DB + '/site/bans?key=' + KEY, { headers: t ? { Authorization: 'Bearer ' + t } : {}, cache: 'no-store' }).then(function(r){
       if (r.status === 404) return { bans: {}, resets: {} };
@@ -8683,12 +8681,14 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   function banWrite(em, name, on, note){
     em = String(em || '').trim().toLowerCase(); var k = pkey(em);
     return token().then(function(t){ return bansGet(t).then(function(d){
-      if (on){ d.bans[k] = { em: em, nm: name || '', note: String(note || '').slice(0, 500), at: Date.now() }; }
-      else { delete d.bans[k]; d.resets[k] = Date.now(); }
+      d.devs = d.devs || {};
+      if (on){ d.bans[k] = { em: em, nm: name || '', note: String(note || '').slice(0, 500), at: Date.now() };
+        people().forEach(function(p){ if (p.did && String(p.email || '').toLowerCase() === em) d.devs[p.did] = { em: em, nm: name || p.name || '', note: String(note || '').slice(0, 500), at: Date.now() }; }); }
+      else { delete d.bans[k]; d.resets[k] = Date.now(); Object.keys(d.devs).forEach(function(x){ if (d.devs[x].em === em) delete d.devs[x]; }); }
       return fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } }) })
         .then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); window.NG_BANS = d; NG_BAN_REFRESH();
           if (!on){   // also clear the old screenshot-strike record, if there is one
-            var u = { email:{ stringValue: em }, banned:{ booleanValue: false }, strikes:{ integerValue: '0' }, until:{ integerValue: '0' }, what:{ stringValue: 'unblocked by the owner' }, last:{ timestampValue: new Date().toISOString() } };
+            var u = { email:{ stringValue: em }, banned:{ booleanValue: false }, strikes:{ integerValue: '0' }, until:{ integerValue: '0' }, what:{ stringValue: '' }, last:{ timestampValue: new Date().toISOString() } };
             fetch(DB + '/blocks/' + k + '?' + Object.keys(u).map(function(f){ return 'updateMask.fieldPaths=' + f; }).join('&') + '&key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: u }) }).catch(function(){}); } }); }); });
   }
   function banAll(on, note){ return token().then(function(t){ return bansGet(t).then(function(d){
@@ -8696,10 +8696,17 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
       return fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } }) })
         .then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); window.NG_BANS = d; return d; }); }); }); }
   window.NG_BAN_REFRESH = function(){ var d = window.NG_BANS || { bans: {} };
-    [].forEach.call(document.querySelectorAll('.ng-blk'), function(b){ var on = !!d.bans[pkey(String(b.getAttribute('data-to') || '').toLowerCase())]; if (b.dataset.busy) return; b.classList.toggle('is-on', on); b.textContent = on ? 'Unblock' : 'Block'; }); };
+    [].forEach.call(document.querySelectorAll('.ng-blk:not(.rd-devb)'), function(b){ var on = !!d.bans[pkey(String(b.getAttribute('data-to') || '').toLowerCase())]; if (b.dataset.busy) return; b.classList.toggle('is-on', on); b.textContent = on ? 'Unblock' : 'Block'; }); };
   function loadBans(){ if (!owner()) return; token().then(bansGet).then(function(d){ window.NG_BANS = d; NG_BAN_REFRESH(); }).catch(function(){}); }
   setTimeout(loadBans, 2500); setInterval(loadBans, 30000); document.addEventListener('ng:owner', loadBans);
   var banMo = 0; new MutationObserver(function(){ if (banMo) return; banMo = requestAnimationFrame(function(){ banMo = 0; if (window.NG_BANS) NG_BAN_REFRESH(); }); }).observe(document.body, { childList: true, subtree: true });
+  window.NG_BAN_DEV = function(did, lab, on){ return token().then(function(t){ return bansGet(t).then(function(d){ d.devs = d.devs || {};
+      if (on) d.devs[did] = { em: '', nm: String(lab || '').slice(0, 80), note: '', at: Date.now() }; else delete d.devs[did];
+      return fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } }) })
+        .then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); window.NG_BANS = d; return d; }); }); }); };
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('.rd-devb'); if (!b) return; var on = !b.classList.contains('is-on');
+    if (on && !NG_SURE(b, 'Press again: block this device')) return; b.textContent = on ? 'Blocking\u2026' : 'Unblocking\u2026';
+    NG_BAN_DEV(b.getAttribute('data-did'), b.getAttribute('data-lab'), on).then(function(){ b.classList.toggle('is-on', on); b.textContent = on ? 'Unblock device' : 'Block this device'; if (!$('vm-ban').hidden) drawBan(); }).catch(function(x){ b.textContent = x.message; }); });
   window.NG_BAN = function(em, nm, on, note){ if (/^levichekroun@ulyop\.com$/i.test(em)) return Promise.reject(new Error('You cannot block the owner.')); return banWrite(em, nm, on, note); };
   function drawBan(){
     var list = $('rd-banlist'), pick = $('rd-banpick'), inp = $('rd-bane');
@@ -8709,8 +8716,9 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
       $('rd-allon').onclick = function(){ var b = this; if (!NG_SURE(b, 'Press again: block EVERYONE')) return; $('rd-allst').textContent = 'Blocking everyone\u2026'; banAll(true, ($('rd-bannote').value || '').trim()).then(drawBan).catch(function(e){ $('rd-allst').textContent = e.message; }); };
       $('rd-alloff').onclick = function(){ $('rd-allst').textContent = 'Unblocking everyone\u2026'; banAll(false).then(drawBan).catch(function(e){ $('rd-allst').textContent = e.message; }); };
       var rows = Object.keys(d.bans).map(function(k){ var x = d.bans[k]; return { em: x.em, nm: x.nm, on: true }; }).filter(function(x){ return x.em; });
+      var devRows = Object.keys(d.devs || {}).filter(function(k){ return !d.devs[k].em; }).map(function(k){ return '<div class="rd-logrow"><span><b>Blocked device</b><br><small>' + esc(d.devs[k].nm || '') + ' \u00b7 device ' + esc(k.slice(0, 6)) + '</small></span><span class="rd-act"><button type="button" class="ng-blk rd-devb is-on" data-did="' + esc(k) + '">Unblock device</button></span></div>'; }).join('');
       drawBan.blocked = {}; rows.forEach(function(x){ drawBan.blocked[x.em.toLowerCase()] = 1; }); everyone();
-      list.innerHTML = rows.length ? rows.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.nm || x.em.split('@')[0]) + '</b><br><small>' + esc(x.em) + '</small></span><button type="button" class="rd-unban" data-em="' + esc(x.em) + '">Unblock</button></div>'; }).join('') : '<p class="rd-tip">Nobody is blocked.</p>';
+      list.innerHTML = rows.length ? rows.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.nm || x.em.split('@')[0]) + '</b><br><small>' + esc(x.em) + '</small></span><button type="button" class="rd-unban" data-em="' + esc(x.em) + '">Unblock</button></div>'; }).join('') + devRows : devRows || '<p class="rd-tip">Nobody is blocked.</p>';
     }).catch(function(e){ list.innerHTML = '<p class="rd-tip">' + esc(e.message) + '</p>'; });
     function suggest(){
       var q = (inp.value || '').trim().toLowerCase(); if (!q){ pick.innerHTML = ''; return; }
@@ -11180,5 +11188,99 @@ html.ng-ch .tape{padding-top:70px!important}
 .rd-when button.on{background:#12294a;color:#f5e4cc}
 #rd-everyone .rd-logrow{align-items:center}#rd-everyone .rd-logrow>span{flex:1;min-width:0}
 </style>
+<!-- ===== OWNER PANEL: full screen on a computer, drag the two lines to make it any size ===== -->
+<style>
+@media (min-width:761px){
+  #owner-panel{width:var(--op-w,100vw)!important;max-width:100vw!important;transition:transform .3s ease,visibility .3s}
+  #owner-panel.op-wide{column-width:340px;column-gap:28px;padding:20px 40px 40px}
+  #owner-panel.op-wide > *{break-inside:avoid}
+  #owner-panel.op-wide > .op-head,#owner-panel.op-wide > .op-hi,#owner-panel.op-wide > .op-note{column-span:all}
+  #owner-panel.op-dragging{transition:none}
+}
+.op-grip{position:fixed;top:0;bottom:0;width:18px;margin-left:-9px;z-index:1201;cursor:col-resize;display:none;align-items:center;justify-content:center;gap:3px;touch-action:none}
+.op-grip i{width:3px;height:34px;border-radius:2px;background:var(--navy,#12294a)}
+.op-grip:hover i,.op-grip.on i{background:#c9a24a}
+@media (min-width:761px){ body.op-open .op-grip{display:flex} }
+</style>
+<script>
+(function(){
+  var panel = document.getElementById('owner-panel'); if (!panel) return;
+  var grip = document.createElement('div'); grip.className = 'op-grip'; grip.title = 'Drag to change the size. Double-click for full screen.'; grip.innerHTML = '<i></i><i></i>'; document.body.appendChild(grip);
+  function get(){ try { return localStorage.getItem('ng_op_w') || 'full'; } catch(e){ return 'full'; } }
+  function set(v){ try { localStorage.setItem('ng_op_w', v); } catch(e){} }
+  function apply(v){ var full = v === 'full' || +v >= innerWidth - 40, w = full ? innerWidth : Math.max(300, Math.min(innerWidth, +v || innerWidth));
+    panel.style.setProperty('--op-w', full ? '100vw' : w + 'px'); panel.classList.toggle('op-wide', full || w >= 760); grip.style.left = (full ? innerWidth - 9 : w) + 'px'; }
+  function sync(){ var open = panel.classList.contains('open'); document.body.classList.toggle('op-open', open); if (open) apply(get()); }
+  new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ['class'] }); addEventListener('resize', sync); sync();
+  var drag = false;
+  grip.addEventListener('pointerdown', function(e){ drag = true; grip.classList.add('on'); panel.classList.add('op-dragging'); grip.setPointerCapture(e.pointerId); e.preventDefault(); });
+  grip.addEventListener('pointermove', function(e){ if (!drag) return; var w = Math.round(Math.max(300, Math.min(innerWidth, e.clientX))); set(w >= innerWidth - 40 ? 'full' : String(w)); apply(get()); });
+  grip.addEventListener('pointerup', function(){ drag = false; grip.classList.remove('on'); panel.classList.remove('op-dragging'); });
+  grip.addEventListener('dblclick', function(){ set(get() === 'full' ? '420' : 'full'); apply(get()); });
+})();
+</script>
+<style id="rd-rows">
+/* Radar rows: name on the left, time in its own column, buttons on the right, all lined up */
+#vm .rd-logrow{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(18,41,74,.14)}
+#vm .rd-logrow>span:first-child{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;line-height:1.35}
+#vm .rd-logrow>small,#vm .rd-logrow>.rd-when2{flex:0 0 96px;text-align:right;opacity:.75;white-space:nowrap}
+#vm .rd-act{flex:0 0 auto;display:flex;gap:8px;justify-content:flex-end;min-width:150px}
+#vm .rd-act .ng-ask,#vm .rd-act .ng-blk{margin:0}
+#vm .rd-logrow>button{flex:none}
+#vm #rd-log{padding:0;margin:0;overflow:visible}
+#vm .rd-how{font-style:normal;font:800 .66rem Figtree,system-ui,sans-serif;letter-spacing:.04em;border:1.5px solid #12294a;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+#vm .rd-devb.is-on{background:#f5e4cc;color:#12294a}
+#vm .vm-stats>div{cursor:pointer}
+#vm .vm-stats>div:hover{border-color:#12294a}
+@media (max-width:640px){#vm .rd-logrow{flex-wrap:wrap}#vm .rd-logrow>span:first-child{flex-basis:calc(100% - 110px)}#vm .rd-act{flex-basis:100%;justify-content:flex-start;min-width:0}}
+</style>
+<script>
+/* the number boxes at the top of the Radar open the matching list */
+(function(){ var st = document.querySelector('#vm .vm-stats'); if (!st) return;
+  var map = { 'vm-now':'now', 'vm-today':'today', 'vm-week':'week', 'vm-month':'all' };
+  st.addEventListener('click', function(e){ var d = e.target.closest('.vm-stats > div'); if (!d) return; var b = d.querySelector('b'), f = b && map[b.id];
+    var tab = document.querySelector('#vm .vm-tabs [data-v="who"]'); if (tab) tab.click();
+    if (f){ var fb = document.querySelector('#vm .vm-filter [data-f="' + f + '"]'); if (fb) fb.click(); } });
+})();
+</script>
+<style id="fx-tidy">
+/* Homepage search: one bar at a time, switched by two tabs */
+html body #finder.fx2 .finder-box{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px 14px!important;max-width:880px;margin:0 auto}
+html body #finder.fx2 .finder-label{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)}
+html body #finder.fx2 .fx-tabs{grid-column:1/-1;display:flex;align-items:center;gap:6px}
+html body #finder.fx2 .fx-tabs b{font:800 1.5rem "Bricolage Grotesque",Figtree,system-ui,sans-serif;color:#12294a;margin-right:14px}
+html body #finder.fx2 .fx-tabs button{border:2px solid transparent;background:none;color:#12294a;border-radius:999px;padding:6px 14px;font:800 .95rem Figtree,system-ui,sans-serif;cursor:pointer}
+html body #finder.fx2 .fx-tabs button.on{border-color:#12294a;background:#12294a;color:#f5e4cc}
+html body #finder.fx2 .finder-row{grid-column:1/-1;flex:none!important;width:100%!important}
+html body #finder.fx2 .finder-row[hidden],html body #finder.fx2 .finder-msg[hidden],html body #finder.fx2 .finder-chips[hidden]{display:none!important}
+html body #finder.fx2 .fx-or{display:none!important}
+html body #finder.fx2 .finder-msg,html body #finder.fx2 .finder-chips{grid-column:1/-1}
+html body #finder.fx2 .finder-msg:empty,html body #finder.fx2 .finder-chips:empty{display:none!important}
+@media (max-width:700px){
+ html body #finder.fx2 .fx-tabs{flex-wrap:wrap}
+ html body #finder.fx2 .fx-tabs b{flex-basis:100%;margin:0 0 2px}
+ html body #finder.fx2 .finder-row{flex-wrap:wrap!important;gap:10px!important}
+ html body #finder.fx2 .finder-row .fx-bar{flex:1 1 100%!important}
+ html body #finder.fx2 #finder-surprise{flex:1 1 100%!important;justify-content:center}
+}
+</style>
+<script>
+/* Homepage search: tabs "Issues" and "Comics & recipes" share one spot */
+(function(){
+  var f = document.getElementById('finder'); if (!f) return; var box = f.querySelector('.finder-box'), rows = box.querySelectorAll('.finder-row'); if (rows.length < 2) return;
+  f.classList.add('fx2');
+  var t = document.createElement('div'); t.className = 'fx-tabs'; t.setAttribute('role', 'tablist');
+  t.innerHTML = '<b>Search</b><button type="button" role="tab" data-fx="issue" class="on" aria-selected="true">Issues</button><button type="button" role="tab" data-fx="book" aria-selected="false">Comics &amp; recipes</button>';
+  box.insertBefore(t, box.firstChild);
+  var parts = { issue: [rows[0], document.getElementById('finder-msg'), document.getElementById('finder-chips')], book: [rows[1], document.getElementById('book-msg')] };
+  function show(k, focus){ [].forEach.call(t.querySelectorAll('button'), function(b){ var on = b.dataset.fx === k; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    Object.keys(parts).forEach(function(n){ parts[n].forEach(function(el){ if (el) el.hidden = n !== k; }); });
+    try { sessionStorage.setItem('ng_fx_tab', k); } catch(e){}
+    if (focus){ var i = document.getElementById(k === 'book' ? 'book-q' : 'finder-q'); if (i) i.focus(); } }
+  t.addEventListener('click', function(e){ var b = e.target.closest('button[data-fx]'); if (b) show(b.dataset.fx, true); });
+  var k0 = 'issue'; try { k0 = sessionStorage.getItem('ng_fx_tab') || 'issue'; } catch(e){} show(k0 === 'book' ? 'book' : 'issue');
+  window.NG_FX_TAB = show;
+})();
+</script>
 </body>
 </html>
