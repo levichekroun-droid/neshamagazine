@@ -4538,7 +4538,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
       var len = +r.headers.get('content-length') || 0, zip = r.headers.get('content-encoding'), total = zip || !len ? guess : len, got = 0, rd = r.body && r.body.getReader && r.body.getReader();
       if (!rd) return r.text();
       return (function pump(){ return rd.read().then(function(x){ if (x.done) return; got += x.value.length; at(Math.min(99, Math.floor(got / total * 100))); return pump(); }); })();
-    }).then(function(){ at(100); if (window.NG_RR_READY && NG_RR_READY()) return; setTimeout(function(){ location.reload(); }, 500); }, function(){ if (window.NG_RR_READY && NG_RR_READY()) return; location.reload(); });
+    }).then(function(){ at(100); setTimeout(function(){ location.reload(); }, 500); }, function(){ location.reload(); });
   }
   window.NG_FIXING_SCREEN = fixing;
   // while the technicians (Claude) are working on the site, everyone sees the technician screen; when the work is done it loads the new version
@@ -9987,8 +9987,6 @@ html.ng-ch .tape{padding-top:70px!important}
 <!-- ===== ROBO RUNNER (a game on the fixing screen) ===== -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
 <style id="ng-rr">
-.rr-start{margin:18px auto 0;display:inline-flex;align-items:center;gap:10px;border:4px solid #12294a;outline:3px solid #f5e4cc;background:#f5e4cc;color:#12294a;border-radius:12px;padding:12px 26px;font:400 1.35rem "Lilita One",Figtree,system-ui,sans-serif;letter-spacing:.04em;cursor:pointer}
-.rr-start:hover{transform:scale(1.05)}
 .rr-stage{position:relative;margin:14px auto 0;width:min(820px,96vw)}
 .rr-stage[hidden]{display:none!important}
 .rr-stage.full{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;margin:0;z-index:5;background:#0b1a30;display:flex;flex-direction:column}
@@ -10005,23 +10003,16 @@ html.ng-ch .tape{padding-top:70px!important}
 @media (hover:none),(max-width:760px){.rr-pad{display:flex}}
 .rr-rot{display:none;margin:0 0 10px;text-align:center;color:#f5e4cc;font:400 1.1rem "Lilita One",Figtree,sans-serif;letter-spacing:.04em}
 @media (orientation:portrait){.rr-stage.full{justify-content:center}.rr-stage.full #rr-cv{flex:0 0 auto;height:auto}.rr-stage.full .rr-rot{display:block}}
-.rr-ready{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:3;border:4px solid #12294a;background:#e0b552;color:#12294a;border-radius:12px;font:400 1.15rem "Lilita One",Figtree,sans-serif;padding:10px 20px;cursor:pointer}
-.rr-ready[hidden]{display:none!important}
-.ng-frozen.rr-on .fz-gears,.ng-frozen.rr-on .fz-logo{display:none!important}
-.ng-frozen.rr-on .ngf-box{max-width:860px!important}
 </style>
 <script>
 /* ROBO RUNNER, a NeshamaGazine game. Title screen, 10 levels, rocket flights, garage with skins and upgrades. */
 (function(){
   var ov = document.getElementById('ng-frozen'); if (!ov) return;
   var box = ov.querySelector('.ngf-box') || ov, sign = box.querySelector('.fz-sign');
-  var start = document.createElement('button'); start.type = 'button'; start.className = 'rr-start'; start.textContent = 'PLAY ROBO RUNNER';
   var stage = document.createElement('div'); stage.className = 'rr-stage'; stage.hidden = true;
   stage.innerHTML = '<div class="rr-top"><button type="button" data-a="pause" class="rr-pz" hidden>PAUSE</button><button type="button" data-a="size">SMALL SCREEN</button><button type="button" data-a="exit">EXIT</button></div><p class="rr-rot">Turn your phone sideways for the big screen</p><canvas id="rr-cv" width="800" height="380" aria-label="Robo Runner game"></canvas>' +
-    '<div class="rr-pad"><button type="button" data-k="slide">SLIDE</button><button type="button" data-k="flip">FLIP</button><button type="button" class="big" data-k="jump">JUMP</button></div><button type="button" class="rr-ready" hidden>THE WEBSITE IS READY!</button>';
-  box.insertBefore(start, sign); box.insertBefore(stage, sign);
-  var ready = stage.querySelector('.rr-ready'); ready.onclick = function(){ location.reload(); };
-  window.NG_RR_READY = function(){ if (stage.hidden) return false; ready.hidden = false; return true; };
+    '<div class="rr-pad"><button type="button" data-k="slide">SLIDE</button><button type="button" data-k="flip">FLIP</button><button type="button" class="big" data-k="jump">JUMP</button></div>';
+  document.body.appendChild(stage);   // Robo Runner lives in NeshamaGazine Games only
 
   // ---------- setup ----------
   var cv = stage.querySelector('canvas'), g = cv.getContext('2d'), W = 800, H = 380, GROUND = 300, RX = 130, dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -10500,13 +10491,11 @@ html.ng-ch .tape{padding-top:70px!important}
   // ---------- flow ----------
   function go(lv){ newRun(lv || 1); mode = 'play'; tune([392, 523, 659], 80); }
   function primary(){ if (mode === 'title' || mode === 'over') go(startLv); else if (mode === 'garage') mode = S && S.end ? 'over' : 'title'; }
-  function open(){ ov.classList.add('rr-on'); start.hidden = true; stage.hidden = false; full(true); mode = 'title'; if (document.fonts && document.fonts.load) document.fonts.load('20px "Lilita One"'); }
   function full(on){ stage.classList.toggle('full', on); stage.querySelector('[data-a=size]').textContent = on ? 'SMALL SCREEN' : 'FULL SCREEN'; setTimeout(fit, 30); fit(); }
-  function closeRR(){ mode = 'title'; stage.hidden = true; full(false); stage.classList.remove('full'); ov.classList.remove('rr-on'); start.hidden = false; if (stage.parentNode !== box) box.insertBefore(stage, sign); }
+  function closeRR(){ mode = 'title'; stage.hidden = true; full(false); stage.classList.remove('full'); }
   window.NG_RR_OPEN = function(host){ host.appendChild(stage); stage.hidden = false; full(true); mode = 'title'; if (document.fonts && document.fonts.load) document.fonts.load('20px "Lilita One"'); };   // the Arcade opens Robo Runner here
   window.NG_RR_CLOSE = closeRR;
   stage.querySelector('.rr-top').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; if (b.dataset.a === 'pause'){ setPause(!paused); return; } if (b.dataset.a === 'size') full(!stage.classList.contains('full')); else if (stage.parentNode !== box && window.NG_ARCADE_BACK) NG_ARCADE_BACK(); else closeRR(); });
-  start.onclick = open;
   function cvPoint(e){ var r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H }; }
   var sx0 = null, sy0 = null;
   cv.addEventListener('pointerdown', function(e){ e.preventDefault(); var p = cvPoint(e);
@@ -10520,7 +10509,7 @@ html.ng-ch .tape{padding-top:70px!important}
     if ((ov.hidden && stage.hidden) || (e.target && e.target.closest && e.target.closest('#ngf-door'))) return;
     var k = e.key; if (!/^(Enter| |ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Escape|p|P)$/.test(k)) return;
     if (document.activeElement && document.activeElement !== document.body && !ov.contains(document.activeElement)) document.activeElement.blur();
-    if (stage.hidden){ if (k === 'Enter'){ e.preventDefault(); e.stopPropagation(); open(); } return; }
+    if (stage.hidden) return;
     e.preventDefault(); e.stopPropagation();
     if (k === 'p' || k === 'P' || (k === 'Escape' && (mode === 'play' || paused))){ e.stopImmediatePropagation(); if (!e.repeat) setPause(!paused); return; }
     if (paused){ if (k === 'Enter' && !e.repeat) setPause(false); return; }
