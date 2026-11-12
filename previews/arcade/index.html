@@ -6425,7 +6425,6 @@ document.getElementById('cp').addEventListener('click',function(){
     if (!em || checked === em) return; checked = em;
     remote(em).then(function(x){
       var loc = mailRec(em);
-      if (x.reset && x.reset > (+ls('ng_sec_reset_' + pkey(em)) || 0)){ ls('ng_sec_reset_' + pkey(em), x.reset); ls('ng_sec_' + pkey(em), null); var dd = devRec(); if (!dd.email || dd.email === em) ls('ng_sec_dev', null); checked = ''; if (banned) unban(); unblockScreen(); return; }
       if (x.missing){ if (loc.strikes && loc.synced){ ls('ng_sec_' + pkey(em), null); var d = devRec(); if (d.email === em) ls('ng_sec_dev', null); check(); } return; }   // the owner unblocked them
       if (x.strikes > loc.strikes || (x.strikes === loc.strikes && x.until !== loc.until)){ x.synced = true; ls('ng_sec_' + pkey(em), x); if (x.strikes >= devRec().strikes) ls('ng_sec_dev', { strikes: x.strikes, until: x.until, email: em }); }
       var b = blockedRec(); if (b) showBlock(b);
@@ -6437,9 +6436,12 @@ document.getElementById('cp').addEventListener('click',function(){
   ['pointerdown', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ if (banned && !sirenNodes) try { siren(0); } catch(e){} }, true); });
   function unban(){ if (!banned) return; banned = false; root.classList.remove('ng-banned'); seqT.forEach(clearTimeout); seqUntil = 0; try { stopSiren(); } catch(e){} $('sx-modal').hidden = true; root.classList.remove('ng-blocked', 'ng-black'); gateUp(); }
   function unblockScreen(){ try { stopSiren(); } catch(e){} seqT.forEach(clearTimeout); seqUntil = 0; var m = $('sx-modal'); if (m) m.hidden = true; root.classList.remove('ng-blocked', 'ng-black', 'ng-banned'); try { gateUp(); } catch(e){} }
-  function banPoll(){ var em = email(); if (!em || owner()){ if (banned) unban(); return; } remote(em).then(function(x){
-    if (x.reset && x.reset > (+ls('ng_sec_reset_' + pkey(em)) || 0) && !x.banned){ ls('ng_sec_reset_' + pkey(em), x.reset); ls('ng_sec_' + pkey(em), null); var dd = devRec(); if (!dd.email || dd.email === em) ls('ng_sec_dev', null); checked = ''; banned = false; unblockScreen(); return; }
-    if (x.banned) ban(x.note || ''); else if (banned) unban(); }).catch(function(){}); }
+  function banPoll(){ var em = email(); if (!em || owner()){ if (banned) unban(); return; } var k = pkey(em);
+    fetch(DOCS + '/site/bans?key=' + KEY, { cache: 'no-store' }).then(function(r){ if (r.status === 404) return { bans: {}, resets: {} }; if (!r.ok) throw new Error('no'); return r.json().then(function(j){ var d = {}; try { d = JSON.parse(j.fields.data.stringValue) || {}; } catch(e){} return d; }); })
+      .then(function(d){ var b = (d.bans || {})[k], rs = +((d.resets || {})[k] || 0);
+        if (b){ ban(b.note || ''); return; }
+        if (rs && rs > (+ls('ng_sec_reset_' + k) || 0)){ ls('ng_sec_reset_' + k, rs); ls('ng_sec_' + k, null); var dd = devRec(); if (!dd.email || dd.email === em) ls('ng_sec_dev', null); checked = ''; banned = false; unblockScreen(); return; }
+        if (banned) unban(); }).catch(function(){}); }
   setTimeout(banPoll, 1500); setInterval(banPoll, 15000); document.addEventListener('ng:login', banPoll);
   check(); setInterval(check, 3000);
   document.addEventListener('ng:owner', check);
@@ -8631,20 +8633,33 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   var prev = window.NG_RADAR_TAB;
   window.NG_RADAR_TAB = function(v, fromLoad){ if (prev) prev(v, fromLoad);
     if (v === 'read') drawRead(); if (v === 'new') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'qr' && !fromLoad) drawQR(); if (v === 'ban' && !fromLoad) drawBan(); };
-  function banWrite(em, name, on, note){
-    return token().then(function(t){
-      if (!on){ var u = { email:{ stringValue: em }, banned:{ booleanValue: false }, strikes:{ integerValue: '0' }, until:{ integerValue: '0' }, note:{ stringValue: '' }, what:{ stringValue: 'unblocked by the owner' }, reset:{ integerValue: String(Date.now()) }, last:{ timestampValue: new Date().toISOString() } };
-        return fetch(DB + '/blocks/' + pkey(em) + '?' + Object.keys(u).map(function(k){ return 'updateMask.fieldPaths=' + k; }).join('&') + '&key=' + KEY, { method:'PATCH', headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + t }, body: JSON.stringify({ fields: u }) }); }
-      var f = { email:{ stringValue: em }, name:{ stringValue: name || '' }, banned:{ booleanValue: true }, what:{ stringValue: 'blocked by the owner' }, note:{ stringValue: String(note || '').slice(0, 500) }, last:{ timestampValue: new Date().toISOString() } };
-      return fetch(DB + '/blocks/' + pkey(em) + '?updateMask.fieldPaths=email&updateMask.fieldPaths=name&updateMask.fieldPaths=banned&updateMask.fieldPaths=what&updateMask.fieldPaths=note&updateMask.fieldPaths=last&key=' + KEY, { method:'PATCH', headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + t }, body: JSON.stringify({ fields: f }) });
-    }).then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); });
+  function bansGet(t){
+    return fetch(DB + '/site/bans?key=' + KEY, { headers: t ? { Authorization: 'Bearer ' + t } : {}, cache: 'no-store' }).then(function(r){
+      if (r.status === 404) return { bans: {}, resets: {} };
+      return r.json().then(function(j){ if (!r.ok) throw new Error('Could not read the block list. Connect Firebase in the Owner Panel first.'); var d = {}; try { d = JSON.parse(j.fields.data.stringValue) || {}; } catch(e){} d.bans = d.bans || {}; d.resets = d.resets || {}; return d; }); });
   }
+  function banWrite(em, name, on, note){
+    em = String(em || '').trim().toLowerCase(); var k = pkey(em);
+    return token().then(function(t){ return bansGet(t).then(function(d){
+      if (on){ d.bans[k] = { em: em, nm: name || '', note: String(note || '').slice(0, 500), at: Date.now() }; }
+      else { delete d.bans[k]; d.resets[k] = Date.now(); }
+      return fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } }) })
+        .then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); window.NG_BANS = d; NG_BAN_REFRESH();
+          if (!on){   // also clear the old screenshot-strike record, if there is one
+            var u = { email:{ stringValue: em }, banned:{ booleanValue: false }, strikes:{ integerValue: '0' }, until:{ integerValue: '0' }, what:{ stringValue: 'unblocked by the owner' }, last:{ timestampValue: new Date().toISOString() } };
+            fetch(DB + '/blocks/' + k + '?' + Object.keys(u).map(function(f){ return 'updateMask.fieldPaths=' + f; }).join('&') + '&key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: u }) }).catch(function(){}); } }); }); });
+  }
+  window.NG_BAN_REFRESH = function(){ var d = window.NG_BANS || { bans: {} };
+    [].forEach.call(document.querySelectorAll('.ng-blk'), function(b){ var on = !!d.bans[pkey(String(b.getAttribute('data-to') || '').toLowerCase())]; if (b.dataset.busy) return; b.classList.toggle('is-on', on); b.textContent = on ? 'Unblock' : 'Block'; }); };
+  function loadBans(){ if (!owner()) return; token().then(bansGet).then(function(d){ window.NG_BANS = d; NG_BAN_REFRESH(); }).catch(function(){}); }
+  setTimeout(loadBans, 2500); setInterval(loadBans, 30000); document.addEventListener('ng:owner', loadBans);
+  var banMo = 0; new MutationObserver(function(){ if (banMo) return; banMo = requestAnimationFrame(function(){ banMo = 0; if (window.NG_BANS) NG_BAN_REFRESH(); }); }).observe(document.body, { childList: true, subtree: true });
   window.NG_BAN = function(em, nm, on, note){ if (/^levichekroun@ulyop\.com$/i.test(em)) return Promise.reject(new Error('You cannot block the owner.')); return banWrite(em, nm, on, note); };
   function drawBan(){
     var list = $('rd-banlist'), pick = $('rd-banpick'), inp = $('rd-bane');
     list.innerHTML = '<p class="rd-tip">Loading\u2026</p>';
-    token().then(function(t){ return fetch(DB + '/blocks?pageSize=300&key=' + KEY, { headers:{ Authorization:'Bearer ' + t }, cache:'no-store' }); }).then(function(r){ return r.json(); }).then(function(j){
-      var rows = (j.documents || []).map(function(d){ var f = d.fields || {}; return { em: f.email ? f.email.stringValue : '', nm: f.name ? f.name.stringValue : '', on: !!(f.banned && f.banned.booleanValue) }; }).filter(function(x){ return x.on && x.em; });
+    token().then(bansGet).then(function(d){ window.NG_BANS = d; NG_BAN_REFRESH();
+      var rows = Object.keys(d.bans).map(function(k){ var x = d.bans[k]; return { em: x.em, nm: x.nm, on: true }; }).filter(function(x){ return x.em; });
       drawBan.blocked = {}; rows.forEach(function(x){ drawBan.blocked[x.em.toLowerCase()] = 1; }); everyone();
       list.innerHTML = rows.length ? rows.map(function(x){ return '<div class="rd-logrow"><span><b>' + esc(x.nm || x.em.split('@')[0]) + '</b><br><small>' + esc(x.em) + '</small></span><button type="button" class="rd-unban" data-em="' + esc(x.em) + '">Unblock</button></div>'; }).join('') : '<p class="rd-tip">Nobody is blocked.</p>';
     }).catch(function(e){ list.innerHTML = '<p class="rd-tip">' + esc(e.message) + '</p>'; });
@@ -11031,10 +11046,14 @@ html.ng-ch .tape{padding-top:70px!important}
     cl.onclick = function(){ box.remove(); }; box.addEventListener('click', function(e){ if (e.target === box) box.remove(); });
     row.appendChild(go); row.appendChild(cl); inn.appendChild(row); inn.appendChild(m); box.appendChild(inn); document.body.appendChild(box); iB.focus();
   }
-  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('.ng-blk'); if (!b) return; e.preventDefault(); e.stopPropagation(); open(b.dataset.to, b.dataset.nm); }, true);
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('.ng-blk'); if (!b) return; e.preventDefault(); e.stopPropagation();
+    if (b.classList.contains('is-on')){ if (!window.NG_BAN) return; b.dataset.busy = 1; b.textContent = 'Unblocking\u2026'; NG_BAN(b.dataset.to, b.dataset.nm || '', false).then(function(){ delete b.dataset.busy; b.textContent = 'Unblocked'; setTimeout(function(){ if (window.NG_BAN_REFRESH) NG_BAN_REFRESH(); }, 1500); }, function(err){ delete b.dataset.busy; b.textContent = 'Try again'; alertBox(err.message); }); return; }
+    open(b.dataset.to, b.dataset.nm); }, true);
+  function alertBox(t){ var box = el('div', { 'class': 'ng-askbox', role: 'dialog' }), inn = el('div', { 'class': 'in' }); inn.appendChild(el('h3', null, 'Could not unblock')); inn.appendChild(el('p', null, t)); var row = el('div', { 'class': 'row' }), c = el('button', { type: 'button', 'class': 'go' }, 'OK'); c.onclick = function(){ box.remove(); }; row.appendChild(c); inn.appendChild(row); box.appendChild(inn); document.body.appendChild(box); }
 })();
 </script>
 <style>
+.ng-blk.is-on{background:#f5e4cc;color:#12294a}
 .ng-blk{margin-left:6px;flex:none;border:2px solid #12294a;background:#12294a;color:#f5e4cc;border-radius:8px;padding:3px 10px;font:700 .78rem Figtree,system-ui,sans-serif;cursor:pointer;vertical-align:middle}
 .rd-notel{display:block;font-weight:700;font-size:.85rem;margin:10px 0 4px}
 .rd-bannote{width:100%;box-sizing:border-box;min-height:70px;border:2px solid #12294a;border-radius:8px;padding:8px;font:inherit;background:#fffaf0;color:#12294a}
