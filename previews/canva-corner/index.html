@@ -11083,7 +11083,7 @@ html.ng-ch .tape{padding-top:70px!important}
   var tab = el('<button type="button" id="cc-tab" aria-label="Open the NeshamaGazine Corner"><i></i>NESHAMAGAZINE CORNER</button>');
   var card = el('<section id="cc-card" hidden aria-label="NeshamaGazine Corner"><div class="cc-head"><div><b>NESHAMAGAZINE CORNER</b><small id="cc-title"></small></div><button type="button" id="cc-x" aria-label="Close">&#10005;</button></div>' +
     '<div class="cc-frame" id="cc-frame"></div><div class="cc-row"><button type="button" class="go" id="cc-open">See it big</button></div>' +
-    '<div class="cc-own" id="cc-own" hidden><label for="cc-code">Owner: paste the Canva embed code here</label><textarea id="cc-code" placeholder="&lt;div ...&gt;&lt;iframe src=&quot;https://www.canva.com/design/.../view?embed&quot; ...&gt;"></textarea><label for="cc-name">Title under the name</label><input id="cc-name" style="border:2px solid #12294a;border-radius:8px;padding:6px;font:inherit;background:#fffaf0;color:#12294a"><div class="cc-row" style="padding:0"><button type="button" class="go" id="cc-save">Save for everyone</button><button type="button" id="cc-clear">Remove</button></div><p id="cc-msg"></p></div></section>');
+    '<div class="cc-own" id="cc-own" hidden><label for="cc-code">Owner: paste the Canva link here (Ctrl+V)</label><textarea id="cc-code" placeholder="Paste here"></textarea><label for="cc-name">Title under the name</label><input id="cc-name" style="border:2px solid #12294a;border-radius:8px;padding:6px;font:inherit;background:#fffaf0;color:#12294a"><div class="cc-row" style="padding:0"><button type="button" class="go" id="cc-save">Save for everyone</button><button type="button" id="cc-clear">Remove</button></div><p id="cc-msg"></p></div></section>');
   var big = el('<div id="cc-big" hidden role="dialog" aria-label="NeshamaGazine Corner, big"><div class="in"><iframe title="Canva design" allowfullscreen allow="fullscreen"></iframe><button type="button" aria-label="Close">&#10005;</button></div></div>');
   document.body.appendChild(tab); document.body.appendChild(card); document.body.appendChild(big);
   function apply(){
@@ -11091,7 +11091,7 @@ html.ng-ch .tape{padding-top:70px!important}
     $('cc-title').textContent = title;
     var f = $('cc-frame'); f.innerHTML = '';
     if (src){ var ifr = document.createElement('iframe'); ifr.loading = 'lazy'; ifr.title = 'Canva design'; ifr.allow = 'fullscreen'; ifr.setAttribute('allowfullscreen', ''); ifr.src = src; f.appendChild(ifr); $('cc-open').disabled = false; }
-    else { f.innerHTML = '<div class="cc-empty"><b>Something new is coming</b><span>' + (owner() ? 'Paste a Canva embed code below to fill this corner.' : 'Check back soon.') + '</span></div>'; $('cc-open').disabled = true; }
+    else { f.innerHTML = '<div class="cc-empty"><b>Something new is coming</b><span>' + (owner() ? 'Paste a Canva link below to fill this corner.' : 'Check back soon.') + '</span></div>'; $('cc-open').disabled = true; }
     $('cc-own').hidden = !owner();
   }
   function load(){ return fetch(DB + '/site/canva?key=' + KEY, { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ var f = (j && j.fields) || {}; src = clean(f.src && f.src.stringValue); ratio = (f.ratio && f.ratio.stringValue) || '4/5'; title = (f.title && f.title.stringValue) || 'From the NeshamaGazine studio'; apply(); }).catch(apply); }
@@ -11103,7 +11103,7 @@ html.ng-ch .tape{padding-top:70px!important}
   $('cc-open').onclick = function(){ if (!src) return; big.querySelector('iframe').src = src; big.hidden = false; };
   big.onclick = function(e){ if (e.target === big || e.target.tagName === 'BUTTON'){ big.hidden = true; big.querySelector('iframe').src = 'about:blank'; } };
   $('cc-save').onclick = function(){ var raw = $('cc-code').value, s = clean(raw), m = $('cc-msg');
-    if (!s){ m.textContent = 'That is not a Canva embed code. In Canva: Share, More, Embed, then copy the HTML embed code.'; return; }
+    if (!s){ m.textContent = 'That is not the right Canva link. In Canva click Share, More, Embed, Embed, then Copy, and paste it here.'; return; }
     var rt = ratioFrom(raw) || ratio, ti = ($('cc-name').value || '').trim().slice(0, 60) || 'From the NeshamaGazine studio';
     m.textContent = 'Saving…'; save(s, rt, ti).then(function(){ src = s; ratio = rt; title = ti; apply(); $('cc-code').value = ''; m.textContent = 'Saved. Everyone sees it now.'; }).catch(function(e){ m.textContent = e.message; }); };
   $('cc-clear').onclick = function(){ var m = $('cc-msg'); m.textContent = 'Removing…'; save('', ratio, title).then(function(){ src = ''; apply(); m.textContent = 'Removed.'; }).catch(function(e){ m.textContent = e.message; }); };
