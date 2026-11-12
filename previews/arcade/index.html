@@ -4525,8 +4525,8 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     }).catch(function(){});
   }
   // the technician screen shows while the new version really downloads, then it opens
-  function fixing(){
-    var ov = document.getElementById('ng-frozen'); if (!ov || (window.NG_IS_OWNER && NG_IS_OWNER())){ location.reload(); return; }
+  function fixing(done){
+    var ov = document.getElementById('ng-frozen'); if (!ov || (!done && window.NG_IS_OWNER && NG_IS_OWNER())){ location.reload(); return; }
     window.NG_UPDATING = true; ov.classList.add('ng-updating');
     var m = document.getElementById('ngf-msg'), st = document.getElementById('fz-step'), bar = ov.querySelector('.fz-prog i'), lg = ov.querySelector('.fz-logo'), any = document.querySelector('a[aria-label="NeshamaGazine home"] img');
     if (lg && !lg.getAttribute('src') && any) lg.src = any.src;
@@ -4541,6 +4541,25 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     }).then(function(){ at(100); if (window.NG_RR_READY && NG_RR_READY()) return; setTimeout(function(){ location.reload(); }, 500); }, function(){ if (window.NG_RR_READY && NG_RR_READY()) return; location.reload(); });
   }
   window.NG_FIXING_SCREEN = fixing;
+  // while the technicians (Claude) are working on the site, everyone sees the technician screen; when the work is done it loads the new version
+  var base = location.pathname.indexOf('/neshamagazine/') > -1 ? location.pathname.slice(0, location.pathname.indexOf('/neshamagazine/') + 15) : '/', working = false, stepT = 0;
+  var STEPS = ['The technician team is working', 'Tightening the bolts', 'Oiling the conveyor belt', 'Checking every page', 'Testing the games', 'Almost there'];
+  function showWork(msg){
+    var ov = document.getElementById('ng-frozen'); if (!ov) return; working = true; window.NG_UPDATING = true; ov.classList.add('ng-updating');
+    var m = document.getElementById('ngf-msg'), st = document.getElementById('fz-step'), bar = ov.querySelector('.fz-prog i'), lg = ov.querySelector('.fz-logo'), any = document.querySelector('a[aria-label="NeshamaGazine home"] img');
+    if (lg && !lg.getAttribute('src') && any) lg.src = any.src;
+    if (m) m.textContent = msg || "We're fixing something right now. Back very soon!";
+    ov.hidden = false; ov.style.display = 'flex'; var k = 0, p = 8;
+    clearInterval(stepT); stepT = setInterval(function(){ if (!working) return clearInterval(stepT); k = (k + 1) % STEPS.length; p = Math.min(92, p + Math.random() * 9); if (st) st.textContent = STEPS[k] + '…'; if (bar) bar.style.width = p + '%'; }, 2600);
+    if (st) st.textContent = STEPS[0] + '…'; if (bar) bar.style.width = p + '%';
+  }
+  function work(){
+    fetch(base + 'status.json?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+      if (j && j.fixing){ if (!working) showWork(j.msg); }
+      else if (working){ working = false; clearInterval(stepT); try { sessionStorage.setItem('ng_upd_last', String(Date.now())); } catch(e){} fixing(true); }
+    }).catch(function(){});
+  }
+  work(); setInterval(work, 15000); document.addEventListener('visibilitychange', function(){ if (!document.hidden) work(); });
   check(); setInterval(check, 30000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
 })();
@@ -4662,7 +4681,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     var ov = $('ng-frozen'), bar = $('ng-frozen-bar');
     $('ngf-msg').textContent = (fmsg || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, '').trim() || "We're fixing something. Back very soon!";
     var parts = partsOf(), whole = frozen && parts.indexOf('all') > -1;
-    ov.hidden = !(whole || window.NG_FIX_DEMO) || isOwner(); bar.hidden = !(frozen && isOwner());
+    if (!window.NG_UPDATING) ov.hidden = !(whole || window.NG_FIX_DEMO) || isOwner(); bar.hidden = !(frozen && isOwner());
     var bt = bar.querySelector('.fzb-txt'); if (bt) bt.textContent = whole ? 'The whole website is frozen. Visitors see the technician screen. Only you can use it.' : partNames(parts) + (parts.length > 1 ? ' are' : ' is') + ' frozen. Visitors see "We\'re fixing something." Only you can see ' + (parts.length > 1 ? 'them' : 'it') + '.';
     freezeParts(frozen && !whole && !isOwner() ? parts : []);
     var peek = false; try { peek = isOwner() && sessionStorage.getItem('ng_soon_peek') === '1'; } catch(e){}
