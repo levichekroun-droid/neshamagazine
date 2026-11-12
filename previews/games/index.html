@@ -1491,7 +1491,8 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
 </head>
 <body>
 <script type="application/json" id="ng-config">{"emailjsService": "service_bxqaqrf", "emailjsTemplate": "template_l7jrme1", "emailjsMsgTemplate": "template_i8llobo", "emailjsKey": "Rx0eirUCwTvkK7CWd", "nextIssueDate": "2026-10-16T00:00", "nextIssueTitle": "The next issue drops in…", "teamProgress": 60, "announcement": "", "offers": [{"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "Want the next issue first?", "p": "Get an email the day a new issue is out.", "yes": "Notify me"}, {"t": "Don't miss an issue", "p": "We'll send you a short email when the next one is ready.", "yes": "Notify me"}, {"t": "New comics and stories", "p": "Get an email when we post something new.", "yes": "Notify me"}, {"t": "New issues by email", "p": "One short email when a new issue comes out. That's it.", "yes": "Notify me"}, {"t": "Stay in the loop", "p": "Get an email when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}], "videosLive": false, "videos": [], "tzedakaLive": true, "stripeLink": "https://www.paypal.com/donate/?hosted_button_id=JWML6XVRCWSJL", "teamDone": false, "teamMessage": "Neshama Robo 2.5 is still building this page. Soon you'll meet the kids who write, draw and make NeshamaGazine!", "teamMembers": [], "nextIssueCover": "", "announceSize": "normal", "announceColor": "sunset", "announceCustom": "#e4493c"}</script>
-<style>html.ng-working body > *:not(#ng-frozen),html.ng-frozen-lock body > *:not(#ng-frozen){display:none!important}html.ng-working #ng-frozen,html.ng-frozen-lock #ng-frozen{display:flex!important;position:fixed;inset:0;z-index:2147483646}html.ng-working,html.ng-working body,html.ng-frozen-lock,html.ng-frozen-lock body{overflow:hidden!important}</style>
+<style>.fz-prog.fz-indet{overflow:hidden;position:relative}.fz-prog.fz-indet i{display:none}.fz-prog.fz-indet::after{content:"";position:absolute;top:0;bottom:0;left:-35%;width:35%;border-radius:5px;background:#f5e4cc;animation:fzind 1.6s ease-in-out infinite}@keyframes fzind{to{left:100%}}
+html.ng-working body > *:not(#ng-frozen),html.ng-frozen-lock body > *:not(#ng-frozen){display:none!important}html.ng-working #ng-frozen,html.ng-frozen-lock #ng-frozen{display:flex!important;position:fixed;inset:0;z-index:2147483646}html.ng-working,html.ng-working body,html.ng-frozen-lock,html.ng-frozen-lock body{overflow:hidden!important}</style>
 <script>try { if (localStorage.getItem('ng_fixing') === '1' && sessionStorage.getItem('ng_work_pass') !== '1') document.documentElement.classList.add('ng-working'); } catch(e){}</script>
 <script>window.NG_CFG = JSON.parse(document.getElementById('ng-config').textContent);
 window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.dataset.sure === '1'){ delete b.dataset.sure; clearTimeout(b._sureT); if (b.dataset.t0 != null) b.textContent = b.dataset.t0; return true; }
@@ -4532,7 +4533,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     window.NG_UPDATING = true; ov.classList.add('ng-updating');
     var m = document.getElementById('ngf-msg'), st = document.getElementById('fz-step'), bar = ov.querySelector('.fz-prog i'), lg = ov.querySelector('.fz-logo'), any = document.querySelector('a[aria-label="NeshamaGazine home"] img');
     if (lg && !lg.getAttribute('src') && any) lg.src = any.src;
-    if (m) m.textContent = 'We just fixed something!';
+    if (m) m.textContent = 'We just fixed something!'; var pr0 = ov.querySelector('.fz-prog'); if (pr0) pr0.classList.remove('fz-indet');
     function at(p){ if (bar) bar.style.width = p + '%'; if (st) st.textContent = p < 100 ? 'Loading the new version… ' + p + '%' : 'Done! Opening it…'; }
     at(0); ov.hidden = false; ov.style.display = 'flex';
     var guess = document.documentElement.outerHTML.length;
@@ -4560,9 +4561,9 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     var m = document.getElementById('ngf-msg'), st = document.getElementById('fz-step'), bar = ov.querySelector('.fz-prog i'), lg = ov.querySelector('.fz-logo'), any = document.querySelector('a[aria-label="NeshamaGazine home"] img');
     if (lg && !lg.getAttribute('src') && any) lg.src = any.src;
     if (m) m.textContent = msg || "We're fixing something right now. Back very soon!";
-    ov.hidden = false; ov.style.display = 'flex'; var k = 0, p = 8;
-    clearInterval(stepT); stepT = setInterval(function(){ if (!working) return clearInterval(stepT); k = (k + 1) % STEPS.length; p = Math.min(92, p + Math.random() * 9); if (st) st.textContent = STEPS[k] + '…'; if (bar) bar.style.width = p + '%'; }, 2600);
-    if (st) st.textContent = STEPS[0] + '…'; if (bar) bar.style.width = p + '%';
+    ov.hidden = false; ov.style.display = 'flex'; var k = 0, t0 = Date.now(); var pr = ov.querySelector('.fz-prog'); if (pr) pr.classList.add('fz-indet'); if (bar) bar.style.width = '';
+    function line(){ var sec = Math.floor((Date.now() - t0) / 1000); if (st) st.textContent = STEPS[k] + '\u2026  (working for ' + Math.floor(sec / 60) + ':' + ('0' + sec % 60).slice(-2) + ')'; }
+    clearInterval(stepT); stepT = setInterval(function(){ if (!working) return clearInterval(stepT); if (Math.floor((Date.now() - t0) / 1000) % 5 === 0) k = (k + 1) % STEPS.length; line(); }, 1000); line();
   }
   function work(){
     fetch(base + 'status.json?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
@@ -10001,6 +10002,44 @@ html.ng-ch .tape{padding-top:70px!important}
 </script>
 <!-- ===== END OWNER SECRET DOOR ===== -->
 
+<!-- ===== GAME WALLET: coins, skins and upgrades saved to each reader's account, sealed so they can't be faked ===== -->
+<script>
+(function(){
+  var KEY = 'AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', DB = 'https://firestore.googleapis.com/v1/projects/neshamagazine/databases/(default)/documents', SEAL = 'ng-wallet-7d1f9:';
+  function who(){ var u = (window.NG && NG.getUser && NG.getUser()) || window.NG_READER; return u && u.email ? String(u.email).toLowerCase() : ''; }
+  function pk(em){ return em.replace(/[^a-z0-9]+/g, '_').slice(0, 120); }
+  function hash(t){ var h1 = 0xdeadbeef, h2 = 0x41c6ce57; for (var i = 0; i < t.length; i++){ var c = t.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return (h2 >>> 0).toString(16) + (h1 >>> 0).toString(16); }
+  function seal(d, em){ return hash(SEAL + em + '|' + JSON.stringify(d)); }
+  function blank(){ return { bank: 0, own: {}, skin: 'steel', best: 0, maxLv: 1, t: 0 }; }
+  function clean(d){ var b = blank(); d = d || {}; b.bank = Math.max(0, Math.min(99999, Math.floor(+d.bank || 0))); b.own = d.own && typeof d.own === 'object' ? d.own : {}; b.skin = typeof d.skin === 'string' ? d.skin : 'steel'; b.best = Math.max(0, Math.floor(+d.best || 0)); b.maxLv = Math.max(1, Math.min(99, Math.floor(+d.maxLv || 1))); b.t = +d.t || 0; return b; }
+  function readLocal(em){ try { var x = JSON.parse(localStorage.getItem('ng_w_' + pk(em)) || 'null'); if (x && x.d && x.s === seal(x.d, em)) return clean(x.d); } catch(e){} return null; }
+  function writeLocal(em, d){ try { localStorage.setItem('ng_w_' + pk(em), JSON.stringify({ d: d, s: seal(d, em) })); } catch(e){} }
+  var cache = {}, cloudT = 0;
+  function load(){ var em = who(); if (!em) return blank();
+    if (cache[em]) return clean(cache[em]);
+    var d = readLocal(em) || blank(); cache[em] = d; return clean(d); }
+  function put(d){ var em = who(); if (!em) return; d = clean(d); d.t = Date.now(); cache[em] = d; writeLocal(em, d); clearTimeout(cloudT); cloudT = setTimeout(function(){ cloud(em, d); }, 2500); }
+  function cloud(em, d){ var body = { writes: [{ update: { name: 'projects/neshamagazine/databases/(default)/documents/visitors/' + pk(em), fields: { game: { stringValue: JSON.stringify({ d: d, s: seal(d, em) }) } } }, updateMask: { fieldPaths: ['game'] } }] };
+    fetch(DB + ':commit?key=' + KEY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(function(){}); }
+  function pull(){ var em = who(); if (!em) return;
+    fetch(DB + '/visitors/' + pk(em) + '?mask.fieldPaths=game&key=' + KEY, { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+      var g = j && j.fields && j.fields.game && j.fields.game.stringValue; if (!g) return; var x = JSON.parse(g); if (!x || !x.d || x.s !== seal(x.d, em)) return;
+      var here = load(); if ((+x.d.t || 0) > (here.t || 0)){ var d = clean(x.d); cache[em] = d; writeLocal(em, d); if (window.NG_WALLET_CHANGED) NG_WALLET_CHANGED(); } }).catch(function(){}); }
+  // old coins from before accounts: moved into this account once (up to 1000)
+  function migrate(){ var em = who(); if (!em) return; try { if (localStorage.getItem('ng_w_moved_' + pk(em)) || readLocal(em)) return; var b = Math.min(1000, +localStorage.getItem('ng_rr_bank') || 0), own = JSON.parse(localStorage.getItem('ng_rr_own') || '{}'), d = blank(); d.bank = b; d.own = own; d.skin = localStorage.getItem('ng_rr_skin') || 'steel'; d.best = +localStorage.getItem('ng_rr_best') || 0; d.maxLv = +localStorage.getItem('ng_rr_maxlv') || 1; put(d); localStorage.setItem('ng_w_moved_' + pk(em), '1'); ['ng_rr_bank', 'ng_rr_own', 'ng_rr_skin', 'ng_rr_best', 'ng_rr_maxlv'].forEach(function(k){ localStorage.removeItem(k); }); } catch(e){} }
+  // only the games (which load with the page) get the keys to add coins or save; after the page loads nobody else can
+  var open = true; window.addEventListener('load', function(){ setTimeout(function(){ open = false; }, 0); });
+  var keys = { save: function(d){ var old = load(); d = clean(d); if (d.bank > old.bank + 2000) d.bank = old.bank + 2000; put(d); }, add: function(n){ n = Math.max(0, Math.min(2000, Math.floor(+n || 0))); var d = load(); d.bank += n; put(d); return d.bank; } };
+  window.NG_WALLET = {
+    load: function(){ migrate(); return load(); },
+    bank: function(){ return load().bank; },
+    keys: function(){ return open ? keys : null; },
+    loggedIn: function(){ return !!who(); }
+  };
+  document.addEventListener('ng:login', function(){ cache = {}; migrate(); pull(); });
+  setTimeout(function(){ migrate(); pull(); }, 1500);
+})();
+</script>
 <!-- ===== ROBO RUNNER (a game on the fixing screen) ===== -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
 <style id="ng-rr">
@@ -10041,8 +10080,10 @@ html.ng-ch .tape{padding-top:70px!important}
   var covers = [].slice.call(document.querySelectorAll('#issue-list img')).map(function(im){ var i = new Image(); i.src = im.currentSrc || im.src; return i; }).filter(function(i){ return i.src; });
   function cov(){ return covers.length ? covers[Math.floor(Math.random() * covers.length)] : null; }
   function ls(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
-  var SAVE = { best: +ls('ng_rr_best') || 0, bank: +ls('ng_rr_bank') || 0, maxLv: +ls('ng_rr_maxlv') || 1, own: JSON.parse(ls('ng_rr_own') || '{}'), skin: ls('ng_rr_skin') || 'steel' };
-  function save(){ ls('ng_rr_best', SAVE.best); ls('ng_rr_bank', SAVE.bank); ls('ng_rr_maxlv', SAVE.maxLv); ls('ng_rr_own', JSON.stringify(SAVE.own)); ls('ng_rr_skin', SAVE.skin); }
+  var SAVE = NG_WALLET.load();
+  var WK = NG_WALLET.keys();
+  function save(){ if (WK) WK.save(SAVE); }
+  window.NG_WALLET_CHANGED = function(){ SAVE = NG_WALLET.load(); };
   SAVE.own.steel = 1;
   var SKINS = [
     { id: 'steel', name: 'Classic Steel', cost: 0, a: '#d7dde6', b: '#8a96a8', stripe: '#f2c230', power: 'No power. The original.' },
@@ -10073,7 +10114,7 @@ html.ng-ch .tape{padding-top:70px!important}
     { name: 'SPY TRAIN', theme: 'train', tip: 'Jump between the train cars. Duck the tunnel signs!', mix: ['gap', 'sign', 'sign', 'box', 'laser', 'swing'] },
     { name: 'THE BIG DELIVERY', theme: 'night', tip: 'Everything at once. Deliver the issue!', mix: ['box', 'tall', 'plane', 'drop', 'gap', 'laser', 'fork', 'peel', 'spring', 'gear', 'swing'] }
   ];
-  var LV_LEN = 1600;   // meters per level (about 50 seconds each)
+  var LV_LEN = 18500;   // meters per level (about 7 minutes each)
   // ---------- sound ----------
   var ac = null;
   function snd(f1, f2, d, v, type){ if (window.NG_SOUND && NG_SOUND.isMuted && NG_SOUND.isMuted()) return; try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); var o = ac.createOscillator(), gg = ac.createGain(), t = ac.currentTime; o.type = type || 'triangle'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + d); gg.gain.setValueAtTime(v || .05, t); gg.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(gg); gg.connect(ac.destination); o.start(t); o.stop(t + d + .02); } catch(e){} }
@@ -10148,7 +10189,7 @@ html.ng-ch .tape{padding-top:70px!important}
   }
   function crash(why){
     mode = 'over'; shake = 16; flash = .6; snd(440, 50, .6, .09, 'sawtooth'); burst(RX + 22, GROUND - S.y - 30, 40, '#e4493c');
-    var sc = score(), nb = sc > SAVE.best; if (nb) SAVE.best = sc; SAVE.bank += S.coins; if (S.lv > SAVE.maxLv) SAVE.maxLv = Math.min(S.lv, 99); save();
+    var sc = score(), nb = sc > SAVE.best; if (nb) SAVE.best = sc; SAVE.bank += Math.min(2000, S.coins); if (S.lv > SAVE.maxLv) SAVE.maxLv = Math.min(S.lv, 99); save();
     S.end = { why: why, sc: sc, nb: nb, by: S.by }; S.endT = 0;
   }
   // ---------- pause ----------
@@ -10179,7 +10220,7 @@ html.ng-ch .tape{padding-top:70px!important}
   }
   function update(dt){
     var v = S.speed * (S.slip > 0 ? .55 : 1) * (S.rocket > 0 ? 1.25 : 1);
-    S.speed += dt * 6; S.dist += v * dt;
+    S.speed = Math.min(S.speed + dt * 6, 320 + (S.lv - 1) * 28 + 160); S.dist += v * dt;
     // next level
     var lvNow = Math.floor(S.dist / (LV_LEN * 10)) + 1;
     if (lvNow > S.lv){ S.lv = lvNow; S.speed += 24; if (S.lv > SAVE.maxLv){ SAVE.maxLv = S.lv; save(); } levelBanner(); if (P('night')){ S.shield = Math.max(S.shield, 15); pop(RX, GROUND - 130, 'NIGHT SHIELD!', true); } tune([659, 784, 988, 1318], 90); burst(W / 2, H / 3, 60, BEI); burst(W / 2, H / 3, 40, GOLD); }
@@ -10506,11 +10547,11 @@ html.ng-ch .tape{padding-top:70px!important}
     if (mode === 'title') screenTitle(); else if (mode === 'over') screenOver(); else if (mode === 'garage') screenGarage();
   }
   // ---------- flow ----------
-  function go(lv){ newRun(lv || 1); mode = 'play'; tune([392, 523, 659], 80); }
+  function go(lv){ SAVE = NG_WALLET.load(); newRun(lv || 1); mode = 'play'; tune([392, 523, 659], 80); }
   function primary(){ if (mode === 'title' || mode === 'over') go(startLv); else if (mode === 'garage') mode = S && S.end ? 'over' : 'title'; }
   function full(on){ stage.classList.toggle('full', on); stage.querySelector('[data-a=size]').textContent = on ? 'SMALL SCREEN' : 'FULL SCREEN'; setTimeout(fit, 30); fit(); }
   function closeRR(){ mode = 'title'; stage.hidden = true; full(false); stage.classList.remove('full'); }
-  window.NG_RR_OPEN = function(host){ host.appendChild(stage); stage.hidden = false; full(true); mode = 'title'; if (document.fonts && document.fonts.load) document.fonts.load('20px "Lilita One"'); };   // the Arcade opens Robo Runner here
+  window.NG_RR_OPEN = function(host){ SAVE = NG_WALLET.load(); host.appendChild(stage); stage.hidden = false; full(true); mode = 'title'; if (document.fonts && document.fonts.load) document.fonts.load('20px "Lilita One"'); };   // the Arcade opens Robo Runner here
   window.NG_RR_CLOSE = closeRR;
   stage.querySelector('.rr-top').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; if (b.dataset.a === 'pause'){ setPause(!paused); return; } if (b.dataset.a === 'size') full(!stage.classList.contains('full')); else if (stage.parentNode !== box && window.NG_ARCADE_BACK) NG_ARCADE_BACK(); else closeRR(); });
   function cvPoint(e){ var r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H }; }
@@ -10537,7 +10578,7 @@ html.ng-ch .tape{padding-top:70px!important}
     if (k === 'ArrowLeft') backflip(); else { hold = true; jump(); }
   }, true);
   window.addEventListener('keyup', function(e){ if (/^( |ArrowUp|Enter|ArrowDown)$/.test(e.key)) hold = false; }, true);
-  window.NG_RR = { garage: function(){ mode = 'garage'; }, paused: function(){ return paused; }, pause: setPause, state: function(){ return S; }, mode: function(){ return mode; }, go: go, launch: function(){ launch(); } };
+  window.NG_RR = { garage: function(){ mode = 'garage'; }, paused: function(){ return paused; }, pause: setPause, state: function(){ return location.protocol === 'file:' ? S : null; }, mode: function(){ return mode; }, go: go, launch: function(){ launch(); } };
   fit(); requestAnimationFrame(function(n){ last = n; step(n); });
 })();
 </script>
@@ -10605,7 +10646,8 @@ html.ng-ch .tape{padding-top:70px!important}
 (function(){
   var NAV = '#12294a', BEI = '#f5e4cc', GOLD = '#e0b552', FONT = '"Lilita One","Bricolage Grotesque",Figtree,system-ui,sans-serif';
   function ls(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
-  function bank(add){ var b = +ls('ng_rr_bank') || 0; if (add){ b += add; ls('ng_rr_bank', b); } return b; }
+  var WK2 = NG_WALLET.keys();
+  function bank(add){ return add && WK2 ? WK2.add(add) : NG_WALLET.bank(); }
   var covers = [].slice.call(document.querySelectorAll('#issue-list img')).map(function(im){ var i = new Image(); i.src = im.currentSrc || im.src; return i; }).filter(function(i){ return i.src; });
   var coverNames = [].slice.call(document.querySelectorAll('#issue-list img')).map(function(im){ var a = im.closest('[title]'); return a ? a.getAttribute('title') : ''; });
   // ---------- shared drawing ----------
