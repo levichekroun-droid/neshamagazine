@@ -4306,6 +4306,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
     try { document.dispatchEvent(new CustomEvent('ng:owner', { detail: v })); } catch(e){}
   }
   window.NG_IS_OWNER = function(){ return owner; };
+  window.NG_OWNER_OFF = function(){ if (owner) setOwner(false); };
   // the owner logs in through the normal Log in: owner email + owner code = owner mode
   window.NG_OWNER_CHECK = function(em, pw){
     em = String(em || '').trim().toLowerCase(); pw = String(pw || '').trim();
@@ -4923,6 +4924,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
   function enter(u, isNew, how){
     window.NG_ENTER_HOW = how || (isNew ? 'signup' : 'login');
     showVerify(false); pend = null;
+    if (u.email && !/^levichekroun@ulyop\.com$/i.test(u.email) && window.NG_OWNER_OFF) NG_OWNER_OFF();   // someone else logged in on the owner's computer: count them like any reader
     NG.setUser({ name: u.name || '', email: u.email, uid: u.uid, via: 'password' });
     try { sessionStorage.removeItem('ng_counted_p'); } catch(e){}
     $('ngw-pass').value = ''; $('ngw-pass2').value = '';
@@ -5022,7 +5024,7 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
       var u = res && res.user; if (!u) return;
       var isNew = !!(res.additionalUserInfo && res.additionalUserInfo.isNewUser);
       $('ngw-msg').textContent = '';
-      enter({ name: String(u.displayName || '').trim().split(/\s+/)[0] || '', email: String(u.email || '').toLowerCase(), uid: u.uid }, isNew);
+      enter({ name: String(u.displayName || '').trim().split(/\s+/)[0] || '', email: String(u.email || '').toLowerCase(), uid: u.uid }, isNew, 'google');
       try { firebase.auth().signOut(); } catch(e){}
     }
     function googleFail(e){
