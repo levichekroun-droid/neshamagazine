@@ -6283,13 +6283,14 @@ document.getElementById('cp').addEventListener('click',function(){
   });
 
   // ---------- strikes: warning, then 1 week, then 1 month, then forever ----------
+  (function(){ try { if (localStorage.getItem('ng_sec_fresh1')) return; Object.keys(localStorage).forEach(function(k){ if (/^ng_sec_/.test(k)) localStorage.removeItem(k); }); localStorage.setItem('ng_sec_fresh1', '1'); } catch(e){} })();   // fresh start: old blocks are gone
   function devRec(){ return ls('ng_sec_dev') || { strikes:0, until:0 }; }
   function mailRec(em){ return (em && ls('ng_sec_' + pkey(em))) || { strikes:0, until:0 }; }
   function remote(em){
     return fetch(DOCS + '/blocks/' + pkey(em) + '?key=' + KEY, { cache:'no-store' }).then(function(r){
       if (r.status === 404) return { missing:true };
       if (!r.ok) throw new Error('no');
-      return r.json().then(function(j){ var f = j.fields || {}; return { reset: f.reset ? +(f.reset.integerValue || 0) : 0, note: f.note ? f.note.stringValue || '' : '', banned: !!(f.banned && f.banned.booleanValue), strikes: +((f.strikes && f.strikes.integerValue) || 0), until: f.until ? +(f.until.integerValue || f.until.doubleValue || 0) : 0 }; });
+      return r.json().then(function(j){ var f = j.fields || {}; if (f.last && new Date(f.last.timestampValue).getTime() < Date.UTC(2026, 10, 12, 1, 40)) return { missing: true }; return { reset: f.reset ? +(f.reset.integerValue || 0) : 0, note: f.note ? f.note.stringValue || '' : '', banned: !!(f.banned && f.banned.booleanValue), strikes: +((f.strikes && f.strikes.integerValue) || 0), until: f.until ? +(f.until.integerValue || f.until.doubleValue || 0) : 0 }; });
     });
   }
   function save(em, rec){
