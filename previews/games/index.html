@@ -5208,6 +5208,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
 <div id="vm" class="vm vm-radar" hidden role="dialog" aria-label="Neshama Radar">
   <div class="vm-scan" aria-hidden="true"></div>
   <header class="vm-top">
+    <button type="button" class="vm-back" id="vm-back" aria-label="Back to the Owner Panel"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Owner Panel</button>
     <b>Neshama Radar</b>
     <span class="vm-clock" id="vm-clock"></span>
     <button type="button" class="vm-x" id="vm-close" aria-label="Close">✕</button>
@@ -5370,6 +5371,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   $('vm-open') && $('vm-open').addEventListener('click', open);
   window.NG_VM_LOAD = load;
   $('vm-close').addEventListener('click', close);
+  $('vm-back').addEventListener('click', function(){ close(); setTimeout(function(){ var p = $('owner-panel'), b = $('owner-btn'); if (p && !p.classList.contains('open') && b) b.click(); }, 30); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !vm.hidden) close(); });
   document.addEventListener('ng:owner', function(e){ if (!e.detail) close(); });
   document.querySelectorAll('.vm-tabs [data-v]').forEach(function(b){ b.onclick = function(){
@@ -11305,5 +11307,10 @@ html body #finder.fx2 .finder-msg:empty,html body #finder.fx2 .finder-chips:empt
   window.NG_FX_TAB = show;
 })();
 </script>
+<style id="vm-back-css">
+#vm .vm-back{display:inline-flex;align-items:center;gap:6px;border:2px solid #f5e4cc;background:transparent;color:#f5e4cc;border-radius:999px;padding:6px 14px 6px 10px;font:800 .9rem Figtree,system-ui,sans-serif;cursor:pointer;flex:none}
+#vm .vm-back:hover{background:#f5e4cc;color:#12294a}
+@media (max-width:640px){#vm .vm-back{padding:5px 10px 5px 6px;font-size:.8rem}}
+</style>
 </body>
 </html>
