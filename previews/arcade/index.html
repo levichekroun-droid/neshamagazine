@@ -10611,7 +10611,7 @@ html.ng-ch .tape{padding-top:70px!important}
   }
   var BACK1 = { 'yw7b95bcah': 1 }, back1Who = '';
   function back1(){ var u = (window.NG && NG.getUser && NG.getUser()) || null, em = u && u.email ? String(u.email).toLowerCase() : ''; if (!em || em === back1Who) return; back1Who = em;
-    if (BACK1[gcode('ng-gift:' + em)] && ls('ng_rr_b1') !== '1' && Date.now() < Date.UTC(2026, 10, 28)){ ls('ng_rr_b1', '1'); if (SAVE.maxLv > 1){ SAVE.maxLv = 1; save(); } startLv = 1; } }
+    var kk = 'ng_rr_b1_' + gcode('ng-gift:' + em); if (ls(kk) !== '1' && Date.now() < Date.UTC(2026, 10, 28)){ ls(kk, '1'); if (SAVE.maxLv > 1){ SAVE.maxLv = 1; save(); } startLv = 1; } }   // every account goes back to level 1, once
   function screenTitle(){
     back1();
     var cx = W / 2; logo(cx, H * .27, Math.min(72, W * .09));
