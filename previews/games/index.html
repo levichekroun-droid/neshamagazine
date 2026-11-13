@@ -10316,7 +10316,7 @@ html.ng-ch .tape{padding-top:70px!important}
       else if (t.k === 'mag'){ t.got = true; S.mags++; fill(5); gain(100, tx, ty, 'ISSUE'); burst(tx + 15, ty + 20, 22, BEI); tune([659, 880, 1175, 1568], 60); }
       else if (t.k === 'fuel'){ t.got = true; S.rocket += 1.6; pop(tx, ty, 'FUEL +1.6s', true); snd(400, 900, .2, .05); }
       else if (t.k === 'pow'){ t.got = true; if (t.p === 'magnet'){ S.magnet = SAVE.own.magnet ? 10 : 6; pop(tx, ty, 'MAGNET!', true); } else { S.shield = 180; pop(tx, ty, 'SHIELD ON!', true); } tune([523, 784, 1046], 70); }
-      else if (t.k === 'peel' || t.k === 'oil'){ if (S.y < 4 && S.slip <= 0 && !t.used){ t.used = true; S.slip = 1.3; S.slide = 0; if (t.k === 'peel') t.fly = { vx: 260, vy: 520, rot: 0, spin: 14 }; snd(620, 140, .5, .06, 'sawtooth'); pop(tx, ty - 34, t.k === 'peel' ? 'SLIIIP!' : 'WHOA, INK!', true); shake = 4; } }
+      else if (t.k === 'peel' || t.k === 'oil'){ if (S.y < 4 && S.slip <= 0 && !t.used){ t.used = true; S.slip = 1.3; S.slide = 0; S.banana = t.k === 'peel'; if (t.k === 'peel'){ t.fly = { vx: 260, vy: 520, rot: 0, spin: 14 }; burst(RX + 24, GROUND - 30, 24, '#f2cf3e'); snd(300, 900, .25, .05, 'triangle'); } snd(620, 140, .5, .06, 'sawtooth'); pop(tx, ty - 34, t.k === 'peel' ? 'YOU ARE A BANANA!' : 'WHOA, INK!', true); shake = 4; } }
       else if (t.k === 'spring'){ if (S.vy <= 0 && !t.used){ t.used = true; S.vy = 1050; S.air = 1; S.dive = false; S.chute = 0; snd(200, 950, .35, .06); pop(tx, ty - 34, 'BOING!', true); } }
       else if (P('agent') && (t.k === 'laser' || t.k === 'drone' || t.k === 'plane' || t.k === 'swing' || t.k === 'sign')){ if (!t.dodged){ t.dodged = 1; pop(tx, ty - 24, 'CAN\'T TOUCH ME', false); snd(1200, 1600, .06, .03, 'square'); } }
       else if (P('smash') && /^(box|tall|fork|drop|gear|bolt|ink)$/.test(t.k)){ t.burn = t.burnT = t.k === 'tall' ? 1.1 : .85; t.extra = 0; t.falling = false; burst(tx + tw / 2, ty + th / 2, 22, '#f08a2c'); burst(tx + tw / 2, ty + th / 2, 10, GOLD); shake = 4; S.pts += 30; pop(tx, ty - 20, 'BURNED! +30', true); snd(140, 60, .5, .07, 'sawtooth'); snd(900, 200, .35, .03, 'triangle'); }
@@ -10650,6 +10650,21 @@ html.ng-ch .tape{padding-top:70px!important}
     }
     button(cx - 80, H - 54, 160, 40, 'BACK', function(){ gSel = null; mode = S && S.end ? 'over' : 'title'; }, { size: 20 });
   }
+  // slipped on a peel: for a moment the robot IS a banana
+  function bananaBot(x, base, left){
+    var k = Math.min(1, (1.3 - left) / .18), out = Math.min(1, left / .18), sc = Math.min(k, out), wob = Math.sin(time * 16) * .35;
+    g.save(); g.translate(x + 24, base - 30); g.rotate(-.5 + wob); g.scale((.4 + sc * .6) * 1.4, (.4 + sc * .6) * 1.55);
+    // the banana: a fat yellow crescent
+    g.lineJoin = 'round'; g.beginPath(); g.moveTo(-34, -22); g.quadraticCurveTo(-8, 34, 36, 10); g.quadraticCurveTo(40, 6, 37, 1); g.quadraticCurveTo(2, 10, -22, -30); g.quadraticCurveTo(-30, -32, -34, -22); g.closePath();
+    var bg = g.createLinearGradient(0, -30, 0, 30); bg.addColorStop(0, '#f6dc8a'); bg.addColorStop(1, '#e0b552'); g.fillStyle = bg; g.fill(); g.strokeStyle = NAV; g.lineWidth = 3.5; g.stroke();
+    // ridge line, brown tips
+    g.strokeStyle = 'rgba(167,122,42,.8)'; g.lineWidth = 2; g.beginPath(); g.moveTo(-28, -22); g.quadraticCurveTo(-6, 22, 32, 8); g.stroke();
+    g.fillStyle = '#5b4a36'; g.beginPath(); g.arc(-31, -27, 4.5, 0, 7); g.fill(); g.beginPath(); g.arc(37, 5, 3.5, 0, 7); g.fill();
+    // the robot's eyes are still in there, very surprised
+    g.fillStyle = NAV; rr(-14, -6, 24, 13, 5); g.fill(); g.fillStyle = '#bfe9ff'; g.beginPath(); g.arc(-7, .5, 3.6, 0, 7); g.arc(4, .5, 3.6, 0, 7); g.fill(); g.fillStyle = NAV; g.beginPath(); g.arc(-7, .5, 1.3, 0, 7); g.arc(4, .5, 1.3, 0, 7); g.fill();
+    g.restore();
+    if (Math.random() < .5) S.parts.push({ x: x + 10 + Math.random() * 30, y: base - 6, vx: -160 - Math.random() * 80, vy: -40 * Math.random(), l: .3, c: '#f2cf3e', s: 3, g: 300 });
+  }
   function burning(t){
     var k = 1 - t.burn / t.burnT, x = t.x, w = t.w, hh = Math.max(4, t.h * (1 - k * .8)), top = GROUND - t.y - hh, i;
     g.save(); g.globalAlpha = Math.max(0, 1 - k * 1.5); thing(t); g.restore();
@@ -10675,7 +10690,7 @@ html.ng-ch .tape{padding-top:70px!important}
     if (S && (mode === 'play' || mode === 'over')){
       S.things.forEach(function(t){ if (t.burn > 0) return burning(t); if (!t.fly) return thing(t); var cx = t.x + t.w / 2, cy = GROUND - t.y - t.h / 2; g.save(); g.translate(cx, cy); g.rotate(t.fly.rot); g.translate(-cx, -cy); thing(t); g.restore(); }); if (mode === 'play') S.things.forEach(function(t){ if (!t.got && !t.dead) tag(t); });
       var low = S.slide > 0 || S.slip > 0, rot = S.flipDir ? S.flipDir * S.spin : S.slip > 0 ? Math.sin(S.slip * 18) * .8 : S.rocket > 0 ? -.15 : 0;
-      robo(RX, GROUND - S.y, rot, low && !S.rocket);
+      if (S.slip > 0 && S.banana && mode === 'play') bananaBot(RX, GROUND - S.y, S.slip); else robo(RX, GROUND - S.y, rot, low && !S.rocket);
       if (S.shells) S.shells.forEach(function(sh){ g.save(); g.translate(sh.x + 30, sh.y); g.rotate(sh.r); g.fillStyle = '#e8eaee'; g.strokeStyle = NAV; g.lineWidth = 3; g.beginPath(); if (sh.top){ g.moveTo(-34, 0); g.lineTo(20, 0); g.quadraticCurveTo(40, -16, 20, -34); g.lineTo(-34, -34); } else { g.moveTo(-34, 0); g.lineTo(20, 0); g.quadraticCurveTo(40, 16, 20, 34); g.lineTo(-34, 34); } g.closePath(); g.fill(); g.stroke(); g.restore(); });
       S.parts.forEach(function(p){ g.globalAlpha = Math.max(0, Math.min(1, p.l * 2)); g.fillStyle = p.c; g.fillRect(p.x - p.s / 2, p.y - p.s / 2, p.s, p.s); }); g.globalAlpha = 1;
       S.pops.forEach(function(p){ g.globalAlpha = Math.max(0, Math.min(1, p.l * 1.6)); txt(p.s, p.x + 14, p.y, p.big ? 24 : 18, p.big ? GOLD : BEI); }); g.globalAlpha = 1;
