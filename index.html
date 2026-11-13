@@ -4718,7 +4718,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   function patchStatus(ch){
     var fields = { frozen:{ booleanValue: frozen }, msg:{ stringValue: fmsg }, soon:{ booleanValue: soon }, soonMsg:{ stringValue: smsg }, theme:{ stringValue: theme }, at:{ timestampValue: new Date().toISOString() } };
     Object.keys(ch).forEach(function(k){ fields[k] = typeof ch[k] === 'boolean' ? { booleanValue: ch[k] } : { stringValue: ch[k] }; });
-    return api('PATCH', DB + '/site/status', { fields: fields }, true).then(function(){ frozen = fields.frozen.booleanValue; fmsg = fields.msg.stringValue; soon = fields.soon.booleanValue; smsg = fields.soonMsg.stringValue; theme = fields.theme.stringValue; show(); freezeUI(); });
+    return api('PATCH', DB + '/site/status?' + Object.keys(fields).map(function(k){ return 'updateMask.fieldPaths=' + k; }).join('&'), { fields: fields }, true).then(function(){ frozen = fields.frozen.booleanValue; fmsg = fields.msg.stringValue; soon = fields.soon.booleanValue; smsg = fields.soonMsg.stringValue; theme = fields.theme.stringValue; show(); freezeUI(); });
   }
   var FROZEN_PARTS = [];
   var PART_SEL = { videos:{ sec:'#videos', nav:'#nav-videos' }, sponsor:{ sec:'#sponsor', nav:'header nav a[href="#sponsor"]' }, team:{ sec:'#team', nav:'#nav-team' }, tzedaka:{ sec:'#tzedaka', nav:'#nav-mag' }, contact:{ sec:'#contact', nav:'#nav-contact, a[data-go="contact"]' } };
@@ -5258,7 +5258,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   <section class="vm-view" id="vm-dev" hidden><div class="rd-pad"><h3>Phones vs computers</h3><p class="rd-tip">What readers used this month.</p><div id="rd-dev"></div></div></section>
   <section class="vm-view" id="vm-qr" hidden><div class="rd-pad"><h3>QR codes</h3><p class="rd-tip">How many people scanned the QR codes in the printed magazine, and how many of them became readers.</p><div id="rd-qr"></div></div></section>
   <section class="vm-view" id="vm-fb" hidden><div class="rd-pad"><h3>Feedback</h3><p class="rd-tip">What readers wrote on the feedback page (the QR code in the printed magazine). Newest first.</p><div id="rd-fb"></div></div></section>
-  <section class="vm-view" id="vm-ban" hidden><div class="rd-pad"><h3>Block someone</h3><p class="rd-tip">A blocked reader hears a siren, the gate rolls down and they see "You are blocked". It happens within 15 seconds, even if they are reading right now.</p><form id="rd-banf" class="rd-banf" novalidate><input id="rd-bane" type="search" placeholder="Type a name or an email" autocomplete="off"><button type="submit">Block this email</button></form><label class="rd-notel" for="rd-bannote">Message they will see (you can leave it empty)</label><textarea id="rd-bannote" class="rd-bannote" maxlength="500" placeholder="Hello, I see that you are doing something you should not. You have been blocked."></textarea><div id="rd-banpick"></div><h4 class="rd-h4">Everyone at once</h4><p class="rd-tip" id="rd-allst">Blocks every reader on the website (not you), with the message above.</p><div class="rd-when"><button type="button" id="rd-allon">Block everyone</button><button type="button" id="rd-alloff">Unblock everyone</button></div><h4 class="rd-h4">Blocked now</h4><div id="rd-banlist"></div><h4 class="rd-h4">Everyone who came on</h4><div class="rd-when" id="rd-when"><button type="button" data-w="1" class="on">Today</button><button type="button" data-w="7">Past week</button><button type="button" data-w="30">Past month</button><button type="button" data-w="0">Forever</button></div><div id="rd-everyone"></div></div></section>
+  <section class="vm-view" id="vm-ban" hidden><div class="rd-pad"><h3>Block someone</h3><p class="rd-tip">A blocked reader hears a siren, the gate rolls down and they see "You are blocked". It happens within a few seconds, even if they are in the middle of a game.</p><form id="rd-banf" class="rd-banf" novalidate><input id="rd-bane" type="search" placeholder="Type a name or an email" autocomplete="off"><button type="submit">Block this email</button></form><label class="rd-notel" for="rd-bannote">Message they will see (you can leave it empty)</label><textarea id="rd-bannote" class="rd-bannote" maxlength="500" placeholder="Hello, I see that you are doing something you should not. You have been blocked."></textarea><div id="rd-banpick"></div><h4 class="rd-h4">Everyone at once</h4><p class="rd-tip" id="rd-allst">Blocks every reader on the website (not you), with the message above.</p><div class="rd-when"><button type="button" id="rd-allon">Block everyone</button><button type="button" id="rd-alloff">Unblock everyone</button></div><h4 class="rd-h4">Blocked now</h4><div id="rd-banlist"></div><h4 class="rd-h4">Everyone who came on</h4><div class="rd-when" id="rd-when"><button type="button" data-w="1" class="on">Today</button><button type="button" data-w="7">Past week</button><button type="button" data-w="30">Past month</button><button type="button" data-w="0">Forever</button></div><div id="rd-everyone"></div></div></section>
   <section class="vm-view" id="vm-alert" hidden><div class="rd-pad"><h3>Alerts</h3><p class="rd-tip">Every screenshot, recording or print try, newest first.</p><div id="rd-alert"></div></div></section>
   <p class="vm-msg" id="vm-msg"></p>
 </div>
@@ -6478,14 +6478,15 @@ document.getElementById('cp').addEventListener('click',function(){
   function unban(){ if (!banned) return; banned = false; root.classList.remove('ng-banned'); seqT.forEach(clearTimeout); seqUntil = 0; try { stopSiren(); } catch(e){} $('sx-modal').hidden = true; root.classList.remove('ng-blocked', 'ng-black'); gateUp(); }
   function unblockScreen(){ try { stopSiren(); } catch(e){} seqT.forEach(clearTimeout); seqUntil = 0; var m = $('sx-modal'); if (m) m.hidden = true; root.classList.remove('ng-blocked', 'ng-black', 'ng-banned'); try { gateUp(); } catch(e){} }
   function banPoll(){ var em = email(), did = ''; try { did = localStorage.getItem('ng_did') || ''; } catch(e){} if (owner() || (!em && !did)){ if (banned) unban(); return; } var k = em ? pkey(em) : '-';
-    fetch(DOCS + '/site/bans?key=' + KEY, { cache: 'no-store' }).then(function(r){ if (r.status === 404) return { bans: {}, resets: {} }; if (!r.ok) throw new Error('no'); return r.json().then(function(j){ var d = {}; try { d = JSON.parse(j.fields.data.stringValue) || {}; } catch(e){} return d; }); })
+    var old = function(){ return fetch(DOCS + '/site/bans?key=' + KEY, { cache: 'no-store' }).then(function(r){ if (r.status === 404) return { bans: {}, resets: {} }; if (!r.ok) throw new Error('no'); return r.json().then(function(j){ var d = {}; try { d = JSON.parse(j.fields.data.stringValue) || {}; } catch(e){} return d; }); }); };
+    fetch(DOCS + '/site/status?mask.fieldPaths=bans&key=' + KEY, { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ var raw = j && j.fields && j.fields.bans && j.fields.bans.stringValue; if (!raw) return old(); var d = {}; try { d = JSON.parse(raw) || {}; } catch(e){} return d; }, old)
       .then(function(d){
         if (em && d.kick && /^levichekroun@ulyop\.com$/i.test(em) && localStorage.getItem('ng_owner_dev') !== '1'){ var uu = user(); if (uu && (+uu.start || 0) < +d.kick && window.NG && NG.setUser){ NG.setUser(null); if (window.NG_WALL) NG_WALL(); return; } }
-        var b = (em && (d.bans || {})[k]) || (did && (d.devs || {})[did]) || (em && d.all), rs = Math.max(+((d.resets || {})[k] || 0), +(d.resetAll || 0));
+        var b = (em && (d.bans || {})[k]) || (did && (d.devs || {})[did]) || d.all, rs = Math.max(+((d.resets || {})[k] || 0), +(d.resetAll || 0));
         if (b){ ban(b.note || ''); return; }
         if (rs && rs > (+ls('ng_sec_reset_' + k) || 0)){ ls('ng_sec_reset_' + k, rs); ls('ng_sec_' + k, null); var dd = devRec(); if (!dd.email || dd.email === em) ls('ng_sec_dev', null); checked = ''; banned = false; unblockScreen(); return; }
         if (banned) unban(); }).catch(function(){}); }
-  setTimeout(banPoll, 1500); setInterval(banPoll, 15000); window.NG_BAN_PING = banPoll; document.addEventListener('ng:login', banPoll);
+  setTimeout(banPoll, 1500); setInterval(banPoll, 8000); window.NG_BAN_PING = banPoll; document.addEventListener('ng:login', banPoll);
   check(); setInterval(check, 3000);
   document.addEventListener('ng:owner', check);
 
@@ -8689,7 +8690,16 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   var prev = window.NG_RADAR_TAB;
   window.NG_RADAR_TAB = function(v, fromLoad){ if (prev) prev(v, fromLoad);
     if (v === 'read') drawRead(); if (v === 'log') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'qr' && !fromLoad) drawQR(); if (v === 'ban' && !fromLoad) drawBan(); };
+  function banPut(t, d){
+    var body = JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } });
+    fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: body }).catch(function(){});
+    return fetch(DB + '/site/status?updateMask.fieldPaths=bans&key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { bans: { stringValue: JSON.stringify(d) } } }) });
+  }
   function bansGet(t){
+    return fetch(DB + '/site/status?mask.fieldPaths=bans&key=' + KEY, { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+      var raw = j && j.fields && j.fields.bans && j.fields.bans.stringValue; if (!raw) return bansGetOld(t); var d = {}; try { d = JSON.parse(raw) || {}; } catch(e){} d.bans = d.bans || {}; d.resets = d.resets || {}; return d; }, function(){ return bansGetOld(t); });
+  }
+  function bansGetOld(t){
     return fetch(DB + '/site/bans?key=' + KEY, { headers: t ? { Authorization: 'Bearer ' + t } : {}, cache: 'no-store' }).then(function(r){
       if (r.status === 404) return { bans: {}, resets: {} };
       return r.json().then(function(j){ if (!r.ok) throw new Error('Could not read the block list. Connect Firebase in the Owner Panel first.'); var d = {}; try { d = JSON.parse(j.fields.data.stringValue) || {}; } catch(e){} d.bans = d.bans || {}; d.resets = d.resets || {}; return d; }); });
@@ -8701,7 +8711,7 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
       if (on){ d.bans[k] = { em: em, nm: name || '', note: String(note || '').slice(0, 500), at: Date.now() };
         people().forEach(function(p){ if (p.did && String(p.email || '').toLowerCase() === em) d.devs[p.did] = { em: em, nm: name || p.name || '', note: String(note || '').slice(0, 500), at: Date.now() }; }); }
       else { delete d.bans[k]; d.resets[k] = Date.now(); Object.keys(d.devs).forEach(function(x){ if (d.devs[x].em === em) delete d.devs[x]; }); }
-      return fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } }) })
+      return banPut(t, d)
         .then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); window.NG_BANS = d; NG_BAN_REFRESH();
           if (!on){   // also clear the old screenshot-strike record, if there is one
             var u = { email:{ stringValue: em }, banned:{ booleanValue: false }, strikes:{ integerValue: '0' }, until:{ integerValue: '0' }, what:{ stringValue: '' }, last:{ timestampValue: new Date().toISOString() } };
@@ -8709,7 +8719,7 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   }
   function banAll(on, note){ return token().then(function(t){ return bansGet(t).then(function(d){
       if (on) d.all = { note: String(note || '').slice(0, 500), at: Date.now() }; else { delete d.all; d.resetAll = Date.now(); }
-      return fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } }) })
+      return banPut(t, d)
         .then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); window.NG_BANS = d; return d; }); }); }); }
   window.NG_BAN_REFRESH = function(){ var d = window.NG_BANS || { bans: {} };
     [].forEach.call(document.querySelectorAll('.ng-blk:not(.rd-devb)'), function(b){ var on = !!d.bans[pkey(String(b.getAttribute('data-to') || '').toLowerCase())]; if (b.dataset.busy) return; b.classList.toggle('is-on', on); b.textContent = on ? 'Unblock' : 'Block'; }); };
@@ -8718,7 +8728,7 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   var banMo = 0; new MutationObserver(function(){ if (banMo) return; banMo = requestAnimationFrame(function(){ banMo = 0; if (window.NG_BANS) NG_BAN_REFRESH(); }); }).observe(document.body, { childList: true, subtree: true });
   window.NG_BAN_DEV = function(did, lab, on){ return token().then(function(t){ return bansGet(t).then(function(d){ d.devs = d.devs || {};
       if (on) d.devs[did] = { em: '', nm: String(lab || '').slice(0, 80), note: '', at: Date.now() }; else delete d.devs[did];
-      return fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } }) })
+      return banPut(t, d)
         .then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); window.NG_BANS = d; return d; }); }); }); };
   document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('.rd-devb'); if (!b) return; var on = !b.classList.contains('is-on');
     if (on && !NG_SURE(b, 'Press again: block this device')) return; b.textContent = on ? 'Blocking\u2026' : 'Unblocking\u2026';
@@ -8726,7 +8736,7 @@ html[data-view="phone"] .tape .arch img{height:180px!important}
   document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('#rd-kick'); if (!b) return; if (!NG_SURE(b, 'Press again: log out everywhere else')) return;
     var m = $('rd-kickmsg'); if (m) m.textContent = 'Logging out\u2026';
     token().then(function(t){ return bansGet(t).then(function(d){ d.kick = Date.now();
-      return fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } }) })
+      return banPut(t, d)
         .then(function(r){ if (!r.ok) throw new Error('Could not save. Connect Firebase in the Owner Panel first.'); window.NG_BANS = d; }); }); })
       .then(function(){ if (m) m.textContent = 'Done. Any other phone or computer logged in with your email gets logged out within 15 seconds. Change your password too, so they cannot log in again.'; b.textContent = 'Log my account out everywhere else'; })
       .catch(function(x){ if (m) m.textContent = x.message; }); });
@@ -11344,7 +11354,7 @@ html body #finder.fx2 .finder-msg:empty,html body #finder.fx2 .finder-chips:empt
       .then(function(){
         if (!firebase.apps.length) firebase.initializeApp({ apiKey: 'AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', authDomain: 'neshamagazine.firebaseapp.com', projectId: 'neshamagazine' });
         var db = firebase.firestore(), first = { s: 1, b: 1 };
-        db.doc('site/status').onSnapshot(function(){ if (first.s){ first.s = 0; return; } if (window.NG_STATUS_PING) NG_STATUS_PING(); }, function(){});
+        db.doc('site/status').onSnapshot(function(){ if (first.s){ first.s = 0; return; } if (window.NG_STATUS_PING) NG_STATUS_PING(); if (window.NG_BAN_PING) NG_BAN_PING(); }, function(){});
         db.doc('site/bans').onSnapshot(function(){ if (first.b){ first.b = 0; return; } if (window.NG_BAN_PING) NG_BAN_PING(); }, function(){});
       }).catch(function(){});
   }
