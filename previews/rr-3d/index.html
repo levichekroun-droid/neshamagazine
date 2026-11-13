@@ -575,10 +575,9 @@ addEventListener('keydown', function(e){ var k = e.key;
   else if (k === 'ArrowDown' || k === 's' || k === 'S'){ e.preventDefault(); holdDown = true; if (!e.repeat) down(); } });
 addEventListener('keyup', function(e){ if (/^(ArrowUp|ArrowRight|w|W|d|D| )$/.test(e.key)) hold = false; if (/^(ArrowDown|s|S)$/.test(e.key)) holdDown = false; });
 var tx0 = null, ty0 = 0;
-canvas.addEventListener('pointerdown', function(e){ tx0 = e.clientX; ty0 = e.clientY; hold = true; });
+canvas.addEventListener('pointerdown', function(e){ tx0 = e.clientX; ty0 = e.clientY; hold = true; jump(); });
 addEventListener('pointerup', function(e){ hold = false; if (tx0 == null) return; var dx = e.clientX - tx0, dy = e.clientY - ty0; tx0 = null;
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 26){ jump(); return; }
-  if (Math.abs(dy) > Math.abs(dx)){ if (dy > 0) down(); else jump(); } else if (dx < 0) backflip(); else jump(); });
+  if (dy > 30 && Math.abs(dy) > Math.abs(dx)) down(); else if (dx < -40 && Math.abs(dx) > Math.abs(dy)) backflip(); });
 document.querySelectorAll('[data-k]').forEach(function(b){ b.addEventListener('pointerdown', function(e){ e.preventDefault(); e.stopPropagation(); var k = b.dataset.k; if (k === 'jump'){ hold = true; jump(); } else if (k === 'slide') down(); else backflip(); });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(function(ev){ b.addEventListener(ev, function(){ hold = false; }); }); });
 
@@ -637,7 +636,7 @@ function fill(n){ if (S.rocket > 0) return; if (has('turbo')) n *= 2; S.meter +=
 function launch(){ S.rocket = 6 + (has('turbo') ? 4 : 0); S.vy = 0; S.flipDir = 0; S.slide = 0; S.slip = 0; S.chute = 0; S.eject = 0; S.dive = false; S.air = 0;
   R.shells.forEach(function(sh, i){ sh.position.set(0, 1.1, 0); sh.rotation.set(0, i ? -Math.PI / 2 : Math.PI / 2, 0); }); S.shells = null;
   for (var i = things.length - 1; i >= 0; i--){ var t = things[i]; if (t.k !== 'coin' && t.x > -2 && t.x < 30){ burst(t.x, 1, 0, 10, '#e8e8e4', 4); scene.remove(t.m); things.splice(i, 1); } }
-  banner('ROCKET!', 'TO SPACE', 'Hold JUMP to fly up. DOWN to eject.'); tune([523, 659, 784, 1046, 1318], 70); shake = .5; slowmo = .4; }
+  banner('ROCKET!', 'TO SPACE', 'Hold JUMP to fly up. DOWN to eject.'); tune([523, 659, 784, 1046, 1318], 70); shake = .2; }
 function crash(t){
   if (S.inv > 0 || S.dead) return;
   if (S.shield > 0){ if (t.k === 'gap'){ S.y = .02; S.vy = 0; if (!t.bridged){ t.bridged = 1; pop('SAFE!'); } return; } punch(t); return; }
@@ -676,7 +675,7 @@ function update(dt){
     if (S.chute && S.vy < -2.4) S.vy = -2.4;
     S.y += S.vy * dt;
     if (S.y <= 0 && !S.overGap){ if (S.air || S.chute || S.dive){ if (S.dive){ shake = .35; burst(.4, .1, 0, 22, '#f5e4cc', 5); pop('GROUND POUND!', true); gain(20); } else burst(.4, .1, 0, 8, '#f5e4cc', 3); }
-      S.y = 0; S.vy = 0; S.air = 0; S.dive = false; S.chute = 0; if (S.flipDir){ S.flipDir = 0; S.flip = 0; pop('SLOPPY LANDING'); } }
+      S.squash = .3; S.y = 0; S.vy = 0; S.air = 0; S.dive = false; S.chute = 0; if (S.flipDir){ S.flipDir = 0; S.flip = 0; pop('SLOPPY LANDING'); } }
   }
   if (S.flipDir){ S.flip += dt / .5; if (S.flip >= 1){ S.flip = 0; S.flipDir = 0; S.tricks++; gain(25, S.air > 2 ? 'TRIPLE FLIP!' : 'FLIP!'); sfx(880, 1320, .14, .05); } }
   if (S.slide > 0){ S.slide -= dt; if (S.slide <= 0 && holdDown) S.slide = .1; if (Math.random() < .5) burst(-.4, .05, rnd(-.5, .5), 1, '#e0b552', 2); }
@@ -731,7 +730,7 @@ function update(dt){
 }
 
 // ---------------- render ----------------
-var camPos = new THREE.Vector3(), camLook = new THREE.Vector3(), SPACEC = new THREE.Color('#02040a');
+var camY = 0, camPos = new THREE.Vector3(), camLook = new THREE.Vector3(), SPACEC = new THREE.Color('#02040a');
 function render(dt){
   var playing = S && (mode === 'play' || mode === 'over');
   if (S && playing){
@@ -739,7 +738,8 @@ function render(dt){
       if (S.flipDir) root.rotation.z = -S.flipDir * S.flip * Math.PI * 2;
       if (S.slip > 0) root.rotation.z = Math.sin(S.slip * 18) * .5;
       if (S.rocket > 0) root.rotation.z = Math.max(-.3, Math.min(.3, S.vy * .04)); }
-    var low = (S.slide > 0 || S.slip > 0) && S.y < .05; R.hip.scale.y += ((low ? .5 : 1) - R.hip.scale.y) * Math.min(1, dt * 18);
+    var low = (S.slide > 0 || S.slip > 0) && S.y < .05; S.squash = (S.squash || 0) * Math.pow(.001, dt); var sq = S.squash;
+    R.hip.scale.y += ((low ? .5 : 1) - sq * .35 - R.hip.scale.y) * Math.min(1, dt * 22); R.hip.scale.x = R.hip.scale.z = 1 + sq * .25;
     var run = S.count > 0 || S.y > .05 ? 0 : 1; R.arms.forEach(function(a, i){ a.rotation.x = Math.sin(time * 13 + i * Math.PI) * .7 * run - (S.y > .05 ? 1.1 : 0); });
     R.wheels.forEach(function(w){ w.rotation.x -= dt * S.speed * 5; });
     R.capsule.visible = S.rocket > 0 || !!S.shells; R.jet.visible = R.nose.visible = R.nozzle.visible = S.rocket > 0; R.fins.forEach(function(f){ f.visible = S.rocket > 0; }); R.jet.scale.set(1, 1 + Math.random() * .4, 1);
@@ -758,10 +758,10 @@ function render(dt){
   if (R.headlight) R.headlight.intensity = curL && curL.hemi > .5 ? 1.5 : 8;
   // camera: side view, a little from the front, like the 2D game but with depth
   var space = S ? S.space : 0, port = innerWidth / innerHeight < 1;
-  if (playing){ camPos.set(4.2 + space * 3, 2.3 + S.y * .6 + space * 4, (port ? 12.5 : 8.2) + space * 6); camLook.set(4.6, 1.4 + S.y * .6 + space * 2, 0); }
+  if (playing){ var lift = Math.max(0, S.y - 3.2) * .7; camY += (lift - camY) * Math.min(1, dt * 2.5); camPos.set(4.2 + space * 3, 2.4 + camY + space * 4, (port ? 12.5 : 8.6) + space * 6); camLook.set(4.6, 1.5 + camY + space * 2, 0); }
   else { var a = time * .3; camPos.set(Math.sin(a) * 2.2 + 2.6, 2.0, 5.2 + Math.cos(a) * .8); camLook.set(0, 1.1, 0); if (mode === 'garage'){ camPos.set(Math.sin(a * 2) * 3, 1.6, 3.2 + Math.cos(a * 2) * .4); camLook.set(0, 1.1, 0); } }
-  camera.position.lerp(camPos, Math.min(1, dt * (playing ? 5 : 2)));
-  if (shake > 0){ camera.position.x += rnd(-1, 1) * shake * .25; camera.position.y += rnd(-1, 1) * shake * .25; shake = Math.max(0, shake - dt * 1.6); }
+  if (playing && !S.dead) camera.position.copy(camPos); else camera.position.lerp(camPos, Math.min(1, dt * 2));
+  if (shake > 0){ camera.position.x += rnd(-1, 1) * shake * .12; camera.position.y += rnd(-1, 1) * shake * .12; shake = Math.max(0, shake - dt * 3); }
   camera.lookAt(camLook);
   var fov = (port ? 70 : 50) + (S && S.rocket > 0 ? 8 : 0); camera.fov += (fov - camera.fov) * Math.min(1, dt * 3); camera.updateProjectionMatrix();
   // level colors fade in; space takes over during the rocket
@@ -794,7 +794,8 @@ applyLevel(LEVELS[0], true); show('title');
 window.R3D = { step: function(dt, n){ for (var i = 0; i < (n || 1); i++) update(dt); }, state: function(){ return S; }, mode: function(){ return mode; }, start: start, launch: function(){ launch(); }, skin: function(i){ skinI = i; buildRobot(); }, add: add, things: function(){ return things; }, level: function(lv){ newRun(lv); mode = 'play'; show('hud'); }, jump: jump, down: down };
 
 var slow = 0, frames = 0;
-function loop(now){ var dt = Math.min(.05, (now - last) / 1000); last = now; update(dt); render(dt);
+var acc = 0, STEP = 1 / 120;
+function loop(now){ var dt = Math.min(.05, (now - last) / 1000); last = now; acc += dt; var n = 0; while (acc >= STEP && n < 8){ update(STEP); acc -= STEP; n++; } if (n === 8) acc = 0; render(dt);
   frames++; if (dt > 1 / 40) slow++; if (frames === 180){ if (slow > 90){ if (composer){ composer = null; renderer.outputEncoding = THREE.sRGBEncoding; scene.traverse(function(o){ if (o.material) o.material.needsUpdate = true; }); } else { renderer.setPixelRatio(Math.min(1.5, PR)); renderer.shadowMap.enabled = false; } } frames = 0; slow = 0; }
   requestAnimationFrame(loop); }
 requestAnimationFrame(loop);
