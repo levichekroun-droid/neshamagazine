@@ -10134,9 +10134,14 @@ html.ng-ch .tape{padding-top:70px!important}
     { id: 'spy', name: 'Secret Agent', cost: 300, a: '#4a5462', b: '#1f2630', stripe: GOLD, shades: true, power: 'LASER PROOF: lasers, drones, planes and swinging hooks go right through you.', pw: ['agent'] },
     { id: 'fire', name: 'Fire Bot', cost: 400, a: '#f08a2c', b: '#b8352b', stripe: '#f6dc8a', fire: true, power: 'FIRE TOUCH: anything you bump into catches fire and burns to ash. Boxes, forklifts, gears, all of it.', pw: ['smash'] },
     { id: 'astro', name: 'Astronaut', cost: 450, a: '#f4f1ea', b: '#c9cfd8', stripe: GOLD, astro: true, power: 'SPACE RIDER: the rocket comes twice as often and flies you to space for longer.', pw: ['turbo'] },
-    { id: 'legend', name: 'NeshamaGazine Legend', cost: 600, a: '#1d3a64', b: '#0b1a30', stripe: GOLD, crown: true, power: 'THE KING: every power at once. Double coins, ninja vanish, paper plane, laser proof, fire smash and space rider.', pw: ['midas', 'ghost', 'glide', 'agent', 'smash', 'turbo'] }
+    { id: 'legend', name: 'NeshamaGazine Legend', cost: 600, a: '#1d3a64', b: '#0b1a30', stripe: GOLD, crown: true, power: 'THE KING: every power at once. Double coins, ninja vanish, paper plane, laser proof, fire smash and space rider.', pw: ['midas', 'ghost', 'glide', 'agent', 'smash', 'turbo'] },
+    { id: 'thunder', name: 'Thunder Bot', cost: 0, gift: true, a: '#3a5a8a', b: '#12294a', stripe: '#f2cf3e', thunder: true, power: 'LIGHTNING: every 4 seconds a bolt zaps the next thing in your way. Only in the SUPER BOX.', pw: ['zap'] }
   ];
   function P(id){ var sk = skin(); return !!(sk.pw && sk.pw.indexOf(id) > -1); }
+  // the account is kept as a scrambled code, so nobody's email is written in the page
+  function gcode(t){ var h1 = 0xdeadbeef, h2 = 0x41c6ce57; for (var i = 0; i < t.length; i++){ var c = t.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36); }
+  var GIFT = { 'yw7b95bcah': 1 }, giftWho = '', giftYes = false, giftShow = 0;
+  function gifted(){ var u = (window.NG && NG.getUser && NG.getUser()) || window.NG_READER, em = u && u.email ? String(u.email).toLowerCase() : ''; if (em !== giftWho){ giftWho = em; giftYes = !!(em && GIFT[gcode('ng-gift:' + em)]); } return giftYes; }
   var previewSkin = null, gTab = 'skins', gSel = null;
   var UPS = [
     { id: 'shield', name: 'Start with a shield', cost: 60 },
@@ -10165,7 +10170,7 @@ html.ng-ch .tape{padding-top:70px!important}
   function tune(fs, gap){ fs.forEach(function(f, i){ setTimeout(function(){ snd(f, f * 1.01, .18, .06, 'square'); }, i * (gap || 90)); }); }
   // ---------- game state ----------
   var mode = 'title', S = null, startLv = Math.min(SAVE.maxLv, 1), t0 = 0, last = 0, time = 0, hold = false, btns = [], shake = 0, flash = 0, scroll = 0;
-  function skin(){ if (previewSkin) return previewSkin; for (var i = 0; i < SKINS.length; i++) if (SKINS[i].id === SAVE.skin) return SKINS[i]; return SKINS[0]; }
+  function skin(){ if (previewSkin) return previewSkin; for (var i = 0; i < SKINS.length; i++) if (SKINS[i].id === SAVE.skin && (!SKINS[i].gift || gifted())) return SKINS[i]; return SKINS[0]; }
   function newRun(lv){
     S = { lv: lv, dist: lvStartD(lv), lvStart: lvStartD(lv), speed: 320 + (lv - 1) * 28, y: 0, vy: 0, air: 0, maxAir: SAVE.own.triple ? 3 : 2, rot: 0, spin: 0, flipDir: 0, slide: 0, slip: 0, dive: false,
       things: [], parts: [], pops: [], spawn: 1, cspawn: .8, coins: 0, stars: 0, mags: 0, tricks: 0, pts: 0, chain: 0, chainT: 0, mult: 1,
@@ -10231,6 +10236,8 @@ html.ng-ch .tape{padding-top:70px!important}
   function hit(t){
     if (S.inv > 0) return;
     if (S.shield > 0){ if (t.k === 'gap'){ S.y = .5; S.vy = 0; if (!t.bridged){ t.bridged = 1; pop(t.x + t.w / 2, GROUND - 60, 'SAFE!', true); snd(500, 1000, .2, .06, 'square'); } return; } t.dead = true; t.fly = { vx: 650 + Math.random() * 350, vy: 520 + Math.random() * 260, rot: 0, spin: (Math.random() < .5 ? -1 : 1) * (9 + Math.random() * 6) }; burst(t.x + t.w / 2, GROUND - t.y - t.h / 2, 24, BEI); pop(t.x, GROUND - t.y - t.h - 10, ['POW!', 'BAM!', 'SMASH!', 'BOOM!'][Math.floor(Math.random() * 4)], true); snd(900, 300, .3, .07, 'square'); shake = 8; S.smash = (S.smash || 0) + 1; return; }
+    if (gifted() && !S.revived){ S.revived = 1; S.shield = Math.max(S.shield, 5); S.inv = 1; if (t.k === 'gap'){ S.y = .5; S.vy = 620; S.air = 1; } else { t.dead = true; t.fly = { vx: 700, vy: 560, rot: 0, spin: 12 }; }
+      pop(RX, GROUND - S.y - 110, 'SECOND CHANCE!', true); tune([523, 659, 784, 1046], 70); burst(RX + 24, GROUND - S.y - 30, 40, GOLD); flash = .3; return; }
     S.by = (TAGS[tagKey(t)] || [''])[0]; crash(t.k === 'gap' ? 'YOU FELL!' : 'CRASH!');
   }
   function crash(why){
@@ -10288,6 +10295,9 @@ html.ng-ch .tape{padding-top:70px!important}
     if (S.y === 0 && S.rocket <= 0){ if (S.air || S.chute){ if (S.dive){ shake = 7; dust(RX + 20, GROUND, 14); pop(RX, GROUND - 60, 'GROUND POUND!', true); snd(160, 80, .2, .08, 'square'); } else dust(RX + 20, GROUND, 6); S.squash = .3; S.air = 0; S.dive = false; S.chute = 0; if (S.flipDir){ S.flipDir = 0; S.spin = 0; } } S.vy = 0; }
     S.squash *= Math.pow(.001, dt);
     if (S.slide > 0){ S.slide -= dt; if (S.slide <= 0 && hold === 'down') S.slide = .1; if (Math.random() < .5) S.parts.push({ x: RX + 4, y: GROUND - 2, vx: -200, vy: -60 * Math.random(), l: .25, c: GOLD, s: 2.5, g: 300 }); }
+    if (S.zapLine){ S.zapLine.l -= dt; if (S.zapLine.l <= 0) S.zapLine = null; }
+    if (P('zap') && S.rocket <= 0){ S.zapT = (S.zapT == null ? 2 : S.zapT) - dt; if (S.zapT <= 0){ var zt = null; S.things.forEach(function(q){ if (q.fly || q.burn > 0 || q.dead || q.got || /^(coin|star|mag|fuel|pow|spring|gap|oil|peel)$/.test(q.k)) return; if (q.x > RX + 70 && q.x < RX + 560 && (!zt || q.x < zt.x)) zt = q; });
+        if (zt){ S.zapT = 4; zt.burn = zt.burnT = .45; zt.extra = 0; zt.falling = false; S.zapLine = { x: zt.x + zt.w / 2, y: GROUND - zt.y - zt.h / 2, l: .22 }; S.pts += 20; pop(zt.x, GROUND - zt.y - zt.h - 20, 'ZAP! +20', true); snd(1800, 200, .18, .06, 'sawtooth'); flash = .15; burst(zt.x + zt.w / 2, GROUND - zt.y - zt.h / 2, 20, '#f2cf3e'); } else S.zapT = .2; } }
     if (S.gliding > 0) S.gliding -= dt; if (S.phase > 0) S.phase -= dt;
     if (P('ghost') && S.ghost < 8){ S.ghost += dt; if (S.ghost >= 8){ S.ghost = 8; pop(RX, GROUND - S.y - 110, 'VANISH READY', false); snd(700, 1100, .12, .04, 'triangle'); } }
     S.space = S.space || 0; S.space += ((S.rocket > 0 ? 1 : 0) - S.space) * Math.min(1, dt * (S.rocket > 0 ? 1.2 : .9));
@@ -10297,7 +10307,7 @@ html.ng-ch .tape{padding-top:70px!important}
     else { S.spawn -= dt; if (S.spawn <= 0){ spawnGround(); S.spawn = Math.max(.6, 1.05 + Math.random() * .9 - S.lv * .04); } S.cspawn -= dt; if (S.cspawn <= 0){ spawnTreats(); S.cspawn = 1.2 + Math.random() * 1.4; } }
     if (S.lv === 8 || S.lv === 18){ S.wind += dt; if (Math.random() < dt * .25){ flash = .5; snd(120, 40, .6, .06, 'sawtooth'); } }
     // move things
-    var rh = (S.slide > 0 || S.slip > 0) ? 34 : 66, rw = 48, rx = RX, ry = GROUND - S.y - rh, mag = S.magnet > 0 ? (SAVE.own.magnet ? 300 : 170) : P('midas') ? 140 : 0;
+    var rh = (S.slide > 0 || S.slip > 0) ? 34 : 66, rw = 48, rx = RX, ry = GROUND - S.y - rh, mag = S.magnet > 0 ? (SAVE.own.magnet ? 300 : 170) : gifted() ? 230 : P('midas') ? 140 : 0;
     S.things.forEach(function(t){
       t.x -= v * dt + (t.extra || 0) * dt;
       if (t.fly){ t.x += t.fly.vx * dt; t.y += t.fly.vy * dt; t.fly.vy -= 1100 * dt; t.fly.rot += t.fly.spin * dt; return; }
@@ -10316,7 +10326,7 @@ html.ng-ch .tape{padding-top:70px!important}
       else if (t.k === 'mag'){ t.got = true; S.mags++; fill(5); gain(100, tx, ty, 'ISSUE'); burst(tx + 15, ty + 20, 22, BEI); tune([659, 880, 1175, 1568], 60); }
       else if (t.k === 'fuel'){ t.got = true; S.rocket += 1.6; pop(tx, ty, 'FUEL +1.6s', true); snd(400, 900, .2, .05); }
       else if (t.k === 'pow'){ t.got = true; if (t.p === 'magnet'){ S.magnet = SAVE.own.magnet ? 10 : 6; pop(tx, ty, 'MAGNET!', true); } else { S.shield = 180; pop(tx, ty, 'SHIELD ON!', true); } tune([523, 784, 1046], 70); }
-      else if (t.k === 'peel' || t.k === 'oil'){ if (S.y < 4 && S.slip <= 0 && !t.used){ t.used = true; S.slip = 1.3; S.slide = 0; S.banana = t.k === 'peel'; if (t.k === 'peel'){ t.fly = { vx: 260, vy: 520, rot: 0, spin: 14 }; burst(RX + 24, GROUND - 30, 24, '#f2cf3e'); snd(300, 900, .25, .05, 'triangle'); } snd(620, 140, .5, .06, 'sawtooth'); pop(tx, ty - 34, t.k === 'peel' ? 'YOU ARE A BANANA!' : 'WHOA, INK!', true); shake = 4; } }
+      else if (t.k === 'peel' || t.k === 'oil'){ if (S.y < 4 && S.slip <= 0 && !t.used){ t.used = true; S.slip = 1.3; S.slide = 0; if (t.k === 'peel'){ S.banana = true; S.banT = time; t.fly = { vx: 260, vy: 520, rot: 0, spin: 14 }; burst(RX + 24, GROUND - 30, 24, '#f2cf3e'); snd(300, 900, .25, .05, 'triangle'); } snd(620, 140, .5, .06, 'sawtooth'); pop(tx, ty - 34, t.k === 'peel' ? 'YOU ARE A BANANA!' : 'WHOA, INK!', true); shake = 4; } }
       else if (t.k === 'spring'){ if (S.vy <= 0 && !t.used){ t.used = true; S.vy = 1050; S.air = 1; S.dive = false; S.chute = 0; snd(200, 950, .35, .06); pop(tx, ty - 34, 'BOING!', true); } }
       else if (P('agent') && (t.k === 'laser' || t.k === 'drone' || t.k === 'plane' || t.k === 'swing' || t.k === 'sign')){ if (!t.dodged){ t.dodged = 1; pop(tx, ty - 24, 'CAN\'T TOUCH ME', false); snd(1200, 1600, .06, .03, 'square'); } }
       else if (P('smash') && /^(box|tall|fork|drop|gear|bolt|ink)$/.test(t.k)){ t.burn = t.burnT = t.k === 'tall' ? 1.1 : .85; t.extra = 0; t.falling = false; burst(tx + tw / 2, ty + th / 2, 22, '#f08a2c'); burst(tx + tw / 2, ty + th / 2, 10, GOLD); shake = 4; S.pts += 30; pop(tx, ty - 20, 'BURNED! +30', true); snd(140, 60, .5, .07, 'sawtooth'); snd(900, 200, .35, .03, 'triangle'); }
@@ -10473,6 +10483,9 @@ html.ng-ch .tape{padding-top:70px!important}
     else if (sk.astro){ g.fillStyle = 'rgba(191,233,255,.28)'; g.strokeStyle = '#e8eaee'; g.lineWidth = 3; g.beginPath(); g.arc(X + 24, T + 18, 30, Math.PI * 1.02, Math.PI * 1.98); g.lineTo(X + 52, T + 30); g.lineTo(X - 4, T + 30); g.closePath(); g.fill(); g.stroke(); g.strokeStyle = 'rgba(255,255,255,.7)'; g.lineWidth = 2.5; g.beginPath(); g.arc(X + 24, T + 18, 24, Math.PI * 1.2, Math.PI * 1.45); g.stroke(); }
     else if (sk.ninja){ }
     else { g.fillStyle = '#aab4c3'; g.strokeStyle = NAV; g.lineWidth = 1.8; [-1, 1].forEach(function(sd){ g.save(); g.translate(X + 24 + sd * 5, T - 4); g.rotate(sd * (-.55 + Math.sin(time * 6) * .1)); rr(-3, -12, 6, 12, 2); g.fill(); g.stroke(); g.restore(); }); }
+    if (sk.thunder){ g.fillStyle = '#f2cf3e'; g.strokeStyle = NAV; g.lineWidth = 1.5; g.beginPath(); g.moveTo(X + 27, T + 29); g.lineTo(X + 17, T + 40); g.lineTo(X + 23, T + 40); g.lineTo(X + 19, T + 50); g.lineTo(X + 32, T + 37); g.lineTo(X + 25, T + 37); g.lineTo(X + 31, T + 29); g.closePath(); g.fill(); g.stroke();
+      g.strokeStyle = '#f2cf3e'; g.lineWidth = 2; for (var el = 0; el < 3; el++){ if ((Math.floor(time * 14) + el) % 3) continue; var ex = X + [-6, 50, 24][el], ey = T + [20, 34, -14][el]; g.beginPath(); g.moveTo(ex, ey); g.lineTo(ex + 5, ey + 5); g.lineTo(ex - 2, ey + 8); g.lineTo(ex + 4, ey + 14); g.stroke(); }
+      g.fillStyle = '#f2cf3e'; g.beginPath(); g.arc(X + 24, T - 16, 4, 0, 7); g.fill(); g.strokeStyle = NAV; g.lineWidth = 1.5; g.stroke(); }
     if (sk.shades){ g.strokeStyle = '#05080d'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(X + 46, T + 20); g.quadraticCurveTo(X + 52, T + 30, X + 46, T + 40); g.stroke(); }
     // the rocket capsule around the robot
     if (S && S.rocket > 0){ g.fillStyle = 'rgba(242,207,62,.9)'; for (var fl2 = 0; fl2 < 3; fl2++){ var fz = (time * 12 + fl2 * .33) % 1; g.globalAlpha = 1 - fz; g.beginPath(); g.ellipse(X - 22 - fz * 30, T + 32, 16 * (1 - fz) + 4, 8 * (1 - fz) + 2, 0, 0, 7); g.fill(); } g.globalAlpha = 1;
@@ -10589,7 +10602,21 @@ html.ng-ch .tape{padding-top:70px!important}
     button(cx - bw / 2, by + 62, bw, 40, 'GARAGE', function(){ mode = 'garage'; }, { size: 20 });
     if (SAVE.maxLv > 1){ txt('START AT LEVEL ' + startLv, cx, by - 18, 18, BEI); button(cx - bw / 2 - 52, by - 46, 40, 34, '<', function(){ startLv = Math.max(1, startLv - 1); }, { size: 20 }); button(cx + bw / 2 + 12, by - 46, 40, 34, '>', function(){ startLv = Math.min(SAVE.maxLv, startLv + 1); }, { size: 20 }); }
     txt('BEST ' + SAVE.best + '     COINS ' + SAVE.bank, cx, H - 26, 16, BEI);
+    if (gifted()){ var opened = ls('ng_rr_gift') === '1';
+      if (!opened && !giftShow){ var gy = Math.min(by - 70, -80 + ((time * 260) % 2000 > by + 10 ? by + 10 : (time * 260) % 2000)), bob = Math.sin(time * 6) * 3, bxx = cx + bw / 2 + 40;
+        g.save(); g.translate(bxx + 30, by + 30 + bob); g.rotate(Math.sin(time * 5) * .08); g.fillStyle = GOLD; rr(-30, -24, 60, 50, 8); g.fill(); g.strokeStyle = NAV; g.lineWidth = 3; g.stroke(); g.fillStyle = NAV; g.fillRect(-5, -24, 10, 50); g.fillRect(-30, -4, 60, 9); g.beginPath(); g.arc(-9, -30, 9, 0, 7); g.arc(9, -30, 9, 0, 7); g.fill(); g.restore();
+        button(cx + bw / 2 + 14, by + 64, 112, 36, 'OPEN IT!', function(){ ls('ng_rr_gift', '1'); giftShow = time; SAVE.skin = 'thunder'; save(); tune([523, 659, 784, 1046, 1318, 1568], 80); }, { gold: true, size: 16 }); }
+      else if (!giftShow) txt('SUPER BOX: ON', cx + bw / 2 + 70, by + 88, 12, GOLD);
+}
     txt('SPACE jump  |  again in the air: FLIP  |  DOWN slide  |  LEFT back flip', cx, H - 50, 13, BEI);
+    if (gifted()){
+      if (giftShow){ var u2 = (window.NG && NG.getUser && NG.getUser()) || {}, pw2 = Math.min(440, W - 30), ph2 = 250, px2 = cx - pw2 / 2, py2 = Math.max(20, H / 2 - ph2 / 2);
+        g.fillStyle = 'rgba(8,20,38,.8)'; g.fillRect(0, 0, W, H); btns = [];
+        g.fillStyle = NAV; rr(px2, py2, pw2, ph2, 18); g.fill(); g.strokeStyle = GOLD; g.lineWidth = 4; g.stroke();
+        txt('SUPER BOX' + (u2.name ? ' FOR ' + String(u2.name).toUpperCase() : ''), cx, py2 + 38, 24, GOLD);
+        [['MAGNET FOREVER', 'Coins fly to you the whole run.'], ['SECOND CHANCE', 'One free save every run when you crash.'], ['THUNDER BOT', 'A skin only you have. It zaps what is in your way.']].forEach(function(it, n){ txt(it[0], cx, py2 + 76 + n * 44, 17, BEI); txt(it[1], cx, py2 + 94 + n * 44, 12, BEI); });
+        button(cx - 70, py2 + ph2 - 46, 140, 34, 'AWESOME', function(){ giftShow = 0; }, { gold: true, size: 17 }); }
+    }
   }
   function screenOver(){
     g.fillStyle = 'rgba(8,20,38,.72)'; g.fillRect(0, 0, W, H);
@@ -10634,11 +10661,11 @@ html.ng-ch .tape{padding-top:70px!important}
       button(px + 20, py + ph - 40, pw - 40, 32, wearing ? 'WEARING' : owned ? 'WEAR IT' : 'BUY FOR ' + gSel.cost, function(){ if (wearing) return; if (owned){ SAVE.skin = sel.id; save(); tune([523, 784], 60); } else if (SAVE.bank >= sel.cost){ SAVE.bank -= sel.cost; SAVE.own[sel.id] = 1; SAVE.skin = sel.id; save(); tune([523, 659, 784, 1046], 70); } else { snd(200, 120, .2, .05, 'square'); } }, { size: 16, gold: !wearing && (owned || SAVE.bank >= gSel.cost) });
       if (!owned && SAVE.bank < gSel.cost) txt('NEED ' + (gSel.cost - SAVE.bank) + ' MORE COINS', px + pw / 2, py + ph - 46, 11, '#ff9a8f');
       // the skins to pick from
-      var gx = px + pw + 18, gw = W - gx - 20, cols = gw > 330 ? 4 : 3, cwid = (gw - (cols - 1) * 10) / cols, chh = 92;
-      SKINS.forEach(function(sk, k){ var c0 = k % cols, r0 = Math.floor(k / cols), x0 = gx + c0 * (cwid + 10), y0 = py + r0 * (chh + 10), isSel = gSel.id === sk.id, has = SAVE.own[sk.id] || sk.cost === 0;
+      var shown = SKINS.filter(function(q){ return !q.gift || gifted(); }), gx = px + pw + 18, gw = W - gx - 20, cols = gw > 330 ? 4 : 3, cwid = (gw - (cols - 1) * 10) / cols, rows = Math.ceil(shown.length / cols), chh = Math.min(92, (H - py - 62 - (rows - 1) * 10) / rows), rs = Math.min(.8, chh / 92 * .8);
+      shown.forEach(function(sk, k){ var c0 = k % cols, r0 = Math.floor(k / cols), x0 = gx + c0 * (cwid + 10), y0 = py + r0 * (chh + 10), isSel = gSel.id === sk.id, has = SAVE.own[sk.id] || sk.cost === 0;
         g.fillStyle = isSel ? 'rgba(224,181,82,.3)' : 'rgba(245,228,204,.08)'; rr(x0, y0, cwid, chh, 10); g.fill(); g.strokeStyle = isSel ? GOLD : 'rgba(245,228,204,.35)'; g.lineWidth = isSel ? 3 : 1.5; g.stroke();
-        previewSkin = sk; var om = mode; mode = 'play'; g.save(); g.translate(x0 + cwid / 2, y0 + 58); g.scale(.8, .8); robo(-24, 0, 0, false); g.restore(); mode = om; previewSkin = null;
-        txt(has ? (SAVE.skin === sk.id ? 'ON' : 'OWNED') : String(sk.cost), x0 + cwid / 2, y0 + chh - 8, 11, has ? BEI : GOLD);
+        previewSkin = sk; var om = mode; mode = 'play'; g.save(); g.translate(x0 + cwid / 2, y0 + chh * .63); g.scale(rs, rs); robo(-24, 0, 0, false); g.restore(); mode = om; previewSkin = null;
+        txt(has ? (SAVE.skin === sk.id ? 'ON' : sk.gift ? 'GIFT' : 'OWNED') : String(sk.cost), x0 + cwid / 2, y0 + chh - 6, 11, has ? BEI : GOLD);
         btns.push({ x: x0, y: y0, w: cwid, h: chh, fn: function(){ gSel = sk; snd(700, 900, .05, .03, 'square'); } }); });
     } else {
       var colW = Math.min(520, W - 60), lx = cx - colW / 2;
@@ -10651,19 +10678,20 @@ html.ng-ch .tape{padding-top:70px!important}
     button(cx - 80, H - 54, 160, 40, 'BACK', function(){ gSel = null; mode = S && S.end ? 'over' : 'title'; }, { size: 20 });
   }
   // slipped on a peel: for a moment the robot IS a banana
-  function bananaBot(x, base, left){
-    var k = Math.min(1, (1.3 - left) / .18), out = Math.min(1, left / .18), sc = Math.min(k, out), wob = Math.sin(time * 16) * .35;
-    g.save(); g.translate(x + 24, base - 30); g.rotate(-.5 + wob); g.scale((.4 + sc * .6) * 1.4, (.4 + sc * .6) * 1.55);
-    // the banana: a fat yellow crescent
-    g.lineJoin = 'round'; g.beginPath(); g.moveTo(-34, -22); g.quadraticCurveTo(-8, 34, 36, 10); g.quadraticCurveTo(40, 6, 37, 1); g.quadraticCurveTo(2, 10, -22, -30); g.quadraticCurveTo(-30, -32, -34, -22); g.closePath();
-    var bg = g.createLinearGradient(0, -30, 0, 30); bg.addColorStop(0, '#f6dc8a'); bg.addColorStop(1, '#e0b552'); g.fillStyle = bg; g.fill(); g.strokeStyle = NAV; g.lineWidth = 3.5; g.stroke();
-    // ridge line, brown tips
-    g.strokeStyle = 'rgba(167,122,42,.8)'; g.lineWidth = 2; g.beginPath(); g.moveTo(-28, -22); g.quadraticCurveTo(-6, 22, 32, 8); g.stroke();
-    g.fillStyle = '#5b4a36'; g.beginPath(); g.arc(-31, -27, 4.5, 0, 7); g.fill(); g.beginPath(); g.arc(37, 5, 3.5, 0, 7); g.fill();
-    // the robot's eyes are still in there, very surprised
-    g.fillStyle = NAV; rr(-14, -6, 24, 13, 5); g.fill(); g.fillStyle = '#bfe9ff'; g.beginPath(); g.arc(-7, .5, 3.6, 0, 7); g.arc(4, .5, 3.6, 0, 7); g.fill(); g.fillStyle = NAV; g.beginPath(); g.arc(-7, .5, 1.3, 0, 7); g.arc(4, .5, 1.3, 0, 7); g.fill();
-    g.restore();
-    if (Math.random() < .5) S.parts.push({ x: x + 10 + Math.random() * 30, y: base - 6, vx: -160 - Math.random() * 80, vy: -40 * Math.random(), l: .3, c: '#f2cf3e', s: 3, g: 300 });
+  function bananaBot(x, base, rot, low){
+    var sc = Math.min(1, (time - (S.banT || 0)) / .2), wob = S.slip > 0 ? Math.sin(time * 16) * .35 : Math.sin(time * 9) * .06, sq = S.squash || 0;
+    if (S.inv > 0 && Math.floor(time * 16) % 2) g.globalAlpha = .45;
+    g.save(); g.translate(x + 24, base - 20); g.rotate((S.flipDir ? rot : 0) + wob); g.scale((.4 + sc * .6) * 1.4 * (1 + sq * .3), (.4 + sc * .6) * 1.55 * (low ? .6 : 1 - sq * .3));
+    g.lineJoin = 'round'; g.beginPath(); g.moveTo(-34, -18); g.quadraticCurveTo(-8, 30, 36, 2); g.quadraticCurveTo(40, -2, 37, -7); g.quadraticCurveTo(2, 4, -22, -26); g.quadraticCurveTo(-30, -28, -34, -18); g.closePath();
+    var bg = g.createLinearGradient(0, -30, 0, 26); bg.addColorStop(0, '#f6dc8a'); bg.addColorStop(1, '#e0b552'); g.fillStyle = bg; g.fill(); g.strokeStyle = NAV; g.lineWidth = 3.5; g.stroke();
+    g.strokeStyle = 'rgba(167,122,42,.8)'; g.lineWidth = 2; g.beginPath(); g.moveTo(-28, -18); g.quadraticCurveTo(-6, 18, 32, 0); g.stroke();
+    g.fillStyle = '#5b4a36'; g.beginPath(); g.arc(-31, -23, 4.5, 0, 7); g.fill(); g.beginPath(); g.arc(37, -3, 3.5, 0, 7); g.fill();
+    var blink = (time % 3.2) < .12; g.fillStyle = NAV; rr(-14, -8, 24, 13, 5); g.fill(); g.fillStyle = mode === 'over' ? '#e4493c' : '#bfe9ff';
+    if (blink){ g.fillRect(-10, -2, 7, 2); g.fillRect(1, -2, 7, 2); } else { g.beginPath(); g.arc(-7, -1.5, 3.6, 0, 7); g.arc(4, -1.5, 3.6, 0, 7); g.fill(); g.fillStyle = NAV; g.beginPath(); g.arc(-6, -1.5, 1.3, 0, 7); g.arc(5, -1.5, 1.3, 0, 7); g.fill(); }
+    g.restore(); g.globalAlpha = 1;
+    if (S.chute){ g.strokeStyle = NAV; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x + 6, base - 30); g.lineTo(x - 6, base - 74); g.moveTo(x + 42, base - 30); g.lineTo(x + 54, base - 74); g.stroke(); g.fillStyle = BEI; g.beginPath(); g.arc(x + 24, base - 74, 34, Math.PI, 0); g.fill(); g.stroke(); }
+    if (S.shield > 0 && !(S.shield < 3 && Math.floor(time * 8) % 2)){ g.strokeStyle = 'rgba(191,233,255,.9)'; g.lineWidth = 3; g.beginPath(); g.arc(x + 24, base - 24, 46 + Math.sin(time * 8) * 2, 0, 7); g.stroke(); g.fillStyle = 'rgba(191,233,255,.12)'; g.fill(); }
+    if (S.slip > 0 && Math.random() < .5) S.parts.push({ x: x + 10 + Math.random() * 30, y: base - 6, vx: -160 - Math.random() * 80, vy: -40 * Math.random(), l: .3, c: '#f2cf3e', s: 3, g: 300 });
   }
   function burning(t){
     var k = 1 - t.burn / t.burnT, x = t.x, w = t.w, hh = Math.max(4, t.h * (1 - k * .8)), top = GROUND - t.y - hh, i;
@@ -10690,8 +10718,9 @@ html.ng-ch .tape{padding-top:70px!important}
     if (S && (mode === 'play' || mode === 'over')){
       S.things.forEach(function(t){ if (t.burn > 0) return burning(t); if (!t.fly) return thing(t); var cx = t.x + t.w / 2, cy = GROUND - t.y - t.h / 2; g.save(); g.translate(cx, cy); g.rotate(t.fly.rot); g.translate(-cx, -cy); thing(t); g.restore(); }); if (mode === 'play') S.things.forEach(function(t){ if (!t.got && !t.dead) tag(t); });
       var low = S.slide > 0 || S.slip > 0, rot = S.flipDir ? S.flipDir * S.spin : S.slip > 0 ? Math.sin(S.slip * 18) * .8 : S.rocket > 0 ? -.15 : 0;
-      if (S.slip > 0 && S.banana && mode === 'play') bananaBot(RX, GROUND - S.y, S.slip); else robo(RX, GROUND - S.y, rot, low && !S.rocket);
+      if (S.banana && !(S.rocket > 0)) bananaBot(RX, GROUND - S.y, rot, low); else robo(RX, GROUND - S.y, rot, low && !S.rocket);
       if (S.shells) S.shells.forEach(function(sh){ g.save(); g.translate(sh.x + 30, sh.y); g.rotate(sh.r); g.fillStyle = '#e8eaee'; g.strokeStyle = NAV; g.lineWidth = 3; g.beginPath(); if (sh.top){ g.moveTo(-34, 0); g.lineTo(20, 0); g.quadraticCurveTo(40, -16, 20, -34); g.lineTo(-34, -34); } else { g.moveTo(-34, 0); g.lineTo(20, 0); g.quadraticCurveTo(40, 16, 20, 34); g.lineTo(-34, 34); } g.closePath(); g.fill(); g.stroke(); g.restore(); });
+      if (S.zapLine){ var zx0 = RX + 30, zy0 = GROUND - S.y - 60, zn = 7; g.save(); g.lineJoin = 'round'; [['#12294a', 7], ['#f2cf3e', 4], ['#fff8d8', 1.5]].forEach(function(st){ g.strokeStyle = st[0]; g.lineWidth = st[1]; g.beginPath(); g.moveTo(zx0, zy0); for (var zi = 1; zi < zn; zi++){ var zk = zi / zn; g.lineTo(zx0 + (S.zapLine.x - zx0) * zk + Math.sin(zi * 12.9 + Math.floor(time * 30)) * 10, zy0 + (S.zapLine.y - zy0) * zk + Math.cos(zi * 7.3 + Math.floor(time * 30)) * 10); } g.lineTo(S.zapLine.x, S.zapLine.y); g.stroke(); }); g.restore(); }
       S.parts.forEach(function(p){ g.globalAlpha = Math.max(0, Math.min(1, p.l * 2)); g.fillStyle = p.c; g.fillRect(p.x - p.s / 2, p.y - p.s / 2, p.s, p.s); }); g.globalAlpha = 1;
       S.pops.forEach(function(p){ g.globalAlpha = Math.max(0, Math.min(1, p.l * 1.6)); txt(p.s, p.x + 14, p.y, p.big ? 24 : 18, p.big ? GOLD : BEI); }); g.globalAlpha = 1;
       if (S.rocket > 0){ g.strokeStyle = 'rgba(245,228,204,.25)'; g.lineWidth = 2; for (var i = 0; i < 12; i++){ var ly = (i * 37 + time * 50) % GROUND, lx2 = W - ((time * 1400 + i * 233) % (W + 200)); g.beginPath(); g.moveTo(lx2, ly); g.lineTo(lx2 + 60, ly); g.stroke(); } }
