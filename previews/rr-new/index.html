@@ -10161,9 +10161,10 @@ html.ng-ch .tape{padding-top:70px!important}
     { name: 'SPY TRAIN', theme: 'train', tip: 'Jump between the train cars. Duck the tunnel signs!', mix: ['gap', 'sign', 'sign', 'box', 'laser', 'swing'] },
     { name: 'THE BIG DELIVERY', theme: 'night', tip: 'Everything at once. Deliver the issue!', mix: ['box', 'tall', 'plane', 'drop', 'gap', 'laser', 'fork', 'peel', 'spring', 'gear', 'swing'] }
   ];
-  var LV_LEN = 18500, LV_LEN2 = 26500;   // level 1 is about 7 minutes, every level after it about 10 minutes
-  function lvStartD(lv){ return lv <= 1 ? 0 : (LV_LEN + (lv - 2) * LV_LEN2) * 10; }
-  function lvAt(d){ return d < LV_LEN * 10 ? 1 : 2 + Math.floor((d - LV_LEN * 10) / (LV_LEN2 * 10)); }
+  // every level takes about 10 minutes: its length follows how fast that level runs
+  function lvLen(lv){ return 600 * (474 + (Math.min(lv, 40) - 1) * 28); }
+  function lvStartD(lv){ var d = 0; for (var i = 1; i < lv; i++) d += lvLen(i); return d; }
+  function lvAt(d){ var lv = 1; while (d >= lvLen(lv) && lv < 999){ d -= lvLen(lv); lv++; } return lv; }
   // ---------- sound ----------
   var ac = null;
   function snd(f1, f2, d, v, type){ if (window.NG_SOUND && NG_SOUND.isMuted && NG_SOUND.isMuted()) return; try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); var o = ac.createOscillator(), gg = ac.createGain(), t = ac.currentTime; o.type = type || 'triangle'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + d); gg.gain.setValueAtTime(v || .05, t); gg.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(gg); gg.connect(ac.destination); o.start(t); o.stop(t + d + .02); } catch(e){} }
@@ -10591,7 +10592,7 @@ html.ng-ch .tape{padding-top:70px!important}
       if (it[1] === 'coin') coinIcon(px + 13, y0 + 18, 7.5); else if (it[1] === 'star') star(px + 13, y0 + 18, 9, 4); else magIcon(px + 13, y0 + 18);
       txt(n, px + 25, y0 + 24, 15, BEI, 'left'); px += w + 5; });
     // level + how far to the next one
-    var p = Math.min(1, (S.dist - lvStartD(S.lv)) / ((S.lv <= 1 ? LV_LEN : LV_LEN2) * 10)), bw = Math.min(150, W * .2), bx = W / 2 - bw / 2;
+    var p = Math.min(1, (S.dist - lvStartD(S.lv)) / lvLen(S.lv)), bw = Math.min(150, W * .2), bx = W / 2 - bw / 2;
     g.fillStyle = GOLD; rr(W / 2 - 40, y0 - 2, 80, 20, 6); g.fill(); g.strokeStyle = NAV; g.lineWidth = 2.5; g.stroke(); txt('LEVEL ' + S.lv, W / 2, y0 + 13, 14, NAV, 'center', GOLD);
     pill(bx, y0 + 22, bw, 12); g.fillStyle = BEI; rr(bx + 2, y0 + 24, Math.max(8, (bw - 4) * p), 8, 4); g.fill();
     g.fillStyle = BEI; g.fillRect(bx + bw + 4, y0 + 18, 2, 16); g.fillStyle = GOLD; g.beginPath(); g.moveTo(bx + bw + 6, y0 + 18); g.lineTo(bx + bw + 16, y0 + 22); g.lineTo(bx + bw + 6, y0 + 26); g.fill();
@@ -10608,7 +10609,11 @@ html.ng-ch .tape{padding-top:70px!important}
       txt(pl, 10 + pww / 2, pyy + 16, 12, skn.crown ? GOLD : BEI); }
     if (S.mult > 1){ var cs = 1 + Math.max(0, S.chainT - 1) * .6; g.save(); g.translate(W / 2, y0 + 58); g.scale(cs, cs); g.rotate(-.05); txt('COMBO x' + S.mult, 0, 0, 20, GOLD); g.restore(); }
   }
+  var BACK1 = { 'yw7b95bcah': 1 }, back1Who = '';
+  function back1(){ var u = (window.NG && NG.getUser && NG.getUser()) || null, em = u && u.email ? String(u.email).toLowerCase() : ''; if (!em || em === back1Who) return; back1Who = em;
+    if (BACK1[gcode('ng-gift:' + em)] && ls('ng_rr_b1') !== '1' && Date.now() < Date.UTC(2026, 10, 28)){ ls('ng_rr_b1', '1'); if (SAVE.maxLv > 1){ SAVE.maxLv = 1; save(); } startLv = 1; } }
   function screenTitle(){
+    back1();
     var cx = W / 2; logo(cx, H * .27, Math.min(72, W * .09));
     robo(Math.max(40, cx - 300), GROUND, Math.sin(time * 2) * .05, false); robo(Math.min(W - 90, cx + 252), GROUND, -Math.sin(time * 2) * .05, false);
     var bw = 200, by = H * .5;
