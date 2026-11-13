@@ -10132,7 +10132,7 @@ html.ng-ch .tape{padding-top:70px!important}
     { id: 'navy', name: 'Night Ninja', cost: 200, a: '#2c3e5c', b: '#0b1a30', stripe: GOLD, ninja: true, power: 'NINJA VANISH: you disappear right through the next thing that would crash you. Ready again every 8 seconds.', pw: ['ghost'] },
     { id: 'paper', name: 'Paper Plane', cost: 250, a: '#fbf1e1', b: '#d9c6a4', stripe: NAV, print: true, power: 'PAPER PLANE: 4 jumps, and hold JUMP in the air to fly like a paper plane.', pw: ['glide'] },
     { id: 'spy', name: 'Secret Agent', cost: 300, a: '#4a5462', b: '#1f2630', stripe: GOLD, shades: true, power: 'LASER PROOF: lasers, drones, planes and swinging hooks go right through you.', pw: ['agent'] },
-    { id: 'fire', name: 'Fire Bot', cost: 400, a: '#f08a2c', b: '#b8352b', stripe: '#f6dc8a', fire: true, power: 'FIRE SMASH: you burn right through boxes, printers, forklifts and gears.', pw: ['smash'] },
+    { id: 'fire', name: 'Fire Bot', cost: 400, a: '#f08a2c', b: '#b8352b', stripe: '#f6dc8a', fire: true, power: 'FIRE TOUCH: anything you bump into catches fire and burns to ash. Boxes, forklifts, gears, all of it.', pw: ['smash'] },
     { id: 'astro', name: 'Astronaut', cost: 450, a: '#f4f1ea', b: '#c9cfd8', stripe: GOLD, astro: true, power: 'SPACE RIDER: the rocket comes twice as often and flies you to space for longer.', pw: ['turbo'] },
     { id: 'legend', name: 'NeshamaGazine Legend', cost: 600, a: '#1d3a64', b: '#0b1a30', stripe: GOLD, crown: true, power: 'THE KING: every power at once. Double coins, ninja vanish, paper plane, laser proof, fire smash and space rider.', pw: ['midas', 'ghost', 'glide', 'agent', 'smash', 'turbo'] }
   ];
@@ -10306,7 +10306,7 @@ html.ng-ch .tape{padding-top:70px!important}
       if (t.k === 'drop'){ if (!t.falling && t.x < RX + 300) t.falling = true; if (t.falling && t.y > 0){ t.vy = (t.vy || 0) - 1600 * dt; t.y = Math.max(0, t.y + t.vy * dt); if (t.y === 0 && !t.landed){ t.landed = true; shake = 5; dust(t.x + t.w / 2, GROUND, 8); snd(120, 60, .15, .07, 'square'); } } }
       if (mag && (t.k === 'coin' || t.k === 'star') && Math.abs(t.x - rx) < mag){ var ty0 = GROUND - t.y - t.h / 2, dy = (ry + rh / 2) - ty0; t.x += (rx + 10 - t.x) * 6 * dt; t.y -= dy * 6 * dt; }
     });
-    for (var i = 0; i < S.things.length; i++){ var t = S.things[i]; if (t.dead || t.got) continue;
+    for (var i = 0; i < S.things.length; i++){ var t = S.things[i]; if (t.dead || t.got) continue; if (t.burn > 0) continue;
       var tx = t.x, ty = GROUND - t.y - t.h, tw = t.w, th = t.h;
       if (t.k === 'gap'){ if (S.y <= 0.5 && S.rocket <= 0 && rx + 14 > tx && rx + rw - 14 < tx + tw){ S.vy = -300; S.y = -1; hit(t); if (mode !== 'play') return; } continue; }
       if (t.k === 'laser'){ t.on = ((time + t.ph) % 1.8) < 1.1; if (!t.on) continue; }
@@ -10319,11 +10319,15 @@ html.ng-ch .tape{padding-top:70px!important}
       else if (t.k === 'peel' || t.k === 'oil'){ if (S.y < 4 && S.slip <= 0 && !t.used){ t.used = true; S.slip = 1.3; S.slide = 0; if (t.k === 'peel') t.fly = { vx: 260, vy: 520, rot: 0, spin: 14 }; snd(620, 140, .5, .06, 'sawtooth'); pop(tx, ty - 34, t.k === 'peel' ? 'SLIIIP!' : 'WHOA, INK!', true); shake = 4; } }
       else if (t.k === 'spring'){ if (S.vy <= 0 && !t.used){ t.used = true; S.vy = 1050; S.air = 1; S.dive = false; S.chute = 0; snd(200, 950, .35, .06); pop(tx, ty - 34, 'BOING!', true); } }
       else if (P('agent') && (t.k === 'laser' || t.k === 'drone' || t.k === 'plane' || t.k === 'swing' || t.k === 'sign')){ if (!t.dodged){ t.dodged = 1; pop(tx, ty - 24, 'CAN\'T TOUCH ME', false); snd(1200, 1600, .06, .03, 'square'); } }
-      else if (P('smash') && /^(box|tall|fork|drop|gear|bolt|ink)$/.test(t.k)){ t.dead = true; t.fly = { vx: 700 + Math.random() * 300, vy: 600 + Math.random() * 200, rot: 0, spin: 12 }; burst(tx + tw / 2, ty + th / 2, 26, '#f08a2c'); burst(tx + tw / 2, ty + th / 2, 14, GOLD); shake = 5; S.pts += 30; pop(tx, ty - 20, 'FIRE SMASH +30', true); snd(180, 60, .2, .08, 'sawtooth'); }
+      else if (P('smash') && /^(box|tall|fork|drop|gear|bolt|ink)$/.test(t.k)){ t.burn = t.burnT = t.k === 'tall' ? 1.1 : .85; t.extra = 0; t.falling = false; burst(tx + tw / 2, ty + th / 2, 22, '#f08a2c'); burst(tx + tw / 2, ty + th / 2, 10, GOLD); shake = 4; S.pts += 30; pop(tx, ty - 20, 'BURNED! +30', true); snd(140, 60, .5, .07, 'sawtooth'); snd(900, 200, .35, .03, 'triangle'); }
       else if (P('ghost') && S.ghost >= 8 && S.shield <= 0 && S.inv <= 0 && t.k !== 'gap'){ S.ghost = 0; S.phase = 1; S.inv = 1; t.dodged = 1; burst(RX + 24, GROUND - S.y - 34, 26, '#c3cad3'); pop(tx, ty - 24, skin().crown ? 'VANISH!' : 'NINJA VANISH!', true); snd(900, 300, .3, .05, 'sine'); }
       else hit(t);
       if (mode !== 'play') return;
     }
+    S.things.forEach(function(t){ if (!(t.burn > 0)) return; t.burn -= dt; if (t.burn > t.burnT * .3) t.x = Math.max(t.x, RX + 42); var bx = t.x + Math.random() * t.w, by = GROUND - t.y - t.h * (t.burn / t.burnT) * Math.random();
+      if (Math.random() < .9) S.parts.push({ x: bx, y: by, vx: -40 + Math.random() * 80, vy: -90 - Math.random() * 140, l: .5 + Math.random() * .4, c: Math.random() < .5 ? '#f08a2c' : '#f2cf3e', s: 2 + Math.random() * 3, g: -120 });
+      if (Math.random() < .35) S.parts.push({ x: bx, y: by - 10, vx: -20 + Math.random() * 40, vy: -60 - Math.random() * 60, l: .9, c: 'rgba(40,36,32,.55)', s: 5 + Math.random() * 6, g: -60 });
+      if (t.burn <= 0){ t.dead = true; for (var a2 = 0; a2 < 10; a2++) S.parts.push({ x: t.x + Math.random() * t.w, y: GROUND - 3, vx: -60 + Math.random() * 120, vy: -30 - Math.random() * 50, l: .6, c: '#6b6660', s: 2 + Math.random() * 2, g: 200 }); } });
     S.things = S.things.filter(function(t){ return t.fly ? (t.x < W + 400 && t.y > -300) : (t.x > -200 && !t.got && !t.dead); });
     if (S.shells){ S.shells.forEach(function(sh){ sh.x += sh.vx * dt; sh.y -= sh.vy * dt; sh.vy -= 900 * dt; sh.r += sh.vr * dt; }); S.shells = S.shells.filter(function(sh){ return sh.y < H + 80; }); if (!S.shells.length) S.shells = null; }
     S.parts.forEach(function(p){ p.vy += p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.l -= dt; }); S.parts = S.parts.filter(function(p){ return p.l > 0; });
@@ -10527,7 +10531,7 @@ html.ng-ch .tape{padding-top:70px!important}
     if (!t.tag || t.x < RX + 70) return;
     var cx = t.x + t.w / 2, top = GROUND - t.y - t.h - 14 + Math.sin(time * 6) * 2; if (t.k === 'gap') top = GROUND - 30; if (t.k === 'sign' || t.k === 'laser' && !t.low) top = Math.min(top, GROUND - t.y - t.h - 14);
     if (S.shield > 0 && !/^(coin|star|mag|fuel|spring|magnet|shield|gap)$/.test(key)) T = [T[0], 'SHIELD ON: SMASH IT!'];
-    else if (P('smash') && /^(box|tall|fork|drop|gear|bolt|ink)/.test(key)) T = [T[0], 'FIRE SMASH IT!'];
+    else if (P('smash') && /^(box|tall|fork|drop|gear|bolt|ink)/.test(key)) T = [T[0], 'BURN IT!'];
     else if (P('agent') && /^(laser|drone|plane|swing|sign)/.test(key)) T = [T[0], 'LASER PROOF: GO!'];
     g.font = '13px ' + FONT; var w1 = g.measureText(T[0]).width; g.font = '10px ' + FONT; var w2 = g.measureText(T[1]).width; var bw = Math.max(w1, w2) + 16, bh = 32, bx = Math.max(4, Math.min(W - bw - 4, cx - bw / 2)), by = Math.max(70, top - bh);
     g.fillStyle = NAV; rr(bx, by, bw, bh, 7); g.fill(); g.strokeStyle = BEI; g.lineWidth = 2; g.stroke();
@@ -10646,6 +10650,22 @@ html.ng-ch .tape{padding-top:70px!important}
     }
     button(cx - 80, H - 54, 160, 40, 'BACK', function(){ gSel = null; mode = S && S.end ? 'over' : 'title'; }, { size: 20 });
   }
+  function burning(t){
+    var k = 1 - t.burn / t.burnT, x = t.x, w = t.w, hh = Math.max(4, t.h * (1 - k * .8)), top = GROUND - t.y - hh, i;
+    g.save(); g.globalAlpha = Math.max(0, 1 - k * 1.5); thing(t); g.restore();
+    // the charred shape, sinking as it burns away
+    g.save(); g.globalAlpha = Math.min(.95, k * 2.2); g.fillStyle = '#17120e'; rr(x + 2, top, w - 4, hh, 5); g.fill();
+    g.strokeStyle = 'rgba(240,138,44,' + (.9 - k * .5) + ')'; g.lineWidth = 2; for (i = 0; i < 4; i++){ var cx0 = x + 6 + ((i * 37 + (t.w | 0)) % Math.max(8, w - 12)); g.beginPath(); g.moveTo(cx0, top + hh * .15); g.lineTo(cx0 + 5 * Math.sin(i * 2.3), top + hh * .5); g.lineTo(cx0 - 4, top + hh * .9); g.stroke(); }
+    g.restore();
+    // flames licking up from it
+    var n = Math.max(3, Math.round(w / 12)), power = k < .15 ? k / .15 : 1 - Math.max(0, k - .6) / .4;
+    for (i = 0; i < n; i++){ var fx = x + (i + .5) * w / n, fh = (16 + t.h * .35 + Math.sin(time * 18 + i * 2.1) * 8) * Math.max(.15, power), fw = w / n * .75;
+      [['#b8352b', 1], ['#f08a2c', .72], ['#f6dc8a', .42]].forEach(function(c){ var h2 = fh * c[1], w2 = fw * c[1], sway = Math.sin(time * 11 + i * 1.7) * 4;
+        g.fillStyle = c[0]; g.beginPath(); g.moveTo(fx - w2, top + 4); g.quadraticCurveTo(fx - w2, top - h2 * .5, fx + sway, top - h2); g.quadraticCurveTo(fx + w2, top - h2 * .5, fx + w2, top + 4); g.closePath(); g.fill(); }); }
+    // a warm glow on the belt, then a little pile of ash
+    g.save(); g.globalAlpha = .35 * power; var gl = g.createRadialGradient(x + w / 2, GROUND - 4, 2, x + w / 2, GROUND - 4, w); gl.addColorStop(0, '#f08a2c'); gl.addColorStop(1, 'rgba(240,138,44,0)'); g.fillStyle = gl; g.fillRect(x - w, GROUND - w - 4, w * 3, w + 8); g.restore();
+    if (k > .7){ g.save(); g.globalAlpha = (k - .7) / .3; g.fillStyle = '#5b5650'; g.beginPath(); g.ellipse(x + w / 2, GROUND - 2, w * .45, 4, 0, 0, 7); g.fill(); g.restore(); }
+  }
   function draw(){
     btns = [];
     var theme = mode === 'play' || mode === 'over' ? lvInfo().theme : 'ware';
@@ -10653,7 +10673,7 @@ html.ng-ch .tape{padding-top:70px!important}
     sky(theme); beltDraw(theme);
     if (S && S.space > .01) space(S.space);
     if (S && (mode === 'play' || mode === 'over')){
-      S.things.forEach(function(t){ if (!t.fly) return thing(t); var cx = t.x + t.w / 2, cy = GROUND - t.y - t.h / 2; g.save(); g.translate(cx, cy); g.rotate(t.fly.rot); g.translate(-cx, -cy); thing(t); g.restore(); }); if (mode === 'play') S.things.forEach(function(t){ if (!t.got && !t.dead) tag(t); });
+      S.things.forEach(function(t){ if (t.burn > 0) return burning(t); if (!t.fly) return thing(t); var cx = t.x + t.w / 2, cy = GROUND - t.y - t.h / 2; g.save(); g.translate(cx, cy); g.rotate(t.fly.rot); g.translate(-cx, -cy); thing(t); g.restore(); }); if (mode === 'play') S.things.forEach(function(t){ if (!t.got && !t.dead) tag(t); });
       var low = S.slide > 0 || S.slip > 0, rot = S.flipDir ? S.flipDir * S.spin : S.slip > 0 ? Math.sin(S.slip * 18) * .8 : S.rocket > 0 ? -.15 : 0;
       robo(RX, GROUND - S.y, rot, low && !S.rocket);
       if (S.shells) S.shells.forEach(function(sh){ g.save(); g.translate(sh.x + 30, sh.y); g.rotate(sh.r); g.fillStyle = '#e8eaee'; g.strokeStyle = NAV; g.lineWidth = 3; g.beginPath(); if (sh.top){ g.moveTo(-34, 0); g.lineTo(20, 0); g.quadraticCurveTo(40, -16, 20, -34); g.lineTo(-34, -34); } else { g.moveTo(-34, 0); g.lineTo(20, 0); g.quadraticCurveTo(40, 16, 20, 34); g.lineTo(-34, 34); } g.closePath(); g.fill(); g.stroke(); g.restore(); });
