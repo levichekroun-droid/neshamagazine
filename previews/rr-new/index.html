@@ -10145,7 +10145,7 @@ html.ng-ch .tape{padding-top:70px!important}
     { id: 'magnet', name: 'Super magnet', cost: 80 }
   ];
   var LEVELS = [
-    { name: 'MORNING DELIVERY', theme: 'town', tip: 'Deliver the new issue! Jump the boxes, grab the coins.', mix: ['box', 'box', 'bolt', 'peel'] },
+    { name: 'THE PRINT RUN', theme: 'ware', tip: 'The new issue is out! Jump the boxes, grab the coins.', mix: ['box', 'box', 'bolt'] },
     { name: 'THE PRINTING PRESS', theme: 'press', tip: 'Slide under the paper planes!', mix: ['box', 'plane', 'plane', 'bolt', 'ink'] },
     { name: 'THE LOADING DOCK', theme: 'dock', tip: 'Forklifts! Springs! Spinning gears!', mix: ['box', 'tall', 'fork', 'spring', 'plane', 'gear'] },
     { name: 'NIGHT SHIFT', theme: 'night', tip: 'The claw drops boxes from above.', mix: ['box', 'drop', 'drop', 'plane', 'peel', 'tall', 'swing'] },
@@ -10387,8 +10387,14 @@ html.ng-ch .tape{padding-top:70px!important}
     var p1 = scroll * .15, p2 = scroll * .4, p3 = scroll * .8, i, x;
     if (theme === 'ware' || theme === 'press' || theme === 'dock'){
       // far wall shelves with real covers
-      for (x = -(p1 % 180) - 180; x < W + 180; x += 180){ g.fillStyle = 'rgba(18,41,74,.12)'; g.fillRect(x + 10, 90, 160, 5); g.fillRect(x + 10, 170, 160, 5);
-        for (i = 0; i < 5; i++){ var c = covers.length ? covers[(Math.floor((x + p1) / 180) * 5 + i + 1000) % covers.length] : null; g.globalAlpha = .5; if (c && c.complete && c.naturalWidth){ g.drawImage(c, x + 16 + i * 31, 52, 26, 37); g.drawImage(c, x + 16 + ((i + 2) % 5) * 31, 132, 26, 37); } g.globalAlpha = 1; } }
+      // real shelving units: a frame, wooden boards, and the issues standing up on them
+      for (x = -(p1 % 200) - 200; x < W + 200; x += 200){ var u = Math.floor((x + p1) / 200);
+        g.fillStyle = 'rgba(18,41,74,.10)'; g.fillRect(x + 12, 40, 176, 150);
+        g.fillStyle = '#3a5a8a'; g.fillRect(x + 8, 34, 7, 160); g.fillRect(x + 185, 34, 7, 160);
+        [88, 150].forEach(function(by, row){ g.fillStyle = '#a97b48'; g.fillRect(x + 8, by, 184, 7); g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(x + 8, by + 7, 184, 3);
+          for (var k = 0; k < 5; k++){ var c = covers.length ? covers[Math.abs(u * 7 + row * 3 + k) % covers.length] : null, cx = x + 20 + k * 34, lean = (Math.abs(u + k + row) % 4 === 0) ? .12 : 0;
+            g.save(); g.translate(cx + 13, by); g.rotate(lean); if (c && c.complete && c.naturalWidth) g.drawImage(c, -13, -42, 26, 42); else { g.fillStyle = '#f5e4cc'; g.fillRect(-13, -42, 26, 42); } g.strokeStyle = 'rgba(18,41,74,.6)'; g.lineWidth = 1; g.strokeRect(-13, -42, 26, 42); g.restore(); } });
+        g.fillStyle = '#3a5a8a'; g.fillRect(x + 8, 30, 184, 6); }
       if (theme === 'press'){ for (x = -(p2 % 260) - 260; x < W + 260; x += 260){ g.save(); g.translate(x + 130, 150); g.fillStyle = 'rgba(18,41,74,.22)'; g.beginPath(); g.arc(0, 0, 62, 0, 7); g.fill(); g.rotate(scroll / 60); g.strokeStyle = 'rgba(245,228,204,.6)'; g.lineWidth = 6; for (i = 0; i < 4; i++){ g.rotate(Math.PI / 2); g.beginPath(); g.moveTo(0, 0); g.lineTo(52, 0); g.stroke(); } g.restore(); g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x, 210, 260, 14); } }
       if (theme === 'dock'){ g.fillStyle = 'rgba(18,41,74,.18)'; for (x = -(p2 % 300) - 300; x < W + 300; x += 300){ g.fillRect(x + 40, 60, 150, 200); g.fillStyle = 'rgba(245,228,204,.5)'; for (i = 0; i < 6; i++) g.fillRect(x + 46, 70 + i * 30, 138, 4); g.fillStyle = 'rgba(18,41,74,.18)'; } }
       // hanging lamps and light cones
@@ -10642,7 +10648,7 @@ html.ng-ch .tape{padding-top:70px!important}
   }
   function draw(){
     btns = [];
-    var theme = mode === 'play' || mode === 'over' ? lvInfo().theme : 'town';
+    var theme = mode === 'play' || mode === 'over' ? lvInfo().theme : 'ware';
     g.save(); if (shake) g.translate((Math.random() - .5) * shake, (Math.random() - .5) * shake);
     sky(theme); beltDraw(theme);
     if (S && S.space > .01) space(S.space);
