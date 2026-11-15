@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1794697251';
+window.NG_BUILD = '1794780214';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -1265,6 +1265,8 @@ a[aria-label="NeshamaGazine home"]{text-decoration:none!important}
 .fz-what .fz-all{grid-column:1/-1}
 .fz-what input{width:16px;height:16px;accent-color:#e4493c}
 .is-part-frozen > :not(.fz-part){visibility:hidden}
+.sec:has(> .fz-part) > :not(.fz-part){visibility:hidden}
+#story:has(> .fz-part){min-height:460px;max-height:560px;overflow:hidden;position:relative}
 .fz-part{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;min-height:340px;border-radius:8px;background:radial-gradient(circle at 50% 30%,#163257 0%,#0a1628 70%);color:#fff}
 #team.is-part-frozen,#videos.is-part-frozen,#tzedaka.is-part-frozen{min-height:420px}
 .fz-part h3,.fzp-box h3{margin:6px 0 6px;font:800 clamp(1.3rem,3vw,1.9rem)/1.2 "Figtree",system-ui,sans-serif}
@@ -3094,7 +3096,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <a href="#home">Home</a>
     <a href="#sponsor" id="nav-sponsor">Sponsor</a>
     <a href="#videos" id="nav-videos"> Videos</a>
-    <a href="#team" id="nav-team">Meet the Team</a>
+    <a href="#team" id="nav-team" hidden style="display:none!important" tabindex="-1" aria-hidden="true">Meet the Team</a>
     <a href="#story" id="nav-story">Our Story</a>
     <a class="dl" id="nav-mag" href="https://drive.google.com/drive/folders/1vYJaBebvh1LZad_ZM7D4HN4SnpwEWELZ?usp=drive_link" target="_blank" rel="noopener"><span class="nm-text">Read a Magazine</span><span class="nm-curtain l"></span><span class="nm-curtain r"></span></a>
     <a href="#contact" id="nav-contact">Contact Us</a>
@@ -3458,7 +3460,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     </div>
   </section>
 
-  <section class="sec team" id="team" aria-label="Meet the team">
+  <section class="sec team" id="team" aria-label="Meet the team" hidden style="display:none!important">
     <div class="team-box tm-box">
       <div class="tz-curtain l" aria-hidden="true"></div><div class="tz-curtain r" aria-hidden="true"></div>
       <div class="tape-stripe"></div>
@@ -5298,7 +5300,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <p class="op-msg" id="oc-msg"></p>
   </details>
 
-  <details class="op-sec"><summary> Meet the Team</summary>
+  <details class="op-sec" hidden style="display:none"><summary> Meet the Team</summary>
     <label>Progress bar: <b id="ot-val">60%</b><input id="ot-range" type="range" min="0" max="100" step="5"></label>
     <label class="op-switch"><input id="ot-done" type="checkbox"> The page is finished (show the full team, no "under construction")</label>
     <label>Under-construction message<textarea id="ot-msg" rows="3"></textarea></label>
@@ -5400,7 +5402,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
       <label class="fz-all"><input type="checkbox" value="all" checked> The whole website</label>
       <label><input type="checkbox" value="videos"> Videos</label>
       <label><input type="checkbox" value="sponsor"> Sponsor</label>
-      <label><input type="checkbox" value="team"> Meet the Team</label>
+      <label><input type="checkbox" value="story"> Our Story</label>
       <label><input type="checkbox" value="tzedaka"> Tzedaka Box</label>
       <label><input type="checkbox" value="contact"> Contact Us</label>
     </div>
@@ -6194,7 +6196,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
 </div>
 <div id="ng-wall" class="ng-wall" hidden>
   <div class="ngw-box">
-    <div class="ngw-art"><img id="ngw-cover" alt=""><div class="ngw-perks"><h3>Join NeshamaGazine, it's free!</h3><ul><li><b>Every issue:</b> real stories, spies, heroes and history</li><li><b>Meet the Team</b> behind the magazine</li><li><b>Behind-the-scenes videos</b> on NeshamaTV</li><li><b>Spin the wheel</b> for a surprise issue</li><li><b>Be the first to know</b> when a new issue drops</li></ul></div></div>
+    <div class="ngw-art"><img id="ngw-cover" alt=""><div class="ngw-perks"><h3>Join NeshamaGazine, it's free!</h3><ul><li><b>Every issue:</b> real stories, spies, heroes and history</li><li><b>Behind-the-scenes videos</b> on NeshamaTV</li><li><b>Spin the wheel</b> for a surprise issue</li><li><b>Be the first to know</b> when a new issue drops</li></ul></div></div>
     <div class="ngw-main">
     <button type="button" class="ngw-x" id="ngw-x" aria-label="Close" hidden>&times;</button>
     <img class="ngw-logo" alt="NeshamaGazine">
@@ -6285,7 +6287,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     if (!window.NG_UPDATING) ov.hidden = !(whole || window.NG_FIX_DEMO) || isOwner(); bar.hidden = !(frozen && isOwner());
     document.documentElement.classList.toggle('ng-frozen-lock', !!(whole && !isOwner()));
     var bt = bar.querySelector('.fzb-txt'); if (bt) bt.textContent = whole ? 'The whole website is frozen. Visitors see the technician screen. Only you can use it.' : partNames(parts) + (parts.length > 1 ? ' are' : ' is') + ' frozen. Visitors see "We\'re fixing something." Only you can see ' + (parts.length > 1 ? 'them' : 'it') + '.';
-    freezeParts(frozen && !whole && !isOwner() ? parts : []);
+    freezeParts((frozen && !whole && !isOwner() ? parts : []).filter(function(k){ return ALWAYS_FIX.indexOf(k) < 0; }).concat(ALWAYS_FIX));
     var peek = false; try { peek = isOwner() && sessionStorage.getItem('ng_soon_peek') === '1'; } catch(e){}
     var sv = soon && !(frozen && !isOwner()) && !peek; $('ng-soon').hidden = !sv; if (sv) soonDraw();
     document.documentElement.classList.toggle('ng-soon-lock', sv && !isOwner()); window.NG_SOON_LOCK = sv && !isOwner();
@@ -6307,7 +6309,8 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     return api('PATCH', DB + '/site/status?' + Object.keys(fields).map(function(k){ return 'updateMask.fieldPaths=' + k; }).join('&'), { fields: fields }, true).then(function(){ frozen = fields.frozen.booleanValue; fmsg = fields.msg.stringValue; soon = fields.soon.booleanValue; smsg = fields.soonMsg.stringValue; theme = fields.theme.stringValue; show(); freezeUI(); });
   }
   var FROZEN_PARTS = [];
-  var PART_SEL = { videos:{ sec:'#videos', nav:'#nav-videos' }, sponsor:{ sec:'#sponsor', nav:'header nav a[href="#sponsor"]' }, team:{ sec:'#team', nav:'#nav-team' }, tzedaka:{ sec:'#tzedaka', nav:'#nav-mag' }, contact:{ sec:'#contact', nav:'#nav-contact, a[data-go="contact"]' } };
+  var ALWAYS_FIX = ['story'];   // parts that show "we're fixing" until this list is emptied
+  var PART_SEL = { story:{ sec:'#story', nav:'#nav-story, a[data-nf="nav-story"]' }, videos:{ sec:'#videos', nav:'#nav-videos' }, sponsor:{ sec:'#sponsor', nav:'header nav a[href="#sponsor"]' }, team:{ sec:'#team', nav:'#nav-team' }, tzedaka:{ sec:'#tzedaka', nav:'#nav-mag' }, contact:{ sec:'#contact', nav:'#nav-contact, a[data-go="contact"]' } };
   function fixMsg(){ return (fmsg || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, '').trim() || "We're fixing something. Back very soon!"; }
   function techHTML(name){ return '<div class="fzp-gears">' + ($('fz-gears') ? $('fz-gears').innerHTML : '') + '</div><p class="fz-kick"><span class="cs-dot"></span>TECHNICIAN TEAM AT WORK</p><h3>' + fixMsg().replace(/</g, '&lt;') + '</h3><p class="fzp-sub">Our technicians are fixing ' + name + ' right now.</p>'; }
   function freezeParts(list){
@@ -6404,10 +6407,11 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     });
   }
   readStatus(); setInterval(readStatus, 10000); window.NG_STATUS_PING = readStatus;
+  try { freezeParts(ALWAYS_FIX); } catch(e){}
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) readStatus(); });
   document.addEventListener('ng:owner', show);
   // which parts are frozen ("theme" holds them now, since the Yom Tov picker is gone)
-  var PART_NAMES = { all:'the whole website', videos:'Videos', sponsor:'Sponsor', team:'Meet the Team', tzedaka:'Tzedaka Box', contact:'Contact Us' };
+  var PART_NAMES = { all:'the whole website', story:'Our Story', videos:'Videos', sponsor:'Sponsor', team:'Meet the Team', tzedaka:'Tzedaka Box', contact:'Contact Us' };
   function partsOf(){ return /^freeze:/.test(theme || '') ? theme.slice(7).split(',').filter(Boolean) : ['all']; }
   function partNames(list){ return list.map(function(k){ return PART_NAMES[k] || k; }).join(', '); }
   if ($('fz-what')) $('fz-what').addEventListener('change', function(e){ var all = this.querySelector('[value=all]');
@@ -7541,7 +7545,7 @@ window.NGFlipbook = function(host, pages, opts){
   <div class="nf4-word" aria-hidden="true">NeshamaGazine</div>
   <div class="nf2-belt" aria-label="All issues"><div class="nf2-trk" id="nf2-trk"></div></div>
   <div class="nf4-row">
-    <nav aria-label="Footer"><a href="#" data-nf="latest">Latest issue</a><a href="#" data-nf="nav-story">Our Story</a><a href="#" data-nf="nav-team">Meet the Team</a><a href="#" data-nf="nav-videos">NeshamaTV</a><a href="#" data-nf="nav-mag">Tzedaka Box</a><a href="#" data-nf="nav-contact">Contact Us</a><a href="#" data-nf="nav-sponsor">Sponsor</a><a href="feedback/" target="_blank" rel="noopener">Give feedback</a></nav>
+    <nav aria-label="Footer"><a href="#" data-nf="latest">Latest issue</a><a href="#" data-nf="nav-story">Our Story</a><a href="#" data-nf="nav-videos">NeshamaTV</a><a href="#" data-nf="nav-mag">Tzedaka Box</a><a href="#" data-nf="nav-contact">Contact Us</a><a href="#" data-nf="nav-sponsor">Sponsor</a><a href="feedback/" target="_blank" rel="noopener">Give feedback</a></nav>
     <div class="nf4-nl"><label for="nf2-email">Get the newsletter every 2 weeks</label><form id="nf2-form" novalidate><input id="nf2-email" type="email" placeholder="Your email" autocomplete="email"><button type="submit">Join</button></form><p class="nf2-msg" id="nf2-msg" role="status"></p></div>
   </div>
   <div class="nf2-low"><span>&copy; Copyright 2026 NeshamaGazine. All rights reserved.</span></div>
