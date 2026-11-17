@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1794780214';
+window.NG_BUILD = '1794954546';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -582,6 +582,7 @@ header nav{margin-left:auto}
 .owner-panel.open{transform:none;visibility:visible}
 .op-head{display:flex;align-items:center;justify-content:space-between;font:800 1.2rem "Figtree",system-ui,sans-serif;margin-bottom:6px}
 .op-x{background:none;border:0;font-size:28px;line-height:1;cursor:pointer;color:inherit}
+.op-lockbtn{margin-left:auto;margin-right:12px;background:#12294a;color:#f5e4cc;border:2px solid #12294a;border-radius:6px;padding:7px 14px;font:800 .9rem Figtree,system-ui,sans-serif;cursor:pointer}.op-lockbtn:hover{background:#f5e4cc;color:#12294a}
 .op-hi{margin:0 0 14px;font-weight:700}
 .op-links{display:flex;flex-direction:column;gap:8px}
 .op-links a{display:block;padding:11px 14px;border:2px solid var(--navy);border-radius:12px;color:var(--ink);text-decoration:none;font-weight:700}
@@ -1266,7 +1267,8 @@ a[aria-label="NeshamaGazine home"]{text-decoration:none!important}
 .fz-what input{width:16px;height:16px;accent-color:#e4493c}
 .is-part-frozen > :not(.fz-part){visibility:hidden}
 .sec:has(> .fz-part) > :not(.fz-part){visibility:hidden}
-#story:has(> .fz-part){min-height:460px;max-height:560px;overflow:hidden;position:relative}
+#story:has(> .fz-part){height:calc(100vh - 80px);min-height:460px;overflow:hidden;position:relative;padding:0!important;margin:0!important;max-width:none!important;width:100%!important}
+#story > .fz-part{border-radius:0}
 .fz-part{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;min-height:340px;border-radius:8px;background:radial-gradient(circle at 50% 30%,#163257 0%,#0a1628 70%);color:#fff}
 #team.is-part-frozen,#videos.is-part-frozen,#tzedaka.is-part-frozen{min-height:420px}
 .fz-part h3,.fzp-box h3{margin:6px 0 6px;font:800 clamp(1.3rem,3vw,1.9rem)/1.2 "Figtree",system-ui,sans-serif}
@@ -5271,7 +5273,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
 })();
 </script>
 <aside id="owner-panel" class="owner-panel" aria-label="Owner panel" aria-hidden="true">
-  <div class="op-head"><b>Owner Panel</b><button type="button" id="op-close" class="op-x" aria-label="Close">×</button></div>
+  <div class="op-head"><b>Owner Panel</b><button type="button" id="op-lock" class="op-lockbtn">Lock it again</button><button type="button" id="op-close" class="op-x" aria-label="Close">×</button></div>
   <p class="op-hi" id="op-hi">Welcome back, Levi! </p>
   <p class="op-note">Changes show here right away. Press <b>Save &amp; publish</b> so everyone sees them.</p>
 
@@ -5956,6 +5958,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     openGate();
   });
   document.getElementById('op-close').addEventListener('click', closePanel);
+  document.getElementById('op-lock').addEventListener('click', closePanel);   // Lock it again: just hides the sidebar
   document.getElementById('og-close').addEventListener('click', closeGate);
   gate.addEventListener('click', function(e){ if (e.target === gate) closeGate(); });
 
@@ -6326,7 +6329,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   }
   document.addEventListener('click', function(e){
     if (!FROZEN_PARTS.length) return;
-    for (var i = 0; i < FROZEN_PARTS.length; i++){ var k = FROZEN_PARTS[i], sel = PART_SEL[k]; if (sel && e.target.closest(sel.nav)){ e.preventDefault(); e.stopImmediatePropagation(); techPopup(k); return; } }
+    for (var i = 0; i < FROZEN_PARTS.length; i++){ var k = FROZEN_PARTS[i], sel = PART_SEL[k]; if (ALWAYS_FIX.indexOf(k) > -1) continue; if (sel && e.target.closest(sel.nav)){ e.preventDefault(); e.stopImmediatePropagation(); techPopup(k); return; } }
   }, true);
   // the  buttons on the frozen / coming-soon screens: owner types email + code, then can switch it off
   var after = null;
@@ -6407,7 +6410,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     });
   }
   readStatus(); setInterval(readStatus, 10000); window.NG_STATUS_PING = readStatus;
-  try { freezeParts(ALWAYS_FIX); } catch(e){}
+  [0, 800, 2500].forEach(function(ms){ setTimeout(function(){ try { if (!statusKnown) freezeParts(ALWAYS_FIX); } catch(e){} }, ms); });
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) readStatus(); });
   document.addEventListener('ng:owner', show);
   // which parts are frozen ("theme" holds them now, since the Yom Tov picker is gone)
@@ -11705,6 +11708,16 @@ window.NG_BOOM = function(){
   }
   if (document.readyState === 'complete') setTimeout(start, 800); else window.addEventListener('load', function(){ setTimeout(start, 800); });
 })();
+</script>
+<script>
+  // the browser tab shows a gear and "We're fixing something" for as long as the fixing screen is up
+  (function(){ var on = false, gear = '', T0 = document.title;
+    function icon(){ if (gear) return gear; var c = document.createElement('canvas'); c.width = c.height = 64; var g = c.getContext('2d'); g.fillStyle = '#12294a'; g.beginPath(); g.moveTo(12, 0); g.arcTo(64, 0, 64, 64, 12); g.arcTo(64, 64, 0, 64, 12); g.arcTo(0, 64, 0, 0, 12); g.arcTo(0, 0, 64, 0, 12); g.fill();
+      g.translate(32, 32); g.fillStyle = '#f5e4cc'; for (var i = 0; i < 8; i++){ g.save(); g.rotate(i * Math.PI / 4); g.fillRect(-6, -26, 12, 14); g.restore(); } g.beginPath(); g.arc(0, 0, 18, 0, 7); g.fill(); g.fillStyle = '#12294a'; g.beginPath(); g.arc(0, 0, 8, 0, 7); g.fill(); return gear = c.toDataURL('image/png'); }
+    function tick(){ var R = document.documentElement, want = R.classList.contains('ng-working') || R.classList.contains('ng-frozen-lock'); if (want === on) { if (on && document.title !== "We're fixing something | NeshamaGazine") document.title = "We're fixing something | NeshamaGazine"; return; } on = want;
+      document.querySelectorAll('link[rel~="icon"]').forEach(function(l){ if (on){ if (!l.dataset.h0) l.dataset.h0 = l.getAttribute('href'); l.setAttribute('href', icon()); } else if (l.dataset.h0) l.setAttribute('href', l.dataset.h0); });
+      if (on){ if (document.title.indexOf("We're fixing") < 0) T0 = document.title; document.title = "We're fixing something | NeshamaGazine"; } else document.title = T0; }
+    setInterval(tick, 700); tick(); })();
 </script>
 </body>
 </html>
