@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1794954885';
+window.NG_BUILD = '1794955013';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -11712,8 +11712,7 @@ window.NG_BOOM = function(){
 <script>
   // the browser tab shows a gear and "We're fixing something" for as long as the fixing screen is up
   (function(){ var on = false, gear = '', T0 = document.title;
-    function icon(){ if (gear) return gear; var c = document.createElement('canvas'); c.width = c.height = 64; var g = c.getContext('2d'); g.fillStyle = '#12294a'; g.beginPath(); g.moveTo(12, 0); g.arcTo(64, 0, 64, 64, 12); g.arcTo(64, 64, 0, 64, 12); g.arcTo(0, 64, 0, 0, 12); g.arcTo(0, 0, 64, 0, 12); g.fill();
-      g.translate(32, 32); g.fillStyle = '#f5e4cc'; for (var i = 0; i < 8; i++){ g.save(); g.rotate(i * Math.PI / 4); g.fillRect(-6, -26, 12, 14); g.restore(); } g.beginPath(); g.arc(0, 0, 18, 0, 7); g.fill(); g.fillStyle = '#12294a'; g.beginPath(); g.arc(0, 0, 8, 0, 7); g.fill(); return gear = c.toDataURL('image/png'); }
+    function icon(){ return '/neshamagazine/icons-fixing/icon-192.png?v=5'; }   // the same picture as the frozen-site icon: gear + "We're fixing something"
     function tick(){ var R = document.documentElement, want = R.classList.contains('ng-working') || R.classList.contains('ng-frozen-lock'); if (want === on) { if (on && document.title !== "We're fixing something | NeshamaGazine") document.title = "We're fixing something | NeshamaGazine"; return; } on = want;
       document.querySelectorAll('link[rel~="icon"]').forEach(function(l){ if (on){ if (!l.dataset.h0) l.dataset.h0 = l.getAttribute('href'); l.setAttribute('href', icon()); } else if (l.dataset.h0) l.setAttribute('href', l.dataset.h0); });
       if (on){ if (document.title.indexOf("We're fixing") < 0) T0 = document.title; document.title = "We're fixing something | NeshamaGazine"; } else document.title = T0; }
