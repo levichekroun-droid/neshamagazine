@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Robo Rush 3D | NeshamaGazine test</title>
+<title>Robo Rush 3D | NeshamaGazine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Figtree:wght@600;800&display=swap">
@@ -30,6 +30,7 @@
   button.go{ margin-top:14px; width:100%; border:0; border-radius:999px; background:var(--navy); color:var(--beige); font:400 1.5rem/1 "Lilita One",Figtree,sans-serif; padding:16px; cursor:pointer; letter-spacing:.03em; }
   button.go:hover{ background:#1d3a66; }
   .tag{ display:inline-block; background:var(--navy); color:var(--beige); border-radius:999px; padding:4px 12px; font:800 .68rem/1.2 Figtree,sans-serif; letter-spacing:.14em; margin-bottom:10px; }
+  html.embed .hud{ top:58px; }
   #pop{ position:fixed; left:0; right:0; top:22%; text-align:center; font:400 clamp(1.6rem, 6vw, 2.6rem)/1 "Lilita One",Figtree,sans-serif; color:#fff; -webkit-text-stroke:2px var(--navy); paint-order:stroke fill; pointer-events:none; opacity:0; transition:opacity .25s, transform .25s; transform:translateY(10px); }
   #pop.on{ opacity:1; transform:none; }
 </style>
@@ -46,7 +47,6 @@
 
 <div class="scr" id="s-title">
   <div class="card">
-    <span class="tag">PRIVATE TEST</span>
     <h1>Robo Rush 3D</h1>
     <p>Neshama Robo is late with the magazines. Dodge, jump and roll down the street.</p>
     <div class="keys">
@@ -71,6 +71,7 @@
 <script>
 (function(){
 'use strict';
+try { if (window.self !== window.top) document.documentElement.classList.add('embed'); } catch(e){ document.documentElement.classList.add('embed'); }
 var $ = function(id){ return document.getElementById(id); };
 var cv = $('cv'), mobile = matchMedia('(pointer:coarse)').matches || innerWidth < 720;
 var renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, powerPreference: 'high-performance' });

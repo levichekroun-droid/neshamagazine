@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795051830';
+window.NG_BUILD = '1795129471';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -10360,7 +10360,7 @@ window.NG_BOOM = function(){
   window.NG_WALLET_CHANGED = function(){ SAVE = NG_WALLET.load(); SAVE.own.steel = 1; };
   SAVE.own.steel = 1;
   var SKINS = [
-    { id: 'steel', name: 'Classic Steel', cost: 0, a: '#d7dde6', b: '#8a96a8', stripe: '#f2c230', power: 'No power. The original.' },
+    { id: 'steel', name: 'Classic Steel', cost: 0, a: '#fdf6e8', b: '#e6d5b4', stripe: '#ffd23f', power: 'No power. The original.' },
     { id: 'gold', name: 'Gold Rush', cost: 120, a: '#f6dc8a', b: '#c89a3a', stripe: NAV, power: 'MIDAS TOUCH: every coin is worth 2, and coins fly to you by themselves.', pw: ['midas'] },
     { id: 'navy', name: 'Night Ninja', cost: 200, a: '#2c3e5c', b: '#0b1a30', stripe: GOLD, ninja: true, power: 'NINJA VANISH: you disappear right through the next thing that would crash you. Ready again every 8 seconds.', pw: ['ghost'] },
     { id: 'paper', name: 'Paper Plane', cost: 250, a: '#fbf1e1', b: '#d9c6a4', stripe: NAV, print: true, power: 'PAPER PLANE: 4 jumps, and hold JUMP in the air to fly like a paper plane.', pw: ['glide'] },
@@ -10383,7 +10383,7 @@ window.NG_BOOM = function(){
     { id: 'magnet', name: 'Super magnet', cost: 80 }
   ];
   var LEVELS = [
-    { name: 'THE PRINT RUN', theme: 'ware', tip: 'The new issue is out! Jump the boxes, grab the coins.', mix: ['box', 'box', 'bolt'] },
+    { name: 'THE DELIVERY RUN', theme: 'street', tip: 'The new issue is out! Jump the boxes, grab the coins.', mix: ['box', 'box', 'bolt'] },
     { name: 'THE PRINTING PRESS', theme: 'press', tip: 'Slide under the paper planes!', mix: ['box', 'plane', 'plane', 'bolt', 'ink'] },
     { name: 'THE LOADING DOCK', theme: 'dock', tip: 'Forklifts! Springs! Spinning gears!', mix: ['box', 'tall', 'fork', 'spring', 'plane', 'gear', 'oil'] },
     { name: 'NIGHT SHIFT', theme: 'night', tip: 'The claw drops boxes from above.', mix: ['box', 'drop', 'drop', 'plane', 'peel', 'tall', 'swing'] },
@@ -10637,7 +10637,29 @@ window.NG_BOOM = function(){
     // low fence right behind the belt
     g.fillStyle = 'rgba(245,228,204,.9)'; for (x = -(scroll % 24) - 24; x < W + 24; x += 24) g.fillRect(x, GROUND - 22, 5, 22); g.fillRect(0, GROUND - 17, W, 4); g.fillRect(0, GROUND - 8, W, 4);
   }
+  // sunny city street, in the same style as Robo Rush 3D
+  function street(){ var p1 = scroll * .15, p2 = scroll * .4, p3 = scroll * .8, x, i, u, wx, wy;
+    paintSky('dock', scroll * .15);
+    var FAR = ['#ffc2dd', '#b9ece6', '#ffe9a6', '#d2c2f5', '#ffd0b5', '#c2e2ff'];
+    for (x = -(p1 % 90) - 90; x < W + 90; x += 90){ u = Math.round((x + p1) / 90); var hh = 90 + (((u * 37) % 5) + 5) % 5 * 22; g.fillStyle = FAR[((u % 6) + 6) % 6]; g.fillRect(x, GROUND - 40 - hh, 84, hh + 40); g.fillStyle = 'rgba(255,255,255,.6)'; g.fillRect(x - 2, GROUND - 45 - hh, 88, 6); g.fillStyle = 'rgba(255,255,255,.45)'; for (wy = GROUND - 28 - hh; wy < GROUND - 50; wy += 26) for (wx = x + 12; wx < x + 70; wx += 24) g.fillRect(wx, wy, 12, 14); }
+    var COL = ['#ff5fa2', '#2ec4b6', '#ffd23f', '#7b4ddb', '#ff7a3d', '#4dabf7', '#ff5a5f', '#9be564'];
+    for (x = -(p2 % 190) - 190; x < W + 190; x += 190){ u = Math.round((x + p2) / 190); var ci = ((u % 8) + 8) % 8, bh = 150 + (((u * 53) % 4) + 4) % 4 * 34, bw = 170, by = GROUND - bh;
+      g.fillStyle = '#1d1647'; g.fillRect(x - 3, by - 3, bw + 6, bh + 3); g.fillStyle = COL[ci]; g.fillRect(x, by, bw, bh);
+      g.fillStyle = 'rgba(29,22,71,.16)'; g.fillRect(x + bw - 26, by, 26, bh);
+      g.fillStyle = '#1d1647'; g.fillRect(x - 9, by - 13, bw + 18, 16); g.fillStyle = '#ffffff'; g.fillRect(x - 6, by - 10, bw + 12, 10);
+      for (wy = by + 22; wy < GROUND - 112; wy += 46) for (wx = x + 18; wx < x + bw - 44; wx += 44){ g.fillStyle = '#1d1647'; g.fillRect(wx, wy, 30, 32); g.fillStyle = (Math.abs(wx - x + wy - by + u * 7) | 0) % 3 ? '#bfe9ff' : '#fff1b8'; g.fillRect(wx + 3, wy + 3, 24, 26); g.fillStyle = 'rgba(255,255,255,.6)'; g.fillRect(wx + 3, wy + 3, 24, 5); }
+      g.fillStyle = '#1d1647'; g.fillRect(x + 14, GROUND - 60, bw - 28, 60); g.fillStyle = '#fff3d6'; g.fillRect(x + 18, GROUND - 56, bw - 36, 56); g.fillStyle = '#1d1647'; g.fillRect(x + bw / 2 - 17, GROUND - 46, 34, 46); g.fillStyle = '#bfe9ff'; g.fillRect(x + bw / 2 - 13, GROUND - 42, 26, 30);
+      var ac = COL[(ci + 3) % 8], sw = (bw - 18) / 7; g.fillStyle = '#1d1647'; g.fillRect(x + 6, GROUND - 80, bw - 12, 24); for (i = 0; i < 7; i++){ g.fillStyle = i % 2 ? '#ffffff' : ac; g.fillRect(x + 9 + i * sw, GROUND - 77, sw, 18); } }
+    g.fillStyle = '#1d1647'; g.fillRect(0, GROUND - 14, W, 14); g.fillStyle = '#e9dcc4'; g.fillRect(0, GROUND - 11, W, 11); g.fillStyle = '#c9b99a'; for (x = -(p3 % 60) - 60; x < W; x += 60) g.fillRect(x, GROUND - 11, 3, 11);
+    for (x = -(p3 % 420) - 420; x < W + 420; x += 420){ var B = [[64, -108, 44], [38, -86, 30], [92, -88, 30]];
+      g.fillStyle = '#1d1647'; g.fillRect(x + 55, GROUND - 74, 18, 64); g.fillStyle = '#a8683a'; g.fillRect(x + 58, GROUND - 74, 12, 64);
+      B.forEach(function(c){ g.fillStyle = '#1d1647'; g.beginPath(); g.arc(x + c[0], GROUND + c[1], c[2] + 3, 0, 7); g.fill(); });
+      B.forEach(function(c){ g.fillStyle = '#3ecf7a'; g.beginPath(); g.arc(x + c[0], GROUND + c[1], c[2], 0, 7); g.fill(); });
+      g.fillStyle = 'rgba(255,255,255,.3)'; g.beginPath(); g.arc(x + 50, GROUND - 122, 16, 0, 7); g.fill(); g.fillStyle = 'rgba(29,22,71,.14)'; g.beginPath(); g.arc(x + 78, GROUND - 84, 26, 0, 7); g.fill();
+      g.fillStyle = '#1d1647'; g.fillRect(x + 266, GROUND - 156, 9, 146); g.fillRect(x + 266, GROUND - 158, 42, 8); g.beginPath(); g.arc(x + 304, GROUND - 144, 12, 0, 7); g.fill(); g.fillStyle = '#fff1b8'; g.beginPath(); g.arc(x + 304, GROUND - 144, 9, 0, 7); g.fill(); }
+  }
   function sky(theme){
+    if (theme === 'street'){ street(); return; }
     if (theme === 'moon'){ moonSky(); return; }
     if (theme === 'town'){ town(); return; }
     var dark = theme === 'night' || theme === 'roof' || theme === 'tunnel' || theme === 'storm' || theme === 'train', gr = g.createLinearGradient(0, 0, 0, GROUND);
@@ -10704,6 +10726,8 @@ window.NG_BOOM = function(){
     // tank tread
     g.fillStyle = '#20262e'; rr(X + 1, T + Hh - 13, 46, 13, 6); g.fill(); g.fillStyle = '#c3cad3'; for (var i = 0; i < 4; i++){ g.beginPath(); g.arc(X + 9 + i * 10, T + Hh - 6.5, 3, 0, 7); g.fill(); }
     g.fillStyle = '#5a4fb0'; var to = (scroll / 4) % 8; for (var j = 0; j < 7; j++) g.fillRect(X + 3 + ((j * 8 + 8 - to) % 46), T + Hh - 13, 2, 2);
+    // magazine satchel on the back, like Robo Rush 3D
+    g.fillStyle = '#ff5fa2'; g.fillRect(X - 10, T + 12, 4, 10); g.fillStyle = '#f5e4cc'; g.fillRect(X - 6, T + 9, 4, 13); g.fillStyle = '#2ec4b6'; g.fillRect(X - 2, T + 13, 4, 9); g.fillStyle = NAV; rr(X - 13, T + 18, 17, 28, 4); g.fill(); g.fillStyle = GOLD; g.fillRect(X - 10, T + 25, 9, 3);
     // body
     if (sk.crown){ var cw = Math.sin(time * 7) * 3; g.fillStyle = '#b8352b'; g.strokeStyle = GOLD; g.lineWidth = 2.5; g.beginPath(); g.moveTo(X + 6, T + 8); g.bezierCurveTo(X - 10, T + 18, X - 16 - cw, T + 40, X - 12 - cw, T + 58); g.lineTo(X + 8, T + 52); g.closePath(); g.fill(); g.stroke(); }
     var hg2 = g.createLinearGradient(0, T + 4, 0, T + Hh - 12), hg = hg2; hg.addColorStop(0, sk.a); hg.addColorStop(1, sk.b); g.fillStyle = hg; rr(X, T + 4, 48, Hh - 17, 9); g.fill(); g.strokeStyle = NAV; g.lineWidth = 3; g.stroke();
@@ -11127,7 +11151,7 @@ window.NG_BOOM = function(){
     g.save(); g.globalCompositeOperation = 'overlay'; if (g.globalCompositeOperation === 'overlay'){ g.globalAlpha = 0; g.fillStyle = PT.pp || (PT.pp = g.createPattern(paperTile(), 'repeat')); g.fillRect(0, 0, W, H); } g.restore(); }
   function draw(){
     btns = [];
-    var theme = mode === 'play' || mode === 'over' ? lvInfo().theme : 'ware'; if (S && S.moon > 0 && (mode === 'play' || mode === 'over')) theme = 'moon';
+    var theme = mode === 'play' || mode === 'over' ? lvInfo().theme : 'street'; if (S && S.moon > 0 && (mode === 'play' || mode === 'over')) theme = 'moon';
     g.save(); if (shake) g.translate((Math.random() - .5) * shake, (Math.random() - .5) * shake);
     sky(theme); beltDraw(theme);
     if (S && S.space > .01) space(S.space);
