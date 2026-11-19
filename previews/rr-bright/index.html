@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795051376';
+window.NG_BUILD = '1795051830';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -1529,7 +1529,8 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
 html.ng-working body > *:not(#ng-frozen),html.ng-frozen-lock body > *:not(#ng-frozen){display:none!important}html.ng-working #ng-frozen,html.ng-frozen-lock #ng-frozen{display:flex!important;position:fixed;inset:0;z-index:2147483646}html.ng-working,html.ng-working body,html.ng-frozen-lock,html.ng-frozen-lock body{overflow:hidden!important}</style>
 <style id="fb-viewer-css">
 .nfb-wrap{display:flex;align-items:center;justify-content:center;gap:14px;height:calc(100% - 40px);position:relative}
-.nfb-book{flex:0 0 auto;position:relative;cursor:pointer;overflow:hidden;border-radius:6px}
+.nfb-book{flex:0 0 auto;position:relative;cursor:pointer}
+.nfb-cv{position:absolute;left:0;width:100%;z-index:4;pointer-events:none;display:none}
 .nfb-in{position:absolute;inset:0;z-index:4;display:flex;will-change:transform}
 .nfb-ip{flex:1 1 0;height:100%;background:#fff;overflow:hidden;position:relative}
 .nfb-ip.empty{background:transparent}
@@ -7215,13 +7216,54 @@ window.NGFlipbook = function(host, pages, opts){
   function turn(dir){
     if (busy) return; var to = spread + dir; if (to < 0 || to > maxSpread()) return;
     busy = true; rustle();
-    // magazine turn: the whole next spread slides in over this one
-    spread = to; var nxt = idx(); spread -= dir;
-    function half(i){ var ok = i >= 0 && i < n; return '<div class="nfb-ip' + (ok ? '' : ' empty') + '">' + (ok ? '<img src="' + pages[i] + '" alt="">' : '') + '</div>'; }
-    var inn = document.createElement('div'); inn.className = 'nfb-in ' + (dir > 0 ? 'from-r' : 'from-l');
-    inn.innerHTML = single ? half(nxt.r) : half(nxt.l) + half(nxt.r);
-    book.appendChild(inn);
-    setTimeout(function(){ spread = to; show(); if (inn.parentNode) inn.parentNode.removeChild(inn); busy = false; }, 440);
+    var cur = idx(); spread = to; var nxt = idx(); spread -= dir;
+    function done(){ spread = to; show(); cvs.style.display = 'none'; busy = false; }
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) return done();
+    // which sheet turns: its front, its back, and the page that shows underneath
+    var bw = book.clientWidth, h = book.clientHeight, w = single ? bw : bw / 2, job;
+    if (single) job = dir > 0 ? { sx: 0, s: 1, front: cur.r, back: -2, under: nxt.r, rev: false } : { sx: 0, s: 1, front: nxt.r, back: -2, under: cur.r, rev: true };
+    else job = dir > 0 ? { sx: w, s: 1, front: cur.r, back: nxt.l, under: nxt.r, rev: false } : { sx: w, s: -1, front: cur.l, back: nxt.r, under: nxt.l, rev: false };
+    var need = [job.front, job.back, job.under].filter(function(i){ return i >= 0 && i < n; }), left = need.length, started = false;
+    function go(){ if (started) return; started = true; flip(job, bw, w, h, done); }
+    if (!left) return go();
+    need.forEach(function(i){ var im = pic(i); if (im.complete && im.naturalWidth) { if (--left === 0) go(); } else { im.addEventListener('load', function(){ if (--left === 0) go(); }); im.addEventListener('error', function(){ if (--left === 0) go(); }); } });
+    setTimeout(go, 500);
+  }
+  // ---- soft magazine page turn: the sheet bends over along a slanted fold, like glossy paper ----
+  var cvs = document.createElement('canvas'); cvs.className = 'nfb-cv'; book.appendChild(cvs); var pics = {};
+  function pic(i){ if (!pics[i]){ pics[i] = new Image(); pics[i].src = pages[i]; } return pics[i]; }
+  function half(poly, M, nx, ny, keep){   // the part of a shape on one side of the fold line
+    var out = []; for (var i = 0; i < poly.length; i++){ var a = poly[i], b = poly[(i + 1) % poly.length], da = ((a[0] - M[0]) * nx + (a[1] - M[1]) * ny) * keep, db = ((b[0] - M[0]) * nx + (b[1] - M[1]) * ny) * keep;
+      if (da >= 0) out.push(a); if ((da >= 0) !== (db >= 0)){ var t = da / (da - db); out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]); } } return out; }
+  function trace(g, p){ g.beginPath(); for (var i = 0; i < p.length; i++) g[i ? 'lineTo' : 'moveTo'](p[i][0], p[i][1]); g.closePath(); }
+  function paint(g, i, x, y, w, h){ g.fillStyle = '#fff'; g.fillRect(x, y, w, h); if (!(i >= 0 && i < n)) { if (i === -2){ g.fillStyle = '#f1ece2'; g.fillRect(x, y, w, h); } return; } var im = pic(i); if (!im.complete || !im.naturalWidth) return;
+    var k = Math.min(w / im.naturalWidth, h / im.naturalHeight), dw = im.naturalWidth * k, dh = im.naturalHeight * k; g.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh); }
+  function flip(job, bw, w, h, done){
+    var dpr = Math.min(2, window.devicePixelRatio || 1), pad = Math.round(h * .16), g = cvs.getContext('2d');
+    cvs.width = Math.round(bw * dpr); cvs.height = Math.round((h + pad * 2) * dpr); cvs.style.top = -pad + 'px'; cvs.style.height = (h + pad * 2) + 'px'; cvs.style.display = 'block';
+    var x0 = job.s > 0 ? job.sx : job.sx - w, rect = [[x0, 0], [x0 + w, 0], [x0 + w, h], [x0, h]], P0 = [job.sx + job.s * w, h], t0 = performance.now(), DUR = 760;
+    (function frame(now){
+      var t = Math.min(1, (now - t0) / DUR), e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; if (job.rev) e = 1 - e;
+      var a = Math.max(.0001, e * Math.PI), C = [job.sx + job.s * w * Math.cos(a), h - .34 * w * Math.sin(a)];
+      var vx = P0[0] - C[0], vy = P0[1] - C[1], len = Math.sqrt(vx * vx + vy * vy) || 1, nx = vx / len, ny = vy / len, M = [(P0[0] + C[0]) / 2, (P0[1] + C[1]) / 2], depth = len / 2;
+      var gone = half(rect, M, nx, ny, 1), kept = half(rect, M, nx, ny, -1), d2 = 2 * (M[0] * nx + M[1] * ny);
+      var flap = gone.map(function(p){ var d = (p[0] - M[0]) * nx + (p[1] - M[1]) * ny; return [p[0] - 2 * d * nx, p[1] - 2 * d * ny]; });
+      g.setTransform(dpr, 0, 0, dpr, 0, pad * dpr); g.clearRect(0, -pad, bw, h + pad * 2);
+      if (single){ g.save(); g.beginPath(); g.rect(0, -pad, bw, h + pad * 2); g.clip(); }
+      // the page underneath, where the sheet has already lifted away
+      if (gone.length > 2){ g.save(); trace(g, gone); g.clip(); paint(g, job.under, x0, 0, w, h);
+        var sh = g.createLinearGradient(M[0], M[1], M[0] + nx * Math.min(90, depth), M[1] + ny * Math.min(90, depth)); sh.addColorStop(0, 'rgba(0,0,0,.38)'); sh.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = sh; g.fillRect(x0, 0, w, h); g.restore(); }
+      // the part of the sheet that is still lying flat
+      if (kept.length > 2){ g.save(); trace(g, kept); g.clip(); paint(g, job.front, x0, 0, w, h); g.restore(); }
+      // the bent-over part: we see the back of the sheet
+      if (flap.length > 2){ g.save(); g.shadowColor = 'rgba(0,0,0,.4)'; g.shadowBlur = 26 * dpr; g.shadowOffsetX = -job.s * 6 * dpr; g.fillStyle = '#fff'; trace(g, flap); g.fill(); g.restore();
+        g.save(); trace(g, flap); g.clip(); g.transform(1 - 2 * nx * nx, -2 * nx * ny, -2 * nx * ny, 1 - 2 * ny * ny, d2 * nx, d2 * ny);
+        g.save(); g.translate(2 * x0 + w, 0); g.scale(-1, 1); paint(g, job.back, x0, 0, w, h); g.restore();
+        var gl = g.createLinearGradient(M[0], M[1], M[0] + nx * depth, M[1] + ny * depth); gl.addColorStop(0, 'rgba(0,0,0,.3)'); gl.addColorStop(.18, 'rgba(0,0,0,.06)'); gl.addColorStop(.42, 'rgba(255,255,255,.2)'); gl.addColorStop(.7, 'rgba(255,255,255,0)'); gl.addColorStop(1, 'rgba(0,0,0,.1)');
+        g.fillStyle = gl; g.fillRect(x0 - w, -h, w * 3, h * 3); g.restore(); }
+      if (single) g.restore();
+      if (t < 1 && host.contains(book)) requestAnimationFrame(frame); else done();
+    })(t0);
   }
   host.querySelector('.nfb-next').onclick = function(){ turn(1); };
   host.querySelector('.nfb-prev').onclick = function(){ turn(-1); };
