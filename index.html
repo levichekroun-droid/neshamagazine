@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795051009';
+window.NG_BUILD = '1795051376';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -1528,8 +1528,22 @@ html.ng-gated #ng-sec .sx-card{animation:gCard .45s cubic-bezier(.2,1.4,.4,1);bo
 <style>.fz-prog.fz-indet{overflow:hidden;position:relative}.fz-prog.fz-indet i{display:none}.fz-prog.fz-indet::after{content:"";position:absolute;top:0;bottom:0;left:-35%;width:35%;border-radius:5px;background:#f5e4cc;animation:fzind 1.6s ease-in-out infinite}@keyframes fzind{to{left:100%}}
 html.ng-working body > *:not(#ng-frozen),html.ng-frozen-lock body > *:not(#ng-frozen){display:none!important}html.ng-working #ng-frozen,html.ng-frozen-lock #ng-frozen{display:flex!important;position:fixed;inset:0;z-index:2147483646}html.ng-working,html.ng-working body,html.ng-frozen-lock,html.ng-frozen-lock body{overflow:hidden!important}</style>
 <style id="fb-viewer-css">
-.nfb-wrap{display:flex;align-items:center;justify-content:center;gap:14px;height:calc(100% - 40px)}
-.nfb-book{flex:0 0 auto;position:relative;perspective:2400px;cursor:pointer;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
+.nfb-wrap{display:flex;align-items:center;justify-content:center;gap:14px;height:calc(100% - 40px);position:relative}
+.nfb-book{flex:0 0 auto;position:relative;cursor:pointer;overflow:hidden;border-radius:6px}
+.nfb-in{position:absolute;inset:0;z-index:4;display:flex;will-change:transform}
+.nfb-ip{flex:1 1 0;height:100%;background:#fff;overflow:hidden;position:relative}
+.nfb-ip.empty{background:transparent}
+.nfb-ip img{width:100%;height:100%;object-fit:contain;display:block;background:#fff}
+.nfb-ip:first-child:not(.empty):not(:only-child)::after{content:"";position:absolute;top:0;bottom:0;right:0;width:40px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.18))}
+.nfb-ip:last-child:not(.empty):not(:only-child)::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40px;background:linear-gradient(270deg,transparent,rgba(0,0,0,.18))}
+.nfb-in::before{content:"";position:absolute;top:0;bottom:0;width:34px;pointer-events:none}
+.nfb-in.from-r{animation:nfbInR .42s cubic-bezier(.2,.75,.25,1) forwards}
+.nfb-in.from-r::before{right:100%;background:linear-gradient(90deg,transparent,rgba(0,0,0,.3))}
+.nfb-in.from-l{animation:nfbInL .42s cubic-bezier(.2,.75,.25,1) forwards}
+.nfb-in.from-l::before{left:100%;background:linear-gradient(270deg,transparent,rgba(0,0,0,.3))}
+@keyframes nfbInR{from{transform:translateX(100%)}to{transform:none}}
+@keyframes nfbInL{from{transform:translateX(-100%)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.nfb-in.from-r,.nfb-in.from-l{animation-duration:.01s}}
 .nfb-page{position:absolute;top:0;bottom:0;width:50%;background:#fff;overflow:hidden}
 .nfb-page.empty{background:transparent}
 .nfb-l{left:0;border-radius:6px 0 0 6px}.nfb-r{right:0;border-radius:0 6px 6px 0}
@@ -1549,15 +1563,18 @@ html.ng-working body > *:not(#ng-frozen),html.ng-frozen-lock body > *:not(#ng-fr
 .nfb-book.single .nfb-leaf{left:0;width:100%}
 .nfb-book.single .nfb-leaf.go-in{visibility:visible;transform:rotateY(-180deg);animation:nfbPrev .65s cubic-bezier(.45,.05,.3,1) forwards}
 .nfb-book.single .nfb-leaf.go-in .nfb-front{transform:rotateY(180deg)}.nfb-book.single .nfb-leaf.go-in .nfb-back{transform:none}
-.nfb-nav{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#12294a;font-size:30px;line-height:1;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-.nfb-nav:disabled{opacity:.25;cursor:default}
-@media (max-width:759px){.nfb-wrap{position:relative}.nfb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:38px;height:38px;font-size:26px;opacity:.85}.nfb-prev{left:4px}.nfb-next{right:4px}.nfb-nav:disabled{opacity:0;pointer-events:none}}
+.nfb-nav{flex:0 0 auto;width:52px;height:52px;border-radius:50%;border:3px solid #f5e4cc;background:#12294a;color:#f5e4cc;font-size:32px;line-height:1;cursor:pointer;padding:0 0 4px}
+.nfb-nav:hover:not(:disabled){background:#f5e4cc;color:#12294a}
+.nfb-side{position:absolute;left:10px;top:50%;transform:translateY(-26px);z-index:6}
+.nfb-wrap > .nfb-next{position:absolute;right:10px;top:50%;transform:translateY(-26px);z-index:6}
+.nfb-nav:disabled{opacity:0;pointer-events:none}
+@media (max-width:759px){.nfb-nav{width:40px;height:40px;font-size:26px}.nfb-side{left:4px;transform:translateY(-20px)}.nfb-wrap > .nfb-next{right:4px;transform:translateY(-20px)}}
 .nfb-count{text-align:center;color:#fff;font:700 15px "Figtree",system-ui,sans-serif;margin-top:10px}
-.nfb-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:10px}
-.nfb-home{border:2px solid #fff;background:rgba(18,41,74,.85);color:#fff;border-radius:6px;padding:6px 10px;font:700 12px "Figtree",system-ui,sans-serif;cursor:pointer;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.nfb-side{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.nfb-home{border:2px solid #f5e4cc;background:#12294a;color:#f5e4cc;border-radius:6px;padding:6px 10px;font:700 12px "Figtree",system-ui,sans-serif;cursor:pointer;white-space:nowrap}
 .nfb-home:hover{background:#fff;color:#12294a}
 .nfb-home.off{visibility:hidden}
-@media (max-width:759px){.nfb-home{position:absolute;left:4px;top:calc(50% + 28px);z-index:5;padding:5px 8px;font-size:11px}}
+@media (max-width:759px){.nfb-home{padding:5px 8px;font-size:11px}}
 </style>
 <style>
 
@@ -7168,7 +7185,7 @@ window.NGFlipbook = function(host, pages, opts){
     if (!host.contains(book)) return;
     single = host.clientWidth < 760;
     var cs = getComputedStyle(host), padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight), padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-    var maxW = host.clientWidth - padX - (single ? 0 : 120), maxH = host.clientHeight - padY - 50;
+    var maxW = host.clientWidth - padX - (single ? 0 : 16), maxH = host.clientHeight - padY - 50;
     var pw = Math.min(single ? maxW : maxW / 2, maxH / ratio);
     book.style.width = (single ? pw : pw * 2) + 'px'; book.style.height = (pw * ratio) + 'px';
     book.classList.toggle('single', single);
@@ -7198,11 +7215,13 @@ window.NGFlipbook = function(host, pages, opts){
   function turn(dir){
     if (busy) return; var to = spread + dir; if (to < 0 || to > maxSpread()) return;
     busy = true; rustle();
-    var cur = idx(); spread = to; var nxt = idx(); spread -= dir;
-    if (dir > 0){ img(F, cur.r); img(B, nxt.l); img(R, nxt.r); leaf.className = 'nfb-leaf go-next'; }
-    else { img(F, cur.l); img(B, nxt.r); img(L, nxt.l); leaf.className = 'nfb-leaf go-prev'; }
-    if (single){ img(F, cur.r); img(B, -1); if (dir < 0){ img(R, cur.r); img(F, nxt.r); leaf.className = 'nfb-leaf go-in'; } }
-    setTimeout(function(){ spread = to; leaf.className = 'nfb-leaf'; F.innerHTML = B.innerHTML = ''; show(); busy = false; }, 650);
+    // magazine turn: the whole next spread slides in over this one
+    spread = to; var nxt = idx(); spread -= dir;
+    function half(i){ var ok = i >= 0 && i < n; return '<div class="nfb-ip' + (ok ? '' : ' empty') + '">' + (ok ? '<img src="' + pages[i] + '" alt="">' : '') + '</div>'; }
+    var inn = document.createElement('div'); inn.className = 'nfb-in ' + (dir > 0 ? 'from-r' : 'from-l');
+    inn.innerHTML = single ? half(nxt.r) : half(nxt.l) + half(nxt.r);
+    book.appendChild(inn);
+    setTimeout(function(){ spread = to; show(); if (inn.parentNode) inn.parentNode.removeChild(inn); busy = false; }, 440);
   }
   host.querySelector('.nfb-next').onclick = function(){ turn(1); };
   host.querySelector('.nfb-prev').onclick = function(){ turn(-1); };
