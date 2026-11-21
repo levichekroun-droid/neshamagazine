@@ -14,38 +14,45 @@
 :root{ --navy:#12294a; --navy2:#1b3a66; --ink:#0d1f39; --beige:#f5e4cc; --paper:#fbf3e4; --sand:#e6d2b2; --line:rgba(18,41,74,.16); }
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
-body{ margin:0; background:var(--navy); color:var(--navy); font:500 17px/1.6 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+body{ margin:0; background:var(--beige); color:var(--navy); font:500 17px/1.6 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
 h1,h2,h3{ font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif; font-weight:800; line-height:1.02; letter-spacing:-.02em; margin:0; text-wrap:balance; }
 a{ color:inherit; }
 img{ max-width:100%; display:block; }
 .wrap{ max-width:1120px; margin:0 auto; padding-left:max(18px, env(safe-area-inset-left, 0px)); padding-right:max(18px, env(safe-area-inset-right, 0px)); }
-:focus-visible{ outline:3px solid var(--beige); outline-offset:3px; }
-.page :focus-visible{ outline-color:var(--navy); }
+:focus-visible{ outline:3px solid var(--navy); outline-offset:3px; }
 
 /* ---------- top bar ---------- */
-.top{ position:sticky; top:0; z-index:20; background:var(--navy); color:var(--beige); border-bottom:2px solid rgba(245,228,204,.18); }
+.top{ position:sticky; top:0; z-index:20; background:var(--beige); color:var(--navy); border-bottom:3px solid var(--navy); }
 .top .wrap{ display:flex; align-items:center; gap:18px; min-height:62px; }
-.mark{ flex:0 0 auto; display:block; background:#f5e4cc; border-radius:8px; padding:4px 9px; }
-.mark img{ height:36px; width:auto; display:block; }
-.tagline{ font-size:.74rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; opacity:.75; flex:0 0 auto; border-left:2px solid rgba(245,228,204,.3); padding-left:14px; }
+.mark{ flex:0 0 auto; display:block; }
+.mark img{ height:44px; width:auto; display:block; mix-blend-mode:multiply; }
+.tagline{ font-size:.74rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; flex:0 0 auto; border-left:2px solid var(--line); padding-left:14px; }
 .nav{ margin-left:auto; display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }
 .nav a{ text-decoration:none; font-weight:700; font-size:.95rem; padding:8px 12px; border-radius:999px; }
-.nav a:hover{ background:rgba(245,228,204,.14); }
-.nav a.on{ background:var(--beige); color:var(--navy); }
-@media (max-width:860px){ .tagline{ display:none; } .top .wrap{ flex-wrap:wrap; padding-top:8px; padding-bottom:8px; gap:6px 12px; } .nav{ margin-left:0; width:100%; justify-content:flex-start; overflow-x:auto; flex-wrap:nowrap; } .nav a{ white-space:nowrap; padding:7px 11px; font-size:.9rem; } }
+.nav a:hover{ background:rgba(18,41,74,.1); }
+.nav a.on{ background:var(--navy); color:var(--beige); }
+.nav a.site{ background:var(--navy); color:var(--beige); display:inline-flex; align-items:center; gap:8px; margin-left:6px; }
+.nav a.site:hover{ background:var(--navy2); }
+.arr{ display:inline-block; width:1.1em; height:.75em; flex:0 0 auto; background:currentColor; clip-path:polygon(0 38%, 62% 38%, 62% 0, 100% 50%, 62% 100%, 62% 62%, 0 62%); }
+.site2{ display:none; }
+@media (max-width:860px){ .nav a.site{ display:none; } .site2{ display:inline-flex; align-items:center; gap:8px; margin-left:auto; text-decoration:none; font-weight:800; font-size:.9rem; padding:9px 14px; border-radius:999px; background:var(--navy); color:var(--beige); } .tagline{ display:none; } .top .wrap{ flex-wrap:wrap; padding-top:8px; padding-bottom:8px; gap:6px 12px; } .nav{ margin-left:0; width:100%; justify-content:flex-start; overflow-x:auto; flex-wrap:nowrap; } .nav a{ white-space:nowrap; padding:7px 11px; font-size:.9rem; } }
 
 /* ---------- the desk ---------- */
-#desk{ color:var(--beige); padding-block:34px 60px; }
+#desk{ color:var(--navy); padding-block:34px 60px; }
 .hello{ display:grid; gap:10px; max-width:760px; margin-bottom:26px; }
 .kicker{ font-size:.78rem; font-weight:800; letter-spacing:.16em; text-transform:uppercase; opacity:.8; }
 .hello h1{ font-size:clamp(2.4rem, 6.6vw, 4.6rem); }
 .hello p{ margin:0; font-size:clamp(1.02rem, 2vw, 1.2rem); max-width:56ch; }
-.pad{ position:relative; background:var(--beige); border-radius:26px; aspect-ratio:16/9.4; overflow:hidden; }
+.pad{ position:relative; background:var(--paper); border:3px solid var(--navy); border-radius:26px; aspect-ratio:16/9.4; overflow:hidden; }
 .pad::before{ content:""; position:absolute; inset:14px; border:2px dashed rgba(18,41,74,.2); border-radius:16px; pointer-events:none; }
 .thing{ position:absolute; display:block; text-decoration:none; color:var(--navy); transition:transform .22s cubic-bezier(.2,1.4,.4,1); }
 .thing:hover, .thing:focus-visible{ transform:translateY(-8px) rotate(var(--tilt, 0deg)); z-index:5; }
 .label{ display:inline-flex; align-items:center; gap:8px; background:var(--navy); color:var(--beige); border-radius:999px; padding:8px 14px 8px 16px; font:800 clamp(.72rem, 1.25vw, .98rem)/1 Figtree,sans-serif; letter-spacing:.02em; white-space:nowrap; position:absolute; left:50%; transform:translateX(-50%); bottom:-4%; }
 .label i{ width:.5em; height:.5em; border-right:2.5px solid currentColor; border-top:2.5px solid currentColor; transform:rotate(45deg); display:block; }
+.label em{ font-style:normal; background:var(--beige); color:var(--navy); border-radius:50%; width:1.55em; height:1.55em; display:grid; place-items:center; font-size:.9em; margin-left:-.5em; }
+.start{ position:absolute; left:3.5%; top:3%; display:flex; align-items:center; gap:.5em; font:800 clamp(.7rem, 1.3vw, 1rem)/1 Figtree,sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--navy); z-index:6; animation:nudge 1.4s ease-in-out infinite; }
+.start .arr{ transform:rotate(55deg); width:1.6em; height:1em; }
+@keyframes nudge{ 50%{ transform:translate(4px, 5px); } }
 .thing:hover .label, .thing:focus-visible .label{ background:var(--navy2); }
 
 /* 1 the stack of issues */
@@ -57,7 +64,7 @@ img{ max-width:100%; display:block; }
 /* 2 the interview notepad */
 .t-talk{ left:41%; top:8%; width:24%; aspect-ratio:1/1.16; --tilt:2deg; transform:rotate(3deg); }
 .t-talk:hover, .t-talk:focus-visible{ transform:translateY(-8px) rotate(1deg); }
-.notepad{ position:absolute; inset:0 0 9% 0; background:var(--paper); border:3px solid var(--navy); border-radius:8px; padding:20% 9% 6%; overflow:hidden;
+.notepad{ position:absolute; inset:0 0 9% 0; background:var(--beige); border:3px solid var(--navy); border-radius:8px; padding:20% 9% 6%; overflow:hidden;
   background-image:repeating-linear-gradient(180deg, transparent 0 1.55em, rgba(18,41,74,.16) 1.55em calc(1.55em + 1.5px)); background-position:0 22%; font-size:clamp(.6rem, 1.3vw, 1rem); line-height:1.6; }
 .notepad::before{ content:""; position:absolute; left:0; right:0; top:0; height:13%; background:var(--navy); }
 .notepad::after{ content:""; position:absolute; left:8%; right:8%; top:5%; height:5%; background:repeating-linear-gradient(90deg, var(--beige) 0 6px, transparent 6px 16px); border-radius:3px; }
@@ -80,22 +87,23 @@ img{ max-width:100%; display:block; }
 /* 5 the envelope */
 .t-note{ right:6%; bottom:10%; width:27%; aspect-ratio:1.55/1; --tilt:2deg; transform:rotate(-3deg); }
 .t-note:hover, .t-note:focus-visible{ transform:translateY(-8px) rotate(-1deg); }
-.env{ position:absolute; inset:0 0 14% 0; background:var(--paper); border:3px solid var(--navy); border-radius:8px; overflow:hidden; display:grid; place-items:end center; padding:0 8% 9%; text-align:center; font-size:clamp(.6rem, 1.3vw, 1rem); line-height:1.3; }
+.env{ position:absolute; inset:0 0 14% 0; background:var(--beige); border:3px solid var(--navy); border-radius:8px; overflow:hidden; display:grid; place-items:end center; padding:0 8% 9%; text-align:center; font-size:clamp(.6rem, 1.3vw, 1rem); line-height:1.3; }
 .env::before{ content:""; position:absolute; left:-3px; right:-3px; top:-3px; height:52%; background:var(--sand); clip-path:polygon(0 0, 100% 0, 50% 100%); }
 .env::after{ content:""; position:absolute; left:50%; top:30%; width:11%; aspect-ratio:1; margin-left:-6.5%; background:var(--navy); border-radius:50%; }
 .env span{ position:relative; font-weight:700; }
 .env span b{ display:block; font:800 1.3em/1.15 "Bricolage Grotesque",Figtree,sans-serif; }
 /* small things lying around */
 .pencil{ position:absolute; left:21%; bottom:10%; width:15%; height:3.2%; background:var(--navy); border-radius:3px 0 0 3px; transform:rotate(-7deg); }
-.pencil::before{ content:""; position:absolute; left:100%; top:0; bottom:0; width:9%; background:var(--sand); clip-path:polygon(0 0, 100% 50%, 0 100%); }
+.pencil::before{ content:""; position:absolute; left:100%; top:0; bottom:0; width:9%; background:var(--navy2); clip-path:polygon(0 0, 100% 50%, 0 100%); }
 .pencil::after{ content:""; position:absolute; left:6%; top:0; bottom:0; width:5%; background:var(--beige); opacity:.55; }
-.sticky{ position:absolute; left:6%; bottom:6%; width:13%; aspect-ratio:1/.8; background:var(--paper); border:2px solid rgba(18,41,74,.3); transform:rotate(-5deg); padding:.8em .8em; font:700 clamp(.5rem, 1vw, .82rem)/1.3 Figtree,sans-serif; }
-.hint{ margin:16px 0 0; font-size:.95rem; opacity:.8; }
+.sticky{ position:absolute; left:6%; bottom:6%; width:13%; aspect-ratio:1/.8; background:var(--beige); border:2px solid rgba(18,41,74,.3); transform:rotate(-5deg); padding:.8em .8em; font:700 clamp(.5rem, 1vw, .82rem)/1.3 Figtree,sans-serif; }
+.hint{ margin:16px 0 0; font-size:1rem; font-weight:700; }
 
 /* phone: the desk becomes a tidy pile of cards */
 @media (max-width:720px){
   .pad{ aspect-ratio:auto; padding:22px 16px 26px; display:grid; grid-template-columns:1fr 1fr; gap:34px 14px; overflow:visible; }
   .pad::before, .pencil, .sticky{ display:none; }
+  .start{ position:static; grid-column:1 / -1; margin-bottom:-22px; animation:none; }
   .thing{ position:relative; left:auto !important; right:auto !important; top:auto !important; bottom:auto !important; width:100% !important; transform:none !important; }
   .t-issues{ grid-column:1 / -1; aspect-ratio:1.5/1; } .t-issues img{ width:38%; } .t-issues img:nth-child(1){ left:6%; top:8%; } .t-issues img:nth-child(2){ left:54%; top:6%; } .t-issues img:nth-child(3){ left:30%; top:0; }
   .t-talk{ aspect-ratio:1/1.2; } .t-story{ aspect-ratio:1/1.2; } .pass{ inset:6% 0 12% 0; } .notepad{ inset:0 0 12% 0; }
@@ -105,7 +113,12 @@ img{ max-width:100%; display:block; }
 }
 
 /* ---------- inner pages ---------- */
-.page{ background:var(--beige); min-height:calc(100vh - 62px); padding-block:44px 80px; }
+.page{ background:var(--beige); min-height:calc(100vh - 62px); padding-block:40px 70px; }
+.next{ margin-top:44px; padding-top:26px; border-top:3px solid var(--navy); display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
+.next span{ font-weight:800; font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; }
+.next a{ display:inline-flex; align-items:center; gap:12px; text-decoration:none; background:var(--navy); color:var(--beige); border-radius:999px; padding:14px 24px; font:800 1.2rem/1 "Bricolage Grotesque",Figtree,sans-serif; }
+.next a:hover{ background:var(--navy2); }
+button.btn{ cursor:pointer; font-family:inherit; }
 .page[hidden], #desk[hidden]{ display:none; }
 #desk, .page{ scroll-margin-top:90px; }
 .back{ display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-weight:800; font-size:.9rem; letter-spacing:.04em; border:2px solid var(--navy); border-radius:999px; padding:7px 14px; margin-bottom:26px; }
@@ -130,7 +143,9 @@ img{ max-width:100%; display:block; }
 .issue .pg{ display:inline-block; margin-top:6px; font-size:.76rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; background:var(--navy); color:var(--beige); border-radius:999px; padding:3px 9px; }
 .issue p{ margin:8px 0 6px; font-size:.95rem; line-height:1.4; font-weight:700; }
 .issue ul{ margin:0 0 10px; padding-left:1.05em; font-size:.88rem; line-height:1.4; }
-.issue a{ font-weight:800; font-size:.9rem; }
+.issue button{ cursor:pointer; font:800 .92rem/1 Figtree,sans-serif; background:var(--navy); color:var(--beige); border:0; border-radius:999px; padding:9px 15px; display:inline-flex; align-items:center; gap:8px; }
+.issue button:hover{ background:var(--navy2); }
+.issue img{ cursor:pointer; }
 @media (max-width:420px){ .issue{ grid-template-columns:92px 1fr; } .issue img{ width:92px; } }
 
 .cards{ display:grid; gap:18px; }
@@ -152,7 +167,7 @@ img{ max-width:100%; display:block; }
 .game .no{ font:800 .8rem/1 Figtree,sans-serif; letter-spacing:.14em; opacity:.6; }
 .game h3{ font-size:1.4rem; }
 .game p{ margin:0; font-size:.98rem; line-height:1.45; }
-.game a{ font-weight:800; margin-top:4px; }
+.game .btn{ justify-self:start; margin-top:8px; }
 .honest{ border-left:5px solid var(--navy); padding:4px 0 4px 18px; max-width:68ch; margin:0 0 22px; font-size:1.05rem; }
 .row{ display:flex; flex-wrap:wrap; gap:10px; }
 
@@ -170,9 +185,75 @@ img{ max-width:100%; display:block; }
 .letter .who{ font-weight:700; margin:0; font-size:.98rem; }
 .reach{ max-width:700px; margin-top:20px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
 .reach code{ font:700 1.05rem/1 Figtree,sans-serif; border:2px solid var(--navy); border-radius:999px; padding:10px 16px; user-select:all; }
-.foot{ background:var(--navy); color:var(--beige); padding-block:26px 34px; font-size:.9rem; border-top:2px solid rgba(245,228,204,.18); }
+.foot{ background:var(--navy); color:var(--beige); padding-block:26px 34px; font-size:.9rem; }
+.foot a{ font-weight:800; }
 .foot .wrap{ display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; opacity:.85; }
-@media (prefers-reduced-motion:reduce){ .thing{ transition:none; } html{ scroll-behavior:auto; } }
+@media (prefers-reduced-motion:reduce){ .thing{ transition:none; } html{ scroll-behavior:auto; } .start{ animation:none; } }
+
+/* the flipbook reader and the game window */
+.win{ position:fixed; inset:0; z-index:60; background:var(--navy); display:flex; flex-direction:column; }
+.win[hidden]{ display:none; }
+.winbar{ flex:0 0 auto; display:flex; align-items:center; gap:14px; padding:8px max(14px, env(safe-area-inset-right, 0px)) 8px max(14px, env(safe-area-inset-left, 0px)); background:var(--beige); border-bottom:3px solid var(--navy); min-height:54px; }
+.winbar b{ font:800 1.15rem/1.1 "Bricolage Grotesque",Figtree,sans-serif; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.winbar small{ font-weight:700; font-size:.85rem; opacity:.8; white-space:nowrap; }
+.winbar button{ margin-left:auto; flex:0 0 auto; cursor:pointer; border:0; border-radius:999px; background:var(--navy); color:var(--beige); font:800 .95rem/1 Figtree,sans-serif; padding:11px 18px; }
+.winbar button:hover{ background:var(--navy2); }
+@media (max-width:700px){ .winbar small{ display:none; } .winbar{ gap:10px; } .winbar b{ font-size:1rem; } .winbar button{ padding:10px 14px; font-size:.88rem; } }
+#rd-host{ flex:1; min-height:0; padding:14px 10px 6px; }
+#pl-frame{ flex:1; min-height:0; width:100%; border:0; background:var(--navy); }
+#pl-wait{ position:absolute; left:0; right:0; top:54px; bottom:0; display:grid; place-items:center; text-align:center; color:var(--beige); font:800 1.3rem/1.4 "Bricolage Grotesque",Figtree,sans-serif; padding:20px; background:var(--navy); }
+#pl-wait[hidden]{ display:none; }
+#pl-wait small{ display:block; font:500 1rem/1.5 Figtree,sans-serif; margin-top:8px; opacity:.85; }
+
+.nfb-wrap{display:flex;align-items:center;justify-content:center;gap:14px;height:calc(100% - 40px);position:relative}
+.nfb-book{flex:0 0 auto;position:relative;cursor:pointer}
+.nfb-cv{position:absolute;left:0;width:100%;z-index:4;pointer-events:none;display:none}
+.nfb-in{position:absolute;inset:0;z-index:4;display:flex;will-change:transform}
+.nfb-ip{flex:1 1 0;height:100%;background:#fff;overflow:hidden;position:relative}
+.nfb-ip.empty{background:transparent}
+.nfb-ip img{width:100%;height:100%;object-fit:contain;display:block;background:#fff}
+.nfb-ip:first-child:not(.empty):not(:only-child)::after{content:"";position:absolute;top:0;bottom:0;right:0;width:40px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.18))}
+.nfb-ip:last-child:not(.empty):not(:only-child)::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40px;background:linear-gradient(270deg,transparent,rgba(0,0,0,.18))}
+.nfb-in::before{content:"";position:absolute;top:0;bottom:0;width:34px;pointer-events:none}
+.nfb-in.from-r{animation:nfbInR .42s cubic-bezier(.2,.75,.25,1) forwards}
+.nfb-in.from-r::before{right:100%;background:linear-gradient(90deg,transparent,rgba(0,0,0,.3))}
+.nfb-in.from-l{animation:nfbInL .42s cubic-bezier(.2,.75,.25,1) forwards}
+.nfb-in.from-l::before{left:100%;background:linear-gradient(270deg,transparent,rgba(0,0,0,.3))}
+@keyframes nfbInR{from{transform:translateX(100%)}to{transform:none}}
+@keyframes nfbInL{from{transform:translateX(-100%)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.nfb-in.from-r,.nfb-in.from-l{animation-duration:.01s}}
+.nfb-page{position:absolute;top:0;bottom:0;width:50%;background:#fff;overflow:hidden}
+.nfb-page.empty{background:transparent}
+.nfb-l{left:0;border-radius:6px 0 0 6px}.nfb-r{right:0;border-radius:0 6px 6px 0}
+.nfb-book.single .nfb-l{display:none}.nfb-book.single .nfb-r{width:100%;border-radius:6px}
+.nfb-page img,.nfb-face img{width:100%;height:100%;object-fit:contain;display:block;background:#fff}
+.nfb-l:not(.empty)::after{content:"";position:absolute;top:0;bottom:0;right:0;width:40px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.18))}
+.nfb-r:not(.empty)::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40px;background:linear-gradient(270deg,transparent,rgba(0,0,0,.18))}
+.nfb-book.single .nfb-r::after{display:none}
+.nfb-leaf{position:absolute;top:0;bottom:0;left:50%;width:50%;transform-style:preserve-3d;transform-origin:left center;pointer-events:none;visibility:hidden;z-index:3}
+.nfb-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#fff;overflow:hidden}
+.nfb-back{transform:rotateY(180deg)}
+.nfb-leaf.go-next{visibility:visible;animation:nfbNext .65s cubic-bezier(.45,.05,.3,1) forwards}
+.nfb-leaf.go-prev{visibility:visible;transform:rotateY(-180deg);animation:nfbPrev .65s cubic-bezier(.45,.05,.3,1) forwards}
+.nfb-leaf.go-prev .nfb-front{transform:rotateY(180deg)}.nfb-leaf.go-prev .nfb-back{transform:none}
+@keyframes nfbNext{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}
+@keyframes nfbPrev{from{transform:rotateY(-180deg)}to{transform:rotateY(0)}}
+.nfb-book.single .nfb-leaf{left:0;width:100%}
+.nfb-book.single .nfb-leaf.go-in{visibility:visible;transform:rotateY(-180deg);animation:nfbPrev .65s cubic-bezier(.45,.05,.3,1) forwards}
+.nfb-book.single .nfb-leaf.go-in .nfb-front{transform:rotateY(180deg)}.nfb-book.single .nfb-leaf.go-in .nfb-back{transform:none}
+.nfb-nav{flex:0 0 auto;width:52px;height:52px;border-radius:50%;border:3px solid #f5e4cc;background:#12294a;color:#f5e4cc;font-size:32px;line-height:1;cursor:pointer;padding:0 0 4px}
+.nfb-nav:hover:not(:disabled){background:#f5e4cc;color:#12294a}
+.nfb-side{position:absolute;left:10px;top:50%;transform:translateY(-26px);z-index:6}
+.nfb-wrap > .nfb-next{position:absolute;right:10px;top:50%;transform:translateY(-26px);z-index:6}
+.nfb-nav:disabled{opacity:0;pointer-events:none}
+@media (max-width:759px){.nfb-nav{width:40px;height:40px;font-size:26px}.nfb-side{left:4px;transform:translateY(-20px)}.nfb-wrap > .nfb-next{right:4px;transform:translateY(-20px)}}
+.nfb-count{text-align:center;color:#fff;font:700 15px "Figtree",system-ui,sans-serif;margin-top:10px}
+.nfb-side{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.nfb-home{border:2px solid #f5e4cc;background:#12294a;color:#f5e4cc;border-radius:6px;padding:6px 10px;font:700 12px "Figtree",system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+.nfb-home:hover{background:#fff;color:#12294a}
+.nfb-home.off{visibility:hidden}
+@media (max-width:759px){.nfb-home{padding:5px 8px;font-size:11px}}
+
 </style>
 </head>
 <body>
@@ -180,6 +261,7 @@ img{ max-width:100%; display:block; }
   <div class="wrap">
     <a class="mark" href="#desk" aria-label="NeshamaGazine, back to the desk"><img src="logo.png" alt="NeshamaGazine" width="424" height="144"></a>
     <span class="tagline">For The Circle editors</span>
+    <a class="site2" href="../" target="_blank" rel="noopener">My website <span class="arr"></span></a>
     <nav class="nav" aria-label="Sections">
       <a href="#desk" data-s="desk">The Desk</a>
       <a href="#issues" data-s="issues">Issues</a>
@@ -187,6 +269,7 @@ img{ max-width:100%; display:block; }
       <a href="#games" data-s="games">Games</a>
       <a href="#story" data-s="story">My Story</a>
       <a href="#note" data-s="note">A Note</a>
+      <a class="site" href="../" target="_blank" rel="noopener">Visit my website <span class="arr"></span></a>
     </nav>
   </div>
 </header>
@@ -201,6 +284,7 @@ img{ max-width:100%; display:block; }
       <p>Welcome to my desk. I'm Levi Chekroun. I'm twelve, and I publish a magazine called NeshamaGazine. I set this desk up for you. Everything on it is real, so pick up whatever looks interesting.</p>
     </div>
     <div class="pad">
+      <span class="start" aria-hidden="true">Start here <span class="arr"></span></span>
       <span class="pencil" aria-hidden="true"></span>
       <span class="sticky" aria-hidden="true">Hi, Circle editors!<br>Thanks for coming.</span>
 
@@ -208,18 +292,18 @@ img{ max-width:100%; display:block; }
         <img src="covers/issue-10-beha-alotcha.jpg" alt="">
         <img src="covers/issue-12-rosh-hashana.jpg" alt="">
         <img src="covers/issue-13-bereishis.jpg" alt="">
-        <span class="label">The Issues <i></i></span>
+        <span class="label"><em>1</em>The Issues <i></i></span>
       </a>
 
       <a class="thing t-talk" href="#interviews">
         <span class="notepad"><small>Interview notes</small><b>Boruch Perlowitz</b><em>Next: Chaim Hershkowitz</em></span>
-        <span class="label">Interviews <i></i></span>
+        <span class="label"><em>2</em>Interviews <i></i></span>
       </a>
 
       <a class="thing t-story" href="#story">
         <span class="strap" aria-hidden="true"></span>
         <span class="pass"><span class="pp">PRESS</span><b>Levi Chekroun</b><span class="role">Publisher and Editor in Chief</span><span class="age">Age 12</span></span>
-        <span class="label">My Story <i></i></span>
+        <span class="label"><em>4</em>My Story <i></i></span>
       </a>
 
       <a class="thing t-games" href="#games">
@@ -233,15 +317,15 @@ img{ max-width:100%; display:block; }
           <circle cx="188" cy="104" r="8" fill="#12294a"/><circle cx="238" cy="92" r="8" fill="#12294a"/>
           <rect x="130" y="126" width="40" height="8" rx="4" fill="#f5e4cc" opacity=".5"/>
         </svg>
-        <span class="label">The Games <i></i></span>
+        <span class="label"><em>3</em>The Games <i></i></span>
       </a>
 
       <a class="thing t-note" href="#note">
         <span class="env"><span>To the editors of<b>The Circle</b></span></span>
-        <span class="label">A Note for You <i></i></span>
+        <span class="label"><em>5</em>A Note for You <i></i></span>
       </a>
     </div>
-    <p class="hint">Five things on the desk, five places to go. The same links are in the bar at the top.</p>
+    <p class="hint">Click anything on the desk. Number 1 is a good place to start, and every page has an arrow to the next one.</p>
   </div>
 </section>
 
@@ -252,7 +336,7 @@ img{ max-width:100%; display:block; }
     <div class="head">
       <span class="kicker">The Issues</span>
       <h1>From 12 pages to 68.</h1>
-      <p>NeshamaGazine is a free Jewish kids' magazine with true stories, comics, news, riddles and Torah. I started it by myself. Now there is a team, and every page has a credit. I picked out ten issues for you to open and read in full.</p>
+      <p>NeshamaGazine is a free Jewish kids' magazine with true stories, comics, news, riddles and Torah. I started it by myself. Now there is a team, and every page has a credit. I picked out ten issues for you. Press Read it, and the whole issue opens right here as a flipbook.</p>
     </div>
     <ul class="facts">
       <li><b>July 2025</b><span>Issue 1, Escape to Shanghai</span></li>
@@ -261,6 +345,7 @@ img{ max-width:100%; display:block; }
       <li><b>15 shuls</b><span>got that issue, three copies each</span></li>
     </ul>
     <div class="issues" id="issue-grid"></div>
+    <div class="next"><span>Next</span><a href="#interviews">Interviews <span class="arr"></span></a></div>
   </div>
 </section>
 
@@ -275,7 +360,7 @@ img{ max-width:100%; display:block; }
     </div>
     <div class="cards">
       <article class="feature">
-        <img src="covers/issue-12-rosh-hashana.jpg" alt="Cover of Issue 12, the Mega Rosh Hashana issue">
+        <img src="covers/issue-12-rosh-hashana.jpg" alt="Cover of Issue 12, the Mega Rosh Hashana issue" data-read="issue-12-rosh-hashana" style="cursor:pointer">
         <div>
           <span class="chip">Published in Issue 12</span>
           <h2>Boruch Perlowitz</h2>
@@ -283,7 +368,7 @@ img{ max-width:100%; display:block; }
           <blockquote>"Nah. It's possible."</blockquote>
           <p>So my father messaged him on LinkedIn. Days passed. Weeks passed. I went to overnight camp and forgot about it, until a message came from my father: Boruch answered. When I got home I called him myself and asked if I could interview him. He said, "Sure."</p>
           <p>The interview ran in our 68-page Mega Rosh Hashana issue, which went to 15 shuls.</p>
-          <a class="btn" id="open12" href="#issues" target="_blank" rel="noopener">Open Issue 12</a>
+          <button class="btn" type="button" data-read="issue-12-rosh-hashana">Read Issue 12 <span class="arr"></span></button>
         </div>
       </article>
       <article class="soon">
@@ -292,6 +377,7 @@ img{ max-width:100%; display:block; }
         <p>This spot is saved for my next interview. It is not published yet. When it is, it will be right here.</p>
       </article>
     </div>
+    <div class="next"><span>Next</span><a href="#games">The Games <span class="arr"></span></a></div>
   </div>
 </section>
 
@@ -302,22 +388,18 @@ img{ max-width:100%; display:block; }
     <div class="head">
       <span class="kicker">The Games</span>
       <h1>A magazine with its own arcade.</h1>
-      <p>The NeshamaGazine website has six games that run right in the browser. They all star Neshama Robo, the robot who runs our print house.</p>
+      <p>These are the games from the NeshamaGazine website. They all star Neshama Robo, the robot who runs our print house. Press Play and the game opens right here.</p>
     </div>
     <p class="honest">To be honest about how they are made: I come up with the games, decide how they should play and look, and test them. The code is written with AI (Claude), working from my instructions.</p>
     <div class="games">
-      <article class="game"><span class="no">01</span><h3>Robo Runner</h3><p>Run the conveyor belt, flip over danger and blast off on a rocket. Ten levels, and a trip to the moon.</p></article>
-      <article class="game"><span class="no">02</span><h3>Robo Rush 3D</h3><p>A three-lane 3D runner. Dodge, jump and roll down the street to deliver the magazines.</p><a href="../robo-rush-3d/" target="_blank" rel="noopener">Play it now</a></article>
-      <article class="game"><span class="no">03</span><h3>Claw Master</h3><p>Grab the magazine shown on the card. The wrong one costs time.</p></article>
-      <article class="game"><span class="no">04</span><h3>Magazine Tower</h3><p>Drop each magazine right on top of the last one. Line it up to keep the tower wide.</p></article>
-      <article class="game"><span class="no">05</span><h3>Printing Press Panic</h3><p>The press went crazy. Catch the pages in order: 1, 2, 3.</p></article>
-      <article class="game"><span class="no">06</span><h3>Spy Mission</h3><p>Sneak through the office at night and deliver the secret message.</p></article>
+      <article class="game"><span class="no">01</span><h3>Robo Runner</h3><p>Run the conveyor belt, flip over danger and blast off on a rocket. Ten levels, and a trip to the moon.</p><button class="btn" type="button" data-play="robo">Play <span class="arr"></span></button></article>
+      <article class="game"><span class="no">02</span><h3>Claw Master</h3><p>Grab the magazine shown on the card. The wrong one costs time.</p><button class="btn" type="button" data-play="claw">Play <span class="arr"></span></button></article>
+      <article class="game"><span class="no">03</span><h3>Magazine Tower</h3><p>Drop each magazine right on top of the last one. Line it up to keep the tower wide.</p><button class="btn" type="button" data-play="tower">Play <span class="arr"></span></button></article>
+      <article class="game"><span class="no">04</span><h3>Printing Press Panic</h3><p>The press went crazy. Catch the pages in order: 1, 2, 3.</p><button class="btn" type="button" data-play="press">Play <span class="arr"></span></button></article>
+      <article class="game"><span class="no">05</span><h3>Spy Mission</h3><p>Sneak through the office at night and deliver the secret message.</p><button class="btn" type="button" data-play="spy">Play <span class="arr"></span></button></article>
     </div>
-    <div class="row">
-      <a class="btn" href="../robo-rush-3d/" target="_blank" rel="noopener">Play Robo Rush 3D</a>
-      <a class="btn line" href="../#games" target="_blank" rel="noopener">Open the arcade on the website</a>
-    </div>
-    <p style="margin:14px 0 0;font-size:.95rem;max-width:60ch">Robo Rush 3D opens straight away. The rest are in the arcade on the main website, which asks for a free sign-up first.</p>
+    <p style="margin:0;font-size:.95rem;max-width:60ch">The first game takes a little while to load. After that they all open quickly.</p>
+    <div class="next"><span>Next</span><a href="#story">My Story <span class="arr"></span></a></div>
   </div>
 </section>
 
@@ -350,6 +432,7 @@ img{ max-width:100%; display:block; }
       <div class="ch"><span class="n">08</span><div><h2>And now</h2>
         <p>Issue 13 is out. There is a website with a reader, an arcade and a robot. The next issue is Chanukah. Stay tuned.</p></div></div>
     </div>
+    <div class="next"><span>Next</span><a href="#note">A Note for You <span class="arr"></span></a></div>
   </div>
 </section>
 
@@ -364,7 +447,7 @@ img{ max-width:100%; display:block; }
     <div class="letter">
       <p>Thank you for stopping by my desk.</p>
       <p>I made this page only for you. It is not linked from the NeshamaGazine website, and there is nothing to sign up for.</p>
-      <p>You make a magazine that kids wait for. I'm a kid who makes one. I wanted you to see what I have built so far: the issues, the interview, the games, and how it all started.</p>
+      <p>I wanted you to see what I have built so far: the issues, the interview, the games, and how it all started.</p>
       <p>If you have a minute, I would be grateful for anything you are willing to tell me: what you like, what you would change, or what you wish you had known when you were starting out.</p>
       <p class="sign">Levi Chekroun</p>
       <p class="who">Publisher and Editor in Chief, NeshamaGazine. Age 12.</p>
@@ -372,23 +455,49 @@ img{ max-width:100%; display:block; }
     <div class="reach">
       <code id="mail">levichekroun@ulyop.com</code>
       <button class="btn" id="copy" type="button">Copy the address</button>
-      <a class="btn line" href="../" target="_blank" rel="noopener">Visit the NeshamaGazine website</a>
     </div>
+    <div class="next"><span>Want to see more?</span><a href="../" target="_blank" rel="noopener">Visit the NeshamaGazine website <span class="arr"></span></a></div>
   </div>
 </section>
 </main>
 
-<footer class="foot"><div class="wrap"><span><img src="logo.png" alt="NeshamaGazine" style="height:30px;width:auto;border-radius:6px;display:inline-block;vertical-align:middle;margin-right:10px">Read to grow. Spark the glow.</span><span>Made for the editors of The Circle. This page is not listed anywhere.</span></div></footer>
+<div class="win" id="reader" hidden role="dialog" aria-modal="true" aria-label="Flipbook reader">
+  <div class="winbar"><b id="rd-title"></b><small>Click the page corners or the arrows to turn pages</small><button type="button" id="rd-close">Close and go back</button></div>
+  <div id="rd-host"></div>
+</div>
+<div class="win" id="player" hidden role="dialog" aria-modal="true" aria-label="Game">
+  <div class="winbar"><b>NeshamaGazine Games</b><small>Press ALL GAMES inside to switch games</small><button type="button" id="pl-close">Close and go back</button></div>
+  <div id="pl-wait">Opening the arcade...<small>It is a big download the first time. Give it a moment.</small></div>
+  <iframe id="pl-frame" title="NeshamaGazine games" allow="autoplay; fullscreen"></iframe>
+</div>
 
+<footer class="foot"><div class="wrap"><span><img src="logo.png" alt="NeshamaGazine" style="height:30px;width:auto;border-radius:6px;display:inline-block;vertical-align:middle;margin-right:10px">Read to grow. Spark the glow.</span><span>Made for the editors of The Circle. <a href="../" target="_blank" rel="noopener">Visit the NeshamaGazine website</a></span></div></footer>
+
+<script src="reader.js"></script>
 <script>
 (function(){
-  var ISSUES = [{"t": "Issue 13 Bereishis", "p": 40, "n": "The newest issue. All the regular sections are now set.", "c": ["How can a farmer be a double agent? The true story of the farmer who fooled Hitler", "Suspense in the Lion's Den", "Hunt for Mengele 3", "Escape"], "img": "covers/issue-13-bereishis.jpg", "link": "https://drive.google.com/file/d/1ivWWEsiEoKUhLX3l_SWetVHN_QWlbwah/view?usp=drive_link"}, {"t": "Issue 12 Rosh Hashana", "p": 68, "n": "Our biggest ever, with the Boruch Perlowitz interview.", "c": ["Mega Rosh Hashana issue: 68 pages!", "What can a plate hide? Discover Behind the Plate", "Exclusive interview with Boruch Perlowitz", "The weekly illusion"], "img": "covers/issue-12-rosh-hashana.jpg", "link": "https://drive.google.com/file/d/1A4AD2v4HFlCTH3WL9ataEQWcmXlxBH7i/view?usp=drive_link"}, {"t": "Issue 10 Beha'alotcha", "p": 32, "n": "Our own characters, Shimmy and Mimmy, appear on the cover.", "c": ["How can a painting be saved? The true story of the attack on Danë", "Jokes & Riddles", "News", "New Comic!"], "img": "covers/issue-10-beha-alotcha.jpg", "link": "https://drive.google.com/file/d/1f_gH6jV0kiE5zc-ICa0_jyxNViML46aN/view?usp=drive_link"}, {"t": "Issue 09 Shavuos", "p": 48, "n": "The first mega issue: a real news section and two comics at once.", "c": ["Mega Shavuos issue: 48 pages!", "How can a machine save the world? The true story of Bletchley Park", "Jokes & Riddles", "News"], "img": "covers/issue-09-shavuos.jpg", "link": "https://drive.google.com/file/d/1lsp47d8m1NtcItu0Eg8_nhElddLYlZvX/view?usp=drive_link"}, {"t": "Issue 08 Tazria Metzora", "p": 20, "n": "The new arch cover design and our first sponsor.", "c": ["How can Eretz Yisrael overcome the unthinkable? Through lasers!", "The youngest partisan", "Jokes & Riddles", "New Comic!"], "img": "covers/issue-08-tazria-metzora.jpg", "link": "https://drive.google.com/file/d/1p9HY-kaFvZh9CgXmKulVJOhx1vNcqr90/view"}, {"t": "Parsha Food Season", "p": 16, "n": "The first ad space, plus a cookie recipe.", "c": ["The Parsha Food Season issue (October 2025)", "News report: Mossad's secret mission to rescue Ethiopian captives", "The hunt for Josef Mengele", "Why don't skeletons fight each other?"], "img": "covers/parsha-food-season.jpg", "link": "https://drive.google.com/file/d/18tE5FCSmDC-mubMJvPECjT1z-3byCHWd/view?usp=drive_link"}, {"t": "Sukkos Edition", "p": 16, "n": "Our first comic in full color, and recipes.", "c": ["Sukkos recipes: 10 delights you can make on chol hamoed", "Rosh Hashanah comic, part 2", "News: what was hidden in Germany?", "Riddles & Jokes"], "img": "covers/sukkos-edition.jpg", "link": "https://drive.google.com/file/d/1DMHaJE2fs11ucjB9ytz1ge8mHIFaM21R/view"}, {"t": "The Double Life of Eli Cohen", "p": 16, "n": "The issue that changed everything: 14 copies in my shul.", "c": ["The Double Life of Eli Cohen", "Exclusive Rosh Hashanah edition"], "img": "covers/the-double-life-of-eli-cohen.jpg", "link": "https://drive.google.com/file/d/1GMxkgIQoJf3wYygW1tehuR78oDgugdpP/view?usp=drive_link"}, {"t": "Issue 5", "p": 16, "n": "The Third Trapdoor comic finally appears.", "c": ["Rosh Hashana comic: the final part!", "Coming next: the hunt for Mengele 2"], "img": "covers/issue-5.jpg", "link": "https://drive.google.com/file/d/1Vb8q_OUpiUnN2bBL7wdSnrwRv1ZhXdaN/view?usp=drive_link"}, {"t": "Escape to Shanghai", "p": 12, "n": "Our first numbered issue. Where it all started.", "c": ["Escape to Shanghai", "Year 1, Issue 1: where it all started! (Tammuz 5785 / July 2025)"], "img": "covers/escape-to-shanghai.jpg", "link": "https://drive.google.com/file/d/1m6d14ki-lUgIEm4W2rg5O3S6uNuukdNP/view?usp=drive_link"}];
+  var ISSUES = [{"t": "Issue 13 Bereishis", "p": 40, "n": "The newest issue. All the regular sections are now set.", "c": ["How can a farmer be a double agent? The true story of the farmer who fooled Hitler", "Suspense in the Lion's Den", "Hunt for Mengele 3", "Escape"], "img": "covers/issue-13-bereishis.jpg", "b": "issue-13-bereishis"}, {"t": "Issue 12 Rosh Hashana", "p": 68, "n": "Our biggest ever, with the Boruch Perlowitz interview.", "c": ["Mega Rosh Hashana issue: 68 pages!", "What can a plate hide? Discover Behind the Plate", "Exclusive interview with Boruch Perlowitz", "The weekly illusion"], "img": "covers/issue-12-rosh-hashana.jpg", "b": "issue-12-rosh-hashana"}, {"t": "Issue 10 Beha'alotcha", "p": 32, "n": "Our own characters, Shimmy and Mimmy, appear on the cover.", "c": ["How can a painting be saved? The true story of the attack on Danë", "Jokes & Riddles", "News", "New Comic!"], "img": "covers/issue-10-beha-alotcha.jpg", "b": "issue-10-behaalotcha"}, {"t": "Issue 09 Shavuos", "p": 48, "n": "The first mega issue: a real news section and two comics at once.", "c": ["Mega Shavuos issue: 48 pages!", "How can a machine save the world? The true story of Bletchley Park", "Jokes & Riddles", "News"], "img": "covers/issue-09-shavuos.jpg", "b": "issue-09-shavuos"}, {"t": "Issue 08 Tazria Metzora", "p": 20, "n": "The new arch cover design and our first sponsor.", "c": ["How can Eretz Yisrael overcome the unthinkable? Through lasers!", "The youngest partisan", "Jokes & Riddles", "New Comic!"], "img": "covers/issue-08-tazria-metzora.jpg", "b": "issue-08-tazria-metzora"}, {"t": "Parsha Food Season", "p": 16, "n": "The first ad space, plus a cookie recipe.", "c": ["The Parsha Food Season issue (October 2025)", "News report: Mossad's secret mission to rescue Ethiopian captives", "The hunt for Josef Mengele", "Why don't skeletons fight each other?"], "img": "covers/parsha-food-season.jpg", "b": "parsha-food-season"}, {"t": "Sukkos Edition", "p": 16, "n": "Our first comic in full color, and recipes.", "c": ["Sukkos recipes: 10 delights you can make on chol hamoed", "Rosh Hashanah comic, part 2", "News: what was hidden in Germany?", "Riddles & Jokes"], "img": "covers/sukkos-edition.jpg", "b": "sukkos-edition"}, {"t": "The Double Life of Eli Cohen", "p": 16, "n": "The issue that changed everything: 14 copies in my shul.", "c": ["The Double Life of Eli Cohen", "Exclusive Rosh Hashanah edition"], "img": "covers/the-double-life-of-eli-cohen.jpg", "b": "the-double-life-of-eli-cohen"}, {"t": "Issue 5", "p": 16, "n": "The Third Trapdoor comic finally appears.", "c": ["Rosh Hashana comic: the final part!", "Coming next: the hunt for Mengele 2"], "img": "covers/issue-5.jpg", "b": "issue-5"}, {"t": "Escape to Shanghai", "p": 12, "n": "Our first numbered issue. Where it all started.", "c": ["Escape to Shanghai", "Year 1, Issue 1: where it all started! (Tammuz 5785 / July 2025)"], "img": "covers/escape-to-shanghai.jpg", "b": "escape-to-shanghai"}], BOOKS = {"issue-10-behaalotcha": {"ratio": 1.2947, "n": 32, "ext": "webp"}, "escape-to-shanghai": {"ratio": 1.2947, "n": 12, "ext": "webp"}, "issue-08-tazria-metzora": {"ratio": 1.2947, "n": 20, "ext": "webp"}, "issue-09-shavuos": {"ratio": 1.2789, "n": 48, "ext": "webp"}, "issue-12-rosh-hashana": {"ratio": 1.2724, "n": 68, "ext": "webp"}, "issue-13-bereishis": {"ratio": 1.2789, "n": 40, "ext": "webp"}, "issue-5": {"ratio": 1.2684, "n": 16, "ext": "webp"}, "parsha-food-season": {"ratio": 1.2947, "n": 16, "ext": "webp"}, "sukkos-edition": {"ratio": 1.2947, "n": 16, "ext": "webp"}, "the-double-life-of-eli-cohen": {"ratio": 1.2947, "n": 16, "ext": "webp"}};
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
   document.getElementById('issue-grid').innerHTML = ISSUES.map(function(o){
-    return '<article class="issue"><img src="' + esc(o.img) + '" alt="Cover of ' + esc(o.t) + '" loading="lazy"><div><h3>' + esc(o.t) + '</h3>' + (o.p ? '<span class="pg">' + o.p + ' pages</span>' : '') +
+    return '<article class="issue"><img src="' + esc(o.img) + '" alt="Cover of ' + esc(o.t) + '" loading="lazy"' + (o.b ? ' data-read="' + esc(o.b) + '"' : '') + '><div><h3>' + esc(o.t) + '</h3>' + (o.p ? '<span class="pg">' + o.p + ' pages</span>' : '') +
       '<p>' + esc(o.n) + '</p><ul>' + o.c.slice(0, 3).map(function(c){ return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' +
-      (o.link ? '<a href="' + esc(o.link) + '" target="_blank" rel="noopener">Open the full issue</a>' : '') + '</div></article>'; }).join('');
-  var i12 = ISSUES.filter(function(o){ return /Issue 12/.test(o.t); })[0]; if (i12 && i12.link) document.getElementById('open12').href = i12.link;
+      (o.b ? '<button type="button" data-read="' + esc(o.b) + '">Read it <span class="arr"></span></button>' : '') + '</div></article>'; }).join('');
+
+  // ---------- the flipbook reader: the real issue, right here ----------
+  var rd = document.getElementById('reader'), rdHost = document.getElementById('rd-host'), book = null, lastFocus = null;
+  function read(slug){ var B = BOOKS[slug]; if (!B || !window.NGFlipbook) return; var pages = []; for (var i = 1; i <= B.n; i++) pages.push('books/' + slug + '/' + (i < 10 ? '0' : '') + i + '.' + B.ext);
+    var it = ISSUES.filter(function(o){ return o.b === slug; })[0]; document.getElementById('rd-title').textContent = (it ? it.t : 'NeshamaGazine') + ' (' + B.n + ' pages)';
+    lastFocus = document.activeElement; rd.hidden = false; document.body.style.overflow = 'hidden'; if (book) book.destroy(); book = window.NGFlipbook(rdHost, pages, { ratio: B.ratio }); document.getElementById('rd-close').focus(); seen('read'); }
+  function closeRead(){ if (book){ book.destroy(); book = null; } rd.hidden = true; document.body.style.overflow = ''; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  document.getElementById('rd-close').addEventListener('click', closeRead);
+  // ---------- the games: the real arcade, right here ----------
+  var pl = document.getElementById('player'), frame = document.getElementById('pl-frame'), wait = document.getElementById('pl-wait');
+  function play(id){ lastFocus = document.activeElement; pl.hidden = false; document.body.style.overflow = 'hidden'; wait.hidden = false; frame.src = 'arcade/index.html#g=' + id; seen('play'); }
+  function closePlay(){ pl.hidden = true; frame.src = 'about:blank'; document.body.style.overflow = ''; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  document.getElementById('pl-close').addEventListener('click', closePlay);
+  addEventListener('message', function(e){ var m = e.data && e.data.ngDesk; if (m === 'ready'){ wait.hidden = true; try { frame.contentWindow.focus(); } catch(x){} } else if (m === 'exit' && !pl.hidden) closePlay(); });
+  document.addEventListener('click', function(e){ var r = e.target.closest('[data-read]'), g = e.target.closest('[data-play]'); if (r) read(r.getAttribute('data-read')); else if (g) play(g.getAttribute('data-play')); });
+  document.addEventListener('keydown', function(e){ if (e.key !== 'Escape') return; if (!rd.hidden) closeRead(); else if (!pl.hidden) closePlay(); });
 
   // ---------- one section at a time ----------
   var NAMES = ['desk', 'issues', 'interviews', 'games', 'story', 'note'], TITLES = { desk: 'For The Circle Editors', issues: 'The Issues', interviews: 'Interviews', games: 'The Games', story: 'My Story', note: 'A Note for You' };

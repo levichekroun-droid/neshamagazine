@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795300761';
+window.NG_BUILD = '1795301820';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -7029,7 +7029,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
           if (w === 'visit') o.v += n; else if (w === 'new') o.u += n; else if (w === 'dev_phone') o.phone += n; else if (w === 'dev_computer') o.computer += n;
           else if (/^sec_/.test(w)) secs[w.slice(4)] = (secs[w.slice(4)] || 0) + n; else if (/^at_/.test(w)) places[w.slice(3)] = (places[w.slice(3)] || 0) + n; }); });
       function sum(n, k){ var t = 0; days.slice(-n).forEach(function(x){ t += by[x][k]; }); return t; }
-      var SN = { desk: 'The desk (first page)', issues: 'The Issues', interviews: 'Interviews', games: 'The Games', story: 'My Story', note: 'A Note for You' };
+      var SN = { desk: 'The desk (first page)', issues: 'The Issues', interviews: 'Interviews', games: 'The Games', story: 'My Story', note: 'A Note for You', read: 'Opened a flipbook', play: 'Played a game' };
       var secHtml = Object.keys(SN).map(function(k){ return '<li><span>' + SN[k] + '</span><b>' + (secs[k] || 0) + '</b></li>'; }).join('');
       var plHtml = Object.keys(places).sort(function(a, b){ return places[b] - places[a]; }).slice(0, 8).map(function(k){ var cc = k.split('__')[0], rg = (k.split('__')[1] || '').replace(/_/g, ' ').trim(), nm = cc; try { nm = cc === 'XX' ? 'Unknown place' : new Intl.DisplayNames(['en'], { type: 'region' }).of(cc); } catch(e){}
         return '<li><span>' + esc(nm + (rg ? ', ' + rg : '')) + '</span><b>' + places[k] + '</b></li>'; }).join('') || '<li><span>Nobody yet</span><b></b></li>';
