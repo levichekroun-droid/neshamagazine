@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>NeshamaGazine | The Editors' Desk</title>
+<meta name="description" content="A private look at NeshamaGazine, made for the editors of The Circle.">
+<link rel="icon" href="../icons-normal/icon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700;800&display=swap">
+<style>
+:root{ --navy:#12294a; --navy2:#1b3a66; --ink:#0d1f39; --beige:#f5e4cc; --paper:#fbf3e4; --sand:#e6d2b2; --line:rgba(18,41,74,.16); }
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{ margin:0; background:var(--navy); color:var(--navy); font:500 17px/1.6 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+h1,h2,h3{ font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif; font-weight:800; line-height:1.02; letter-spacing:-.02em; margin:0; text-wrap:balance; }
+a{ color:inherit; }
+img{ max-width:100%; display:block; }
+.wrap{ max-width:1120px; margin:0 auto; padding-left:max(18px, env(safe-area-inset-left, 0px)); padding-right:max(18px, env(safe-area-inset-right, 0px)); }
+:focus-visible{ outline:3px solid var(--beige); outline-offset:3px; }
+.page :focus-visible{ outline-color:var(--navy); }
+
+/* ---------- top bar ---------- */
+.top{ position:sticky; top:0; z-index:20; background:var(--navy); color:var(--beige); border-bottom:2px solid rgba(245,228,204,.18); }
+.top .wrap{ display:flex; align-items:center; gap:18px; min-height:62px; }
+.mark{ font:800 1.02rem/.9 "Bricolage Grotesque",Figtree,sans-serif; letter-spacing:.03em; text-transform:uppercase; text-decoration:none; flex:0 0 auto; }
+.mark span{ display:block; }
+.tagline{ font-size:.74rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; opacity:.75; flex:0 0 auto; border-left:2px solid rgba(245,228,204,.3); padding-left:14px; }
+.nav{ margin-left:auto; display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }
+.nav a{ text-decoration:none; font-weight:700; font-size:.95rem; padding:8px 12px; border-radius:999px; }
+.nav a:hover{ background:rgba(245,228,204,.14); }
+.nav a.on{ background:var(--beige); color:var(--navy); }
+@media (max-width:860px){ .tagline{ display:none; } .top .wrap{ flex-wrap:wrap; padding-top:8px; padding-bottom:8px; gap:6px 12px; } .nav{ margin-left:0; width:100%; justify-content:flex-start; overflow-x:auto; flex-wrap:nowrap; } .nav a{ white-space:nowrap; padding:7px 11px; font-size:.9rem; } }
+
+/* ---------- the desk ---------- */
+#desk{ color:var(--beige); padding-block:34px 60px; }
+.hello{ display:grid; gap:10px; max-width:760px; margin-bottom:26px; }
+.kicker{ font-size:.78rem; font-weight:800; letter-spacing:.16em; text-transform:uppercase; opacity:.8; }
+.hello h1{ font-size:clamp(2.4rem, 6.6vw, 4.6rem); }
+.hello p{ margin:0; font-size:clamp(1.02rem, 2vw, 1.2rem); max-width:56ch; }
+.pad{ position:relative; background:var(--beige); border-radius:26px; aspect-ratio:16/9.4; overflow:hidden; }
+.pad::before{ content:""; position:absolute; inset:14px; border:2px dashed rgba(18,41,74,.2); border-radius:16px; pointer-events:none; }
+.thing{ position:absolute; display:block; text-decoration:none; color:var(--navy); transition:transform .22s cubic-bezier(.2,1.4,.4,1); }
+.thing:hover, .thing:focus-visible{ transform:translateY(-8px) rotate(var(--tilt, 0deg)); z-index:5; }
+.label{ display:inline-flex; align-items:center; gap:8px; background:var(--navy); color:var(--beige); border-radius:999px; padding:8px 14px 8px 16px; font:800 clamp(.72rem, 1.25vw, .98rem)/1 Figtree,sans-serif; letter-spacing:.02em; white-space:nowrap; position:absolute; left:50%; transform:translateX(-50%); bottom:-4%; }
+.label i{ width:.5em; height:.5em; border-right:2.5px solid currentColor; border-top:2.5px solid currentColor; transform:rotate(45deg); display:block; }
+.thing:hover .label, .thing:focus-visible .label{ background:var(--navy2); }
+
+/* 1 the stack of issues */
+.t-issues{ left:5%; top:9%; width:30%; aspect-ratio:1/1.08; --tilt:-1deg; }
+.t-issues img{ position:absolute; width:62%; border:3px solid var(--navy); border-radius:4px; background:#fff; }
+.t-issues img:nth-child(1){ left:2%; top:14%; transform:rotate(-11deg); }
+.t-issues img:nth-child(2){ left:30%; top:6%; transform:rotate(7deg); }
+.t-issues img:nth-child(3){ left:15%; top:2%; transform:rotate(-2deg); }
+/* 2 the interview notepad */
+.t-talk{ left:41%; top:8%; width:24%; aspect-ratio:1/1.16; --tilt:2deg; transform:rotate(3deg); }
+.t-talk:hover, .t-talk:focus-visible{ transform:translateY(-8px) rotate(1deg); }
+.notepad{ position:absolute; inset:0 0 9% 0; background:var(--paper); border:3px solid var(--navy); border-radius:8px; padding:20% 9% 6%; overflow:hidden;
+  background-image:repeating-linear-gradient(180deg, transparent 0 1.55em, rgba(18,41,74,.16) 1.55em calc(1.55em + 1.5px)); background-position:0 22%; font-size:clamp(.6rem, 1.3vw, 1rem); line-height:1.6; }
+.notepad::before{ content:""; position:absolute; left:0; right:0; top:0; height:13%; background:var(--navy); }
+.notepad::after{ content:""; position:absolute; left:8%; right:8%; top:5%; height:5%; background:repeating-linear-gradient(90deg, var(--beige) 0 6px, transparent 6px 16px); border-radius:3px; }
+.notepad b{ display:block; font:800 1.3em/1.2 "Bricolage Grotesque",Figtree,sans-serif; }
+.notepad small{ display:block; font-size:.86em; font-weight:700; opacity:.75; }
+.notepad em{ font-style:normal; display:block; margin-top:.5em; font-weight:700; }
+/* 3 the press pass */
+.t-story{ right:5%; top:9%; width:21%; aspect-ratio:1/1.38; --tilt:-2deg; transform:rotate(-4deg); }
+.t-story:hover, .t-story:focus-visible{ transform:translateY(-8px) rotate(-6deg); }
+.pass{ position:absolute; inset:9% 0 9% 0; background:var(--navy); color:var(--beige); border-radius:12px; padding:16% 9% 8%; display:flex; flex-direction:column; gap:.35em; font-size:clamp(.56rem, 1.25vw, .98rem); line-height:1.25; }
+.pass::before{ content:""; position:absolute; left:50%; top:5%; width:26%; height:5%; margin-left:-13%; background:var(--beige); border-radius:99px; }
+.strap{ position:absolute; left:50%; top:-6%; width:9%; height:18%; margin-left:-4.5%; background:var(--navy2); border-radius:4px; }
+.pass .pp{ font:800 .78em/1 Figtree,sans-serif; letter-spacing:.2em; opacity:.8; }
+.pass b{ font:800 1.55em/1 "Bricolage Grotesque",Figtree,sans-serif; }
+.pass .role{ font-weight:700; }
+.pass .age{ margin-top:auto; align-self:flex-start; background:var(--beige); color:var(--navy); border-radius:6px; padding:.25em .6em; font-weight:800; }
+/* 4 the arcade box */
+.t-games{ left:39%; bottom:9%; width:25%; aspect-ratio:1.5/1; --tilt:1deg; }
+.t-games svg{ position:absolute; inset:0 0 14% 0; width:100%; height:86%; }
+/* 5 the envelope */
+.t-note{ right:6%; bottom:10%; width:27%; aspect-ratio:1.55/1; --tilt:2deg; transform:rotate(-3deg); }
+.t-note:hover, .t-note:focus-visible{ transform:translateY(-8px) rotate(-1deg); }
+.env{ position:absolute; inset:0 0 14% 0; background:var(--paper); border:3px solid var(--navy); border-radius:8px; overflow:hidden; display:grid; place-items:end center; padding:0 8% 9%; text-align:center; font-size:clamp(.6rem, 1.3vw, 1rem); line-height:1.3; }
+.env::before{ content:""; position:absolute; left:-3px; right:-3px; top:-3px; height:52%; background:var(--sand); clip-path:polygon(0 0, 100% 0, 50% 100%); }
+.env::after{ content:""; position:absolute; left:50%; top:30%; width:11%; aspect-ratio:1; margin-left:-6.5%; background:var(--navy); border-radius:50%; }
+.env span{ position:relative; font-weight:700; }
+.env span b{ display:block; font:800 1.3em/1.15 "Bricolage Grotesque",Figtree,sans-serif; }
+/* small things lying around */
+.pencil{ position:absolute; left:21%; bottom:10%; width:15%; height:3.2%; background:var(--navy); border-radius:3px 0 0 3px; transform:rotate(-7deg); }
+.pencil::before{ content:""; position:absolute; left:100%; top:0; bottom:0; width:9%; background:var(--sand); clip-path:polygon(0 0, 100% 50%, 0 100%); }
+.pencil::after{ content:""; position:absolute; left:6%; top:0; bottom:0; width:5%; background:var(--beige); opacity:.55; }
+.sticky{ position:absolute; left:6%; bottom:6%; width:13%; aspect-ratio:1/.8; background:var(--paper); border:2px solid rgba(18,41,74,.3); transform:rotate(-5deg); padding:.8em .8em; font:700 clamp(.5rem, 1vw, .82rem)/1.3 Figtree,sans-serif; }
+.hint{ margin:16px 0 0; font-size:.95rem; opacity:.8; }
+
+/* phone: the desk becomes a tidy pile of cards */
+@media (max-width:720px){
+  .pad{ aspect-ratio:auto; padding:22px 16px 26px; display:grid; grid-template-columns:1fr 1fr; gap:34px 14px; overflow:visible; }
+  .pad::before, .pencil, .sticky{ display:none; }
+  .thing{ position:relative; left:auto !important; right:auto !important; top:auto !important; bottom:auto !important; width:100% !important; transform:none !important; }
+  .t-issues{ grid-column:1 / -1; aspect-ratio:1.5/1; } .t-issues img{ width:38%; } .t-issues img:nth-child(1){ left:6%; top:8%; } .t-issues img:nth-child(2){ left:54%; top:6%; } .t-issues img:nth-child(3){ left:30%; top:0; }
+  .t-talk{ aspect-ratio:1/1.2; } .t-story{ aspect-ratio:1/1.2; } .pass{ inset:6% 0 12% 0; } .notepad{ inset:0 0 12% 0; }
+  .t-games, .t-note{ aspect-ratio:1.3/1; }
+  .label{ bottom:-6%; font-size:.8rem; padding:7px 11px 7px 13px; }
+  .notepad, .pass, .env{ font-size:.72rem; }
+}
+
+/* ---------- inner pages ---------- */
+.page{ background:var(--beige); min-height:calc(100vh - 62px); padding-block:44px 80px; }
+.page[hidden], #desk[hidden]{ display:none; }
+#desk, .page{ scroll-margin-top:90px; }
+.back{ display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-weight:800; font-size:.9rem; letter-spacing:.04em; border:2px solid var(--navy); border-radius:999px; padding:7px 14px; margin-bottom:26px; }
+.back:hover{ background:var(--navy); color:var(--beige); }
+.back i{ width:.5em; height:.5em; border-left:2.5px solid currentColor; border-bottom:2.5px solid currentColor; transform:rotate(45deg); display:block; }
+.head{ display:grid; gap:14px; max-width:780px; margin-bottom:34px; }
+.head h1{ font-size:clamp(2.4rem, 6vw, 4.2rem); }
+.head p{ margin:0; font-size:1.12rem; max-width:62ch; }
+.facts{ display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:12px; margin:0 0 38px; padding:0; list-style:none; }
+.facts li{ border:2px solid var(--navy); border-radius:14px; padding:14px 16px; }
+.facts b{ display:block; font:800 2rem/1 "Bricolage Grotesque",Figtree,sans-serif; }
+.facts span{ font-size:.92rem; font-weight:700; }
+.btn{ display:inline-flex; align-items:center; gap:8px; text-decoration:none; background:var(--navy); color:var(--beige); border:2px solid var(--navy); border-radius:999px; padding:10px 18px; font-weight:800; font-size:.95rem; }
+.btn:hover{ background:var(--navy2); }
+.btn.line{ background:none; color:var(--navy); }
+.btn.line:hover{ background:var(--navy); color:var(--beige); }
+
+.issues{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:18px; }
+.issue{ display:grid; grid-template-columns:118px 1fr; gap:16px; background:var(--paper); border:2px solid var(--navy); border-radius:16px; padding:14px; align-items:start; }
+.issue img{ width:118px; border:2px solid var(--navy); border-radius:4px; background:#fff; }
+.issue h3{ font-size:1.22rem; line-height:1.1; }
+.issue .pg{ display:inline-block; margin-top:6px; font-size:.76rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; background:var(--navy); color:var(--beige); border-radius:999px; padding:3px 9px; }
+.issue p{ margin:8px 0 6px; font-size:.95rem; line-height:1.4; font-weight:700; }
+.issue ul{ margin:0 0 10px; padding-left:1.05em; font-size:.88rem; line-height:1.4; }
+.issue a{ font-weight:800; font-size:.9rem; }
+@media (max-width:420px){ .issue{ grid-template-columns:92px 1fr; } .issue img{ width:92px; } }
+
+.cards{ display:grid; gap:18px; }
+.feature{ display:grid; grid-template-columns:minmax(0, 250px) 1fr; gap:26px; background:var(--navy); color:var(--beige); border-radius:20px; padding:26px; align-items:start; }
+.feature img{ border:3px solid var(--beige); border-radius:6px; background:#fff; }
+.feature h2{ font-size:clamp(1.9rem, 4.4vw, 2.9rem); margin:6px 0 10px; }
+.feature p{ margin:0 0 12px; max-width:60ch; }
+.feature blockquote{ margin:14px 0; padding:2px 0 2px 16px; border-left:4px solid var(--beige); font:600 1.18rem/1.4 "Bricolage Grotesque",Figtree,sans-serif; }
+.feature .btn{ background:var(--beige); color:var(--navy); border-color:var(--beige); }
+.feature .btn:hover{ background:var(--paper); }
+.chip{ display:inline-block; font-size:.74rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; border:2px solid currentColor; border-radius:999px; padding:3px 10px; }
+.soon{ border:2px dashed var(--navy); border-radius:20px; padding:24px 26px; display:grid; gap:8px; }
+.soon h2{ font-size:clamp(1.6rem, 3.6vw, 2.2rem); }
+.soon p{ margin:0; max-width:62ch; }
+@media (max-width:700px){ .feature{ grid-template-columns:1fr; padding:20px; } .feature img{ max-width:210px; } }
+
+.games{ display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:16px; margin-bottom:26px; }
+.game{ background:var(--paper); border:2px solid var(--navy); border-radius:16px; padding:18px; display:grid; gap:6px; align-content:start; }
+.game .no{ font:800 .8rem/1 Figtree,sans-serif; letter-spacing:.14em; opacity:.6; }
+.game h3{ font-size:1.4rem; }
+.game p{ margin:0; font-size:.98rem; line-height:1.45; }
+.game a{ font-weight:800; margin-top:4px; }
+.honest{ border-left:5px solid var(--navy); padding:4px 0 4px 18px; max-width:68ch; margin:0 0 22px; font-size:1.05rem; }
+.row{ display:flex; flex-wrap:wrap; gap:10px; }
+
+.story{ max-width:760px; display:grid; gap:0; }
+.ch{ display:grid; grid-template-columns:64px 1fr; gap:6px 18px; padding:22px 0; border-top:2px solid var(--line); }
+.ch .n{ font:800 2.2rem/1 "Bricolage Grotesque",Figtree,sans-serif; opacity:.35; }
+.ch h2{ font-size:1.6rem; margin-bottom:8px; }
+.ch p{ margin:0 0 10px; }
+.ch p:last-child{ margin-bottom:0; }
+@media (max-width:520px){ .ch{ grid-template-columns:1fr; } .ch .n{ font-size:1.5rem; } }
+
+.letter{ max-width:700px; background:var(--paper); border:2px solid var(--navy); border-radius:20px; padding:clamp(22px, 5vw, 44px); }
+.letter p{ margin:0 0 14px; font-size:1.1rem; }
+.letter .sign{ font:800 1.5rem/1.2 "Bricolage Grotesque",Figtree,sans-serif; margin:22px 0 2px; }
+.letter .who{ font-weight:700; margin:0; font-size:.98rem; }
+.reach{ max-width:700px; margin-top:20px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.reach code{ font:700 1.05rem/1 Figtree,sans-serif; border:2px solid var(--navy); border-radius:999px; padding:10px 16px; user-select:all; }
+.foot{ background:var(--navy); color:var(--beige); padding-block:26px 34px; font-size:.9rem; border-top:2px solid rgba(245,228,204,.18); }
+.foot .wrap{ display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; opacity:.85; }
+@media (prefers-reduced-motion:reduce){ .thing{ transition:none; } html{ scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#desk" aria-label="NeshamaGazine, back to the desk"><span>Neshama</span><span>Gazine</span></a>
+    <span class="tagline">The Editors' Desk</span>
+    <nav class="nav" aria-label="Sections">
+      <a href="#desk" data-s="desk">The Desk</a>
+      <a href="#issues" data-s="issues">Issues</a>
+      <a href="#interviews" data-s="interviews">Interviews</a>
+      <a href="#games" data-s="games">Games</a>
+      <a href="#story" data-s="story">My Story</a>
+      <a href="#note" data-s="note">A Note</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ================= THE DESK ================= -->
+<section id="desk">
+  <div class="wrap">
+    <div class="hello">
+      <span class="kicker">Made for the editors of The Circle</span>
+      <h1>Welcome to my desk.</h1>
+      <p>I'm Levi Chekroun. I'm twelve, and I publish a magazine called NeshamaGazine. Everything on this desk is real. Pick up whatever looks interesting.</p>
+    </div>
+    <div class="pad">
+      <span class="pencil" aria-hidden="true"></span>
+      <span class="sticky" aria-hidden="true">Next up:<br>the Chanukah issue</span>
+
+      <a class="thing t-issues" href="#issues">
+        <img src="covers/issue-10-beha-alotcha.jpg" alt="">
+        <img src="covers/issue-12-rosh-hashana.jpg" alt="">
+        <img src="covers/issue-13-bereishis.jpg" alt="">
+        <span class="label">The Issues <i></i></span>
+      </a>
+
+      <a class="thing t-talk" href="#interviews">
+        <span class="notepad"><small>Interview notes</small><b>Boruch Perlowitz</b><em>Next: Chaim Hershkowitz</em></span>
+        <span class="label">Interviews <i></i></span>
+      </a>
+
+      <a class="thing t-story" href="#story">
+        <span class="strap" aria-hidden="true"></span>
+        <span class="pass"><span class="pp">PRESS</span><b>Levi Chekroun</b><span class="role">Publisher and Editor in Chief</span><span class="age">Age 12</span></span>
+        <span class="label">My Story <i></i></span>
+      </a>
+
+      <a class="thing t-games" href="#games">
+        <svg viewBox="0 0 300 172" aria-hidden="true">
+          <rect x="6" y="50" width="288" height="116" rx="16" fill="#12294a"/>
+          <rect x="22" y="66" width="256" height="84" rx="9" fill="#1b3a66"/>
+          <rect x="76" y="20" width="12" height="74" rx="6" fill="#12294a"/>
+          <circle cx="82" cy="22" r="20" fill="#f5e4cc" stroke="#12294a" stroke-width="6"/>
+          <ellipse cx="82" cy="98" rx="30" ry="11" fill="#0d1f39"/>
+          <circle cx="188" cy="104" r="17" fill="#f5e4cc"/><circle cx="238" cy="92" r="17" fill="#f5e4cc"/>
+          <circle cx="188" cy="104" r="8" fill="#12294a"/><circle cx="238" cy="92" r="8" fill="#12294a"/>
+          <rect x="130" y="126" width="40" height="8" rx="4" fill="#f5e4cc" opacity=".5"/>
+        </svg>
+        <span class="label">The Games <i></i></span>
+      </a>
+
+      <a class="thing t-note" href="#note">
+        <span class="env"><span>To the editors of<b>The Circle</b></span></span>
+        <span class="label">A Note for You <i></i></span>
+      </a>
+    </div>
+    <p class="hint">Five things on the desk, five places to go. The same links are in the bar at the top.</p>
+  </div>
+</section>
+
+<!-- ================= ISSUES ================= -->
+<section class="page" id="issues" hidden>
+  <div class="wrap">
+    <a class="back" href="#desk"><i></i>Back to the desk</a>
+    <div class="head">
+      <span class="kicker">The Issues</span>
+      <h1>From 12 pages to 68.</h1>
+      <p>NeshamaGazine is a free Jewish kids' magazine with true stories, comics, news, riddles and Torah. I started it by myself. Now there is a team, and every page has a credit. Here are ten issues you can open and read in full.</p>
+    </div>
+    <ul class="facts">
+      <li><b>July 2025</b><span>Issue 1, Escape to Shanghai</span></li>
+      <li><b>Issue 13</b><span>The newest one, with Chanukah next</span></li>
+      <li><b>68 pages</b><span>Our biggest, the Mega Rosh Hashana issue</span></li>
+      <li><b>15 shuls</b><span>got that issue, three copies each</span></li>
+    </ul>
+    <div class="issues" id="issue-grid"></div>
+  </div>
+</section>
+
+<!-- ================= INTERVIEWS ================= -->
+<section class="page" id="interviews" hidden>
+  <div class="wrap">
+    <a class="back" href="#desk"><i></i>Back to the desk</a>
+    <div class="head">
+      <span class="kicker">Interviews</span>
+      <h1>The interview I was told was almost impossible.</h1>
+      <p>One interview is published so far. A second spot is saved for the next one.</p>
+    </div>
+    <div class="cards">
+      <article class="feature">
+        <img src="covers/issue-12-rosh-hashana.jpg" alt="Cover of Issue 12, the Mega Rosh Hashana issue">
+        <div>
+          <span class="chip">Published in Issue 12</span>
+          <h2>Boruch Perlowitz</h2>
+          <p>I watched Boruch Perlowitz for years, even before NeshamaGazine existed, and I wanted to interview him so badly. My father told me, very nicely, that it was almost impossible, because Boruch is a super busy guy.</p>
+          <blockquote>"Nah. It's possible."</blockquote>
+          <p>So my father messaged him on LinkedIn. Days passed. Weeks passed. I went to overnight camp and forgot about it, until a message came from my father: Boruch answered. When I got home I called him myself and asked if I could interview him. He said, "Sure."</p>
+          <p>The interview ran in our 68-page Mega Rosh Hashana issue, which went to 15 shuls.</p>
+          <a class="btn" id="open12" href="#issues" target="_blank" rel="noopener">Open Issue 12</a>
+        </div>
+      </article>
+      <article class="soon">
+        <span class="chip">Coming up</span>
+        <h2>Chaim Hershkowitz</h2>
+        <p>This spot is saved for my next interview. It is not published yet. When it is, it will be right here.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GAMES ================= -->
+<section class="page" id="games" hidden>
+  <div class="wrap">
+    <a class="back" href="#desk"><i></i>Back to the desk</a>
+    <div class="head">
+      <span class="kicker">The Games</span>
+      <h1>A magazine with its own arcade.</h1>
+      <p>The NeshamaGazine website has six games that run right in the browser. They all star Neshama Robo, the robot who runs our print house.</p>
+    </div>
+    <p class="honest">To be honest about how they are made: I come up with the games, decide how they should play and look, and test them. The code is written with AI (Claude), working from my instructions.</p>
+    <div class="games">
+      <article class="game"><span class="no">01</span><h3>Robo Runner</h3><p>Run the conveyor belt, flip over danger and blast off on a rocket. Ten levels, and a trip to the moon.</p></article>
+      <article class="game"><span class="no">02</span><h3>Robo Rush 3D</h3><p>A three-lane 3D runner. Dodge, jump and roll down the street to deliver the magazines.</p><a href="../robo-rush-3d/" target="_blank" rel="noopener">Play it now</a></article>
+      <article class="game"><span class="no">03</span><h3>Claw Master</h3><p>Grab the magazine shown on the card. The wrong one costs time.</p></article>
+      <article class="game"><span class="no">04</span><h3>Magazine Tower</h3><p>Drop each magazine right on top of the last one. Line it up to keep the tower wide.</p></article>
+      <article class="game"><span class="no">05</span><h3>Printing Press Panic</h3><p>The press went crazy. Catch the pages in order: 1, 2, 3.</p></article>
+      <article class="game"><span class="no">06</span><h3>Spy Mission</h3><p>Sneak through the office at night and deliver the secret message.</p></article>
+    </div>
+    <div class="row">
+      <a class="btn" href="../robo-rush-3d/" target="_blank" rel="noopener">Play Robo Rush 3D</a>
+      <a class="btn line" href="../#games" target="_blank" rel="noopener">Open the arcade on the website</a>
+    </div>
+    <p style="margin:14px 0 0;font-size:.95rem;max-width:60ch">Robo Rush 3D opens straight away. The rest are in the arcade on the main website, which asks for a free sign-up first.</p>
+  </div>
+</section>
+
+<!-- ================= STORY ================= -->
+<section class="page" id="story" hidden>
+  <div class="wrap">
+    <a class="back" href="#desk"><i></i>Back to the desk</a>
+    <div class="head">
+      <span class="kicker">My Story</span>
+      <h1>It all started with a frying pan.</h1>
+      <p>How a comic I never finished turned into a magazine. By Levi Chekroun, Publisher and Editor in Chief.</p>
+    </div>
+    <div class="story">
+      <div class="ch"><span class="n">01</span><div><h2>A frying pan</h2>
+        <p>In 2024, my grandmother gave me a script for a comic called The Third Trapdoor. It was about October 7th, which was not funny at all. But the story had a hero moment: terrorists were breaking into a family's house, and the father grabbed the first thing he could find, a frying pan full of sizzling oil.</p>
+        <p>I asked ChatGPT to draw the whole comic. It said it couldn't make an entire comic book, but it gave me a clue: people make pictures like that on Canva. So I opened Canva, and I kind of never closed it.</p></div></div>
+      <div class="ch"><span class="n">02</span><div><h2>A name on a Shabbos walk</h2>
+        <p>On a Shabbos walk with my mother, I said, "Ma, we need a name." My mother is a designer, and inventing names is her job. Neshama plus magazine equals NeshamaGazine. It was done before we got home.</p></div></div>
+      <div class="ch"><span class="n">03</span><div><h2>The first try</h2>
+        <p>My very first magazine was not good. So not good that it never got an issue number. I printed it, my family read it, and they said they liked it. That's what families are for.</p></div></div>
+      <div class="ch"><span class="n">04</span><div><h2>Issue 1: Escape to Shanghai</h2>
+        <p>For the next one I wanted a real feature. In a Jewish magazine my mother gave me, I found the true story of the escape to Shanghai. I wrote it up in day camp, when I was around nine or ten. Lots of people took a copy. Nobody went crazy about it. Yet.</p></div></div>
+      <div class="ch"><span class="n">05</span><div><h2>The issue that changed everything</h2>
+        <p>Then my mother told me the true story of Eli Cohen, the spy who lived a double life. I turned it into our Rosh Hashana issue, printed 14 copies and put them in my shul. Everyone took one. After davening, people came over and said, "Wow, this is so good!" From that day on, people knew to grab NeshamaGazine.</p></div></div>
+      <div class="ch"><span class="n">06</span><div><h2>One kid became a team</h2>
+        <p>Around Issue 5, I brought copies to school and the kids loved it. Two of them asked to join. Best decision ever, theirs and mine. On Lag BaOmer I brought Issue 8 for the parade, and before the parade the whole school was reading it.</p></div></div>
+      <div class="ch"><span class="n">07</span><div><h2>48 pages, then 68</h2>
+        <p>For Shavuos we went all in and pulled off a 48-page mega issue. We had never made anything that big. In Issue 10, our own characters, Shimmy and Mimmy, appeared on the cover.</p>
+        <p>Then came the interview with Boruch Perlowitz and our 68-page Mega Rosh Hashana issue. My mother helped design it, and we put it in 15 different shuls, three copies each.</p></div></div>
+      <div class="ch"><span class="n">08</span><div><h2>And now</h2>
+        <p>Issue 13 is out. There is a website with a reader, an arcade and a robot. The next issue is Chanukah. Stay tuned.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NOTE ================= -->
+<section class="page" id="note" hidden>
+  <div class="wrap">
+    <a class="back" href="#desk"><i></i>Back to the desk</a>
+    <div class="head">
+      <span class="kicker">A Note for You</span>
+      <h1>To the editors of The Circle.</h1>
+    </div>
+    <div class="letter">
+      <p>Thank you for stopping by my desk.</p>
+      <p>I made this page only for you. It is not linked from the NeshamaGazine website, and there is nothing to sign up for.</p>
+      <p>You make a magazine that kids wait for. I'm a kid who makes one. I wanted you to see what I have built so far: the issues, the interview, the games, and how it all started.</p>
+      <p>If you have a minute, I would be grateful for anything you are willing to tell me: what you like, what you would change, or what you wish you had known when you were starting out.</p>
+      <p class="sign">Levi Chekroun</p>
+      <p class="who">Publisher and Editor in Chief, NeshamaGazine. Age 12.</p>
+    </div>
+    <div class="reach">
+      <code id="mail">levichekroun@ulyop.com</code>
+      <button class="btn" id="copy" type="button">Copy the address</button>
+      <a class="btn line" href="../" target="_blank" rel="noopener">Visit the NeshamaGazine website</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="wrap"><span>NeshamaGazine. Read to grow. Spark the glow.</span><span>Made for the editors of The Circle. This page is not listed anywhere.</span></div></footer>
+
+<script>
+(function(){
+  var ISSUES = [{"t": "Issue 13 Bereishis", "p": 40, "n": "The newest issue. All the regular sections are now set.", "c": ["How can a farmer be a double agent? The true story of the farmer who fooled Hitler", "Suspense in the Lion's Den", "Hunt for Mengele 3", "Escape"], "img": "covers/issue-13-bereishis.jpg", "link": "https://drive.google.com/file/d/1ivWWEsiEoKUhLX3l_SWetVHN_QWlbwah/view?usp=drive_link"}, {"t": "Issue 12 Rosh Hashana", "p": 68, "n": "Our biggest ever, with the Boruch Perlowitz interview.", "c": ["Mega Rosh Hashana issue: 68 pages!", "What can a plate hide? Discover Behind the Plate", "Exclusive interview with Boruch Perlowitz", "The weekly illusion"], "img": "covers/issue-12-rosh-hashana.jpg", "link": "https://drive.google.com/file/d/1A4AD2v4HFlCTH3WL9ataEQWcmXlxBH7i/view?usp=drive_link"}, {"t": "Issue 10 Beha'alotcha", "p": 32, "n": "Our own characters, Shimmy and Mimmy, appear on the cover.", "c": ["How can a painting be saved? The true story of the attack on Danë", "Jokes & Riddles", "News", "New Comic!"], "img": "covers/issue-10-beha-alotcha.jpg", "link": "https://drive.google.com/file/d/1f_gH6jV0kiE5zc-ICa0_jyxNViML46aN/view?usp=drive_link"}, {"t": "Issue 09 Shavuos", "p": 48, "n": "The first mega issue: a real news section and two comics at once.", "c": ["Mega Shavuos issue: 48 pages!", "How can a machine save the world? The true story of Bletchley Park", "Jokes & Riddles", "News"], "img": "covers/issue-09-shavuos.jpg", "link": "https://drive.google.com/file/d/1lsp47d8m1NtcItu0Eg8_nhElddLYlZvX/view?usp=drive_link"}, {"t": "Issue 08 Tazria Metzora", "p": 20, "n": "The new arch cover design and our first sponsor.", "c": ["How can Eretz Yisrael overcome the unthinkable? Through lasers!", "The youngest partisan", "Jokes & Riddles", "New Comic!"], "img": "covers/issue-08-tazria-metzora.jpg", "link": "https://drive.google.com/file/d/1p9HY-kaFvZh9CgXmKulVJOhx1vNcqr90/view"}, {"t": "Parsha Food Season", "p": 16, "n": "The first ad space, plus a cookie recipe.", "c": ["The Parsha Food Season issue (October 2025)", "News report: Mossad's secret mission to rescue Ethiopian captives", "The hunt for Josef Mengele", "Why don't skeletons fight each other?"], "img": "covers/parsha-food-season.jpg", "link": "https://drive.google.com/file/d/18tE5FCSmDC-mubMJvPECjT1z-3byCHWd/view?usp=drive_link"}, {"t": "Sukkos Edition", "p": 16, "n": "Our first comic in full color, and recipes.", "c": ["Sukkos recipes: 10 delights you can make on chol hamoed", "Rosh Hashanah comic, part 2", "News: what was hidden in Germany?", "Riddles & Jokes"], "img": "covers/sukkos-edition.jpg", "link": "https://drive.google.com/file/d/1DMHaJE2fs11ucjB9ytz1ge8mHIFaM21R/view"}, {"t": "The Double Life of Eli Cohen", "p": 16, "n": "The issue that changed everything: 14 copies in my shul.", "c": ["The Double Life of Eli Cohen", "Exclusive Rosh Hashanah edition"], "img": "covers/the-double-life-of-eli-cohen.jpg", "link": "https://drive.google.com/file/d/1GMxkgIQoJf3wYygW1tehuR78oDgugdpP/view?usp=drive_link"}, {"t": "Issue 5", "p": 16, "n": "The Third Trapdoor comic finally appears.", "c": ["Rosh Hashana comic: the final part!", "Coming next: the hunt for Mengele 2"], "img": "covers/issue-5.jpg", "link": "https://drive.google.com/file/d/1Vb8q_OUpiUnN2bBL7wdSnrwRv1ZhXdaN/view?usp=drive_link"}, {"t": "Escape to Shanghai", "p": 12, "n": "Our first numbered issue. Where it all started.", "c": ["Escape to Shanghai", "Year 1, Issue 1: where it all started! (Tammuz 5785 / July 2025)"], "img": "covers/escape-to-shanghai.jpg", "link": "https://drive.google.com/file/d/1m6d14ki-lUgIEm4W2rg5O3S6uNuukdNP/view?usp=drive_link"}];
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
+  document.getElementById('issue-grid').innerHTML = ISSUES.map(function(o){
+    return '<article class="issue"><img src="' + esc(o.img) + '" alt="Cover of ' + esc(o.t) + '" loading="lazy"><div><h3>' + esc(o.t) + '</h3>' + (o.p ? '<span class="pg">' + o.p + ' pages</span>' : '') +
+      '<p>' + esc(o.n) + '</p><ul>' + o.c.slice(0, 3).map(function(c){ return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' +
+      (o.link ? '<a href="' + esc(o.link) + '" target="_blank" rel="noopener">Open the full issue</a>' : '') + '</div></article>'; }).join('');
+  var i12 = ISSUES.filter(function(o){ return /Issue 12/.test(o.t); })[0]; if (i12 && i12.link) document.getElementById('open12').href = i12.link;
+
+  // ---------- one section at a time ----------
+  var NAMES = ['desk', 'issues', 'interviews', 'games', 'story', 'note'], TITLES = { desk: "The Editors' Desk", issues: 'The Issues', interviews: 'Interviews', games: 'The Games', story: 'My Story', note: 'A Note for You' };
+  function show(){
+    var s = (location.hash || '#desk').slice(1); if (NAMES.indexOf(s) < 0) s = 'desk';
+    NAMES.forEach(function(n){ document.getElementById(n).hidden = n !== s; });
+    [].forEach.call(document.querySelectorAll('.nav a'), function(a){ var on = a.getAttribute('data-s') === s; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    document.title = 'NeshamaGazine | ' + TITLES[s]; window.scrollTo(0, 0); setTimeout(function(){ window.scrollTo(0, 0); }, 0); seen(s);
+  }
+  addEventListener('hashchange', show);
+
+  document.getElementById('copy').addEventListener('click', function(){ var b = this, t = document.getElementById('mail').textContent;
+    function done(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy the address'; }, 1600); }
+    try { navigator.clipboard.writeText(t).then(done, pick); } catch(e){ pick(); }
+    function pick(){ var r = document.createRange(); r.selectNodeContents(document.getElementById('mail')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } });
+
+  // ---------- quiet visit counter for the owner's Radar: numbers only, no names ----------
+  var KEY = 'AIzaSyCR6NiDXgBtWxWnlMQJjaiES3qkgvJYrIg', PROJ = 'neshamagazine', DOCS = 'projects/' + PROJ + '/databases/(default)/documents/visits/';
+  function day(){ var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function mine(){ try { return !!localStorage.getItem('ng_fb_rt') || /[?&]me\b/.test(location.search); } catch(e){ return false; } }
+  function send(doc, paths){ return fetch('https://firestore.googleapis.com/v1/projects/' + PROJ + '/databases/(default)/documents:commit?key=' + KEY, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ writes: [{ transform: { document: DOCS + doc, fieldTransforms: paths.map(function(p){ return { fieldPath: p, increment: { integerValue: '1' } }; }) } }] }) }).then(function(r){ return r.ok; }, function(){ return false; }); }
+  // first try a page of its own; if the database refuses, tuck the numbers into today's normal page under names that start with CIRCLE
+  function bump(own, shared){ if (!/^https?:$/.test(location.protocol) || mine()) return; send('circle-' + day(), own).then(function(ok){ if (!ok) send(day(), shared); }); }
+  var told = {};
+  function seen(s){ if (told[s]) return; told[s] = 1; try { if (sessionStorage.getItem('ngc_s_' + s)) return; sessionStorage.setItem('ngc_s_' + s, '1'); } catch(e){}
+    bump(['places.SEC__' + s], ['places.CIRCLE__sec_' + s]); }
+  (function visit(){ try { if (sessionStorage.getItem('ngc_v')) return; sessionStorage.setItem('ngc_v', '1'); } catch(e){}
+    var first = false; try { first = localStorage.getItem('ngc_day') !== day(); localStorage.setItem('ngc_day', day()); } catch(e){}
+    var dev = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'phone' : 'computer';
+    var geo = fetch('https://get.geojs.io/v1/ip/geo.json').then(function(r){ return r.json(); }).catch(function(){ return {}; }), timer = new Promise(function(ok){ setTimeout(function(){ ok({}); }, 3500); });
+    Promise.race([geo, timer]).then(function(g){ var place = ((g.country_code || 'XX') + '__' + (g.region || '')).replace(/[^A-Za-z0-9_]/g, '_').slice(0, 50);
+      var own = ['total', 'devices.' + dev, 'places.' + place], shared = ['places.CIRCLE__visit', 'places.CIRCLE__dev_' + dev, 'places.CIRCLE__at_' + place];
+      if (first){ own.push('unique'); shared.push('places.CIRCLE__new'); } bump(own, shared); }); })();
+  show();
+})();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795129473';
+window.NG_BUILD = '1795300761';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -2661,6 +2661,16 @@ html.ng-soon-lock #ng-soon img{-webkit-user-drag:none;user-select:none;pointer-e
 /* the next-issue checklist is gone from the Owner Panel */
 .op-sec:has(#ck-list){display:none!important}
 .rd-h4{margin:18px 0 8px;font:800 16px Figtree,sans-serif;color:#12294a}
+.rc-nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0 4px}
+.rc-nums div{border:2px solid #12294a;border-radius:12px;padding:12px 14px;color:#12294a}
+.rc-nums b{display:block;font:800 30px/1 Figtree,sans-serif}
+.rc-nums span{font:700 13px Figtree,sans-serif}
+.rc-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-width:520px}
+.rc-list li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(18,41,74,.15);padding:7px 2px;font:600 15px Figtree,sans-serif;color:#12294a}
+.rc-list b{font-weight:800}
+.rc-link{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px}
+.rc-link code{font:700 14px Figtree,sans-serif;border:2px solid #12294a;border-radius:8px;padding:8px 10px;color:#12294a;user-select:all;overflow-wrap:anywhere}
+.rc-link button,.rc-link a{border:2px solid #12294a;background:#12294a;color:#f5e4cc;border-radius:8px;padding:8px 13px;font:700 14px Figtree,sans-serif;cursor:pointer;text-decoration:none}
 </style>
 <style id="ng-pagefind-css">
 .pf-bar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:8px;background:#12294a;color:#f5e4cc;border:2px solid #f5e4cc;border-radius:8px;padding:6px 8px;font:700 .9rem Figtree,system-ui,sans-serif;max-width:calc(100% - 20px)}
@@ -6759,7 +6769,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
         function sum(n, k){ var t = 0; days.slice(-n).forEach(function(x){ t += num((by[x] || {})[k]); }); return t; }
         var places = {}, dev = { phone:0, computer:0 };
         days.forEach(function(x){ var f = by[x] || {};
-          var pl = f.places && f.places.mapValue && f.places.mapValue.fields || {}; Object.keys(pl).forEach(function(k){ places[k] = (places[k] || 0) + num(pl[k]); });
+          var pl = f.places && f.places.mapValue && f.places.mapValue.fields || {}; Object.keys(pl).forEach(function(k){ if (/^CIRCLE__/.test(k)) return; places[k] = (places[k] || 0) + num(pl[k]); });
           var dv = f.devices && f.devices.mapValue && f.devices.mapValue.fields || {}; Object.keys(dv).forEach(function(k){ dev[k] = (dev[k] || 0) + num(dv[k]); }); });
         var max = 1; days.slice(-14).forEach(function(x){ max = Math.max(max, num((by[x] || {}).total)); });
         var bars = days.slice(-14).map(function(x){ var v = num((by[x] || {}).total); return '<i title="' + x + ': ' + v + '" style="height:' + Math.max(3, v / max * 100) + '%"><em>' + (v || '') + '</em></i>'; }).join('');
@@ -6856,6 +6866,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <button type="button" data-v="dev">Phones vs computers</button>
     <button type="button" data-v="alert">Alerts</button>
     <button type="button" data-v="ban">Block</button>
+    <button type="button" data-v="circle">The Circle desk</button>
     <button type="button" data-v="fb">Feedback</button>
     <button type="button" data-v="qr">QR codes</button>
     <span class="vm-sp"></span>
@@ -6875,6 +6886,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   <section class="vm-view" id="vm-dev" hidden><div class="rd-pad"><h3>Phones vs computers</h3><p class="rd-tip">What readers used this month.</p><div id="rd-dev"></div></div></section>
   <section class="vm-view" id="vm-qr" hidden><div class="rd-pad"><h3>QR codes</h3><p class="rd-tip">How many people scanned the QR codes in the printed magazine, and how many of them became readers.</p><div id="rd-qr"></div></div></section>
   <section class="vm-view" id="vm-fb" hidden><div class="rd-pad"><h3>Feedback</h3><p class="rd-tip">What readers wrote on the feedback page (the QR code in the printed magazine). Newest first.</p><div id="rd-fb"></div></div></section>
+  <section class="vm-view" id="vm-circle" hidden><div class="rd-pad"><h3>The Circle desk</h3><p class="rd-tip">Your private page for the editors of The Circle. This shows how many times it was opened, and what they looked at. Numbers only, no names. Your own visits from this device are not counted.</p><div id="rc-body"><p class="rd-tip">Loading…</p></div></div></section>
   <section class="vm-view" id="vm-ban" hidden><div class="rd-pad"><h3>Block someone</h3><p class="rd-tip">A blocked reader hears a siren, the gate rolls down and they see "You are blocked". It happens within a few seconds, even if they are in the middle of a game.</p><form id="rd-banf" class="rd-banf" novalidate><input id="rd-bane" type="search" placeholder="Type a name or an email" autocomplete="off"><button type="submit">Block this email</button></form><label class="rd-notel" for="rd-bannote">Message they will see (you can leave it empty)</label><textarea id="rd-bannote" class="rd-bannote" maxlength="500" placeholder="Hello, I see that you are doing something you should not. You have been blocked."></textarea><div id="rd-banpick"></div><h4 class="rd-h4">Everyone at once</h4><p class="rd-tip" id="rd-allst">Blocks every reader on the website (not you), with the message above.</p><div class="rd-when"><button type="button" id="rd-allon">Block everyone</button><button type="button" id="rd-alloff">Unblock everyone</button></div><h4 class="rd-h4">Blocked now</h4><div id="rd-banlist"></div><h4 class="rd-h4">Everyone who came on</h4><div class="rd-when" id="rd-when"><button type="button" data-w="1" class="on">Today</button><button type="button" data-w="7">Past week</button><button type="button" data-w="30">Past month</button><button type="button" data-w="0">Forever</button></div><div id="rd-everyone"></div></div></section>
   <section class="vm-view" id="vm-alert" hidden><div class="rd-pad"><h3>Alerts</h3><p class="rd-tip">Every screenshot, recording or print try, newest first.</p><div id="rd-alert"></div></div></section>
   <p class="vm-msg" id="vm-msg"></p>
@@ -7002,6 +7014,39 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   $('vm-back').addEventListener('click', function(){ close(); setTimeout(function(){ var p = $('owner-panel'), b = $('owner-btn'); if (p && !p.classList.contains('open') && b) b.click(); }, 30); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !vm.hidden) close(); });
   document.addEventListener('ng:owner', function(e){ if (!e.detail) close(); });
+  // ---------- The Circle desk: visits to the private editors' page ----------
+  function loadCircle(){
+    var body = $('rc-body'); if (!body) return; body.innerHTML = '<p class="rd-tip">Loading…</p>';
+    var days = []; for (var i = 29; i >= 0; i--){ var d = new Date(); d.setDate(d.getDate() - i); days.push(day(d)); }
+    var base = 'projects/' + PROJ + '/databases/(default)/documents/visits/', docs = days.map(function(x){ return base + 'circle-' + x; }).concat(days.map(function(x){ return base + x; }));
+    get('https://firestore.googleapis.com/v1/projects/' + PROJ + '/databases/(default)/documents:batchGet', { documents: docs }).then(function(list){
+      var by = {}; days.forEach(function(x){ by[x] = { v: 0, u: 0, phone: 0, computer: 0 }; }); var secs = {}, places = {};
+      function map(f, k){ return f[k] && f[k].mapValue && f[k].mapValue.fields || {}; }
+      (list || []).forEach(function(it){ if (!it.found) return; var id = it.found.name.split('/').pop(), f = it.found.fields || {}, own = /^circle-/.test(id), x = id.replace(/^circle-/, ''), o = by[x]; if (!o) return; var pl = map(f, 'places'), dv = map(f, 'devices');
+        if (own){ o.v += num(f.total); o.u += num(f.unique); o.phone += num(dv.phone); o.computer += num(dv.computer);
+          Object.keys(pl).forEach(function(k){ if (/^SEC__/.test(k)) secs[k.slice(5)] = (secs[k.slice(5)] || 0) + num(pl[k]); else places[k] = (places[k] || 0) + num(pl[k]); }); }
+        else Object.keys(pl).forEach(function(k){ if (!/^CIRCLE__/.test(k)) return; var w = k.slice(8), n = num(pl[k]);
+          if (w === 'visit') o.v += n; else if (w === 'new') o.u += n; else if (w === 'dev_phone') o.phone += n; else if (w === 'dev_computer') o.computer += n;
+          else if (/^sec_/.test(w)) secs[w.slice(4)] = (secs[w.slice(4)] || 0) + n; else if (/^at_/.test(w)) places[w.slice(3)] = (places[w.slice(3)] || 0) + n; }); });
+      function sum(n, k){ var t = 0; days.slice(-n).forEach(function(x){ t += by[x][k]; }); return t; }
+      var SN = { desk: 'The desk (first page)', issues: 'The Issues', interviews: 'Interviews', games: 'The Games', story: 'My Story', note: 'A Note for You' };
+      var secHtml = Object.keys(SN).map(function(k){ return '<li><span>' + SN[k] + '</span><b>' + (secs[k] || 0) + '</b></li>'; }).join('');
+      var plHtml = Object.keys(places).sort(function(a, b){ return places[b] - places[a]; }).slice(0, 8).map(function(k){ var cc = k.split('__')[0], rg = (k.split('__')[1] || '').replace(/_/g, ' ').trim(), nm = cc; try { nm = cc === 'XX' ? 'Unknown place' : new Intl.DisplayNames(['en'], { type: 'region' }).of(cc); } catch(e){}
+        return '<li><span>' + esc(nm + (rg ? ', ' + rg : '')) + '</span><b>' + places[k] + '</b></li>'; }).join('') || '<li><span>Nobody yet</span><b></b></li>';
+      var dayHtml = days.slice(-14).reverse().filter(function(x){ return by[x].v; }).map(function(x){ var d = new Date(x + 'T12:00:00'); return '<li><span>' + d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + '</span><b>' + by[x].v + (by[x].v === 1 ? ' visit' : ' visits') + '</b></li>'; }).join('') || '<li><span>No visits in the last two weeks</span><b></b></li>';
+      var url = location.origin + ((location.pathname.match(/^(.*?\/neshamagazine\/)/) || ['', '/'])[1]) + 'the-circle/';
+      body.innerHTML = '<div class="rc-nums"><div><b>' + sum(1, 'v') + '</b><span>Visits today</span></div><div><b>' + sum(7, 'v') + '</b><span>This week</span></div><div><b>' + sum(30, 'v') + '</b><span>Last 30 days</span></div><div><b>' + sum(30, 'u') + '</b><span>Different visitors</span></div></div>' +
+        (sum(30, 'v') ? '' : '<p class="rd-tip">Nobody has opened it yet. When an editor does, it shows up here.</p>') +
+        '<h4 class="rd-h4">What they opened</h4><ul class="rc-list">' + secHtml + '</ul>' +
+        '<h4 class="rd-h4">Day by day</h4><ul class="rc-list">' + dayHtml + '</ul>' +
+        '<h4 class="rd-h4">Where from</h4><ul class="rc-list">' + plHtml + '</ul>' +
+        '<h4 class="rd-h4">Phone or computer</h4><ul class="rc-list"><li><span>Computer</span><b>' + sum(30, 'computer') + '</b></li><li><span>Phone</span><b>' + sum(30, 'phone') + '</b></li></ul>' +
+        '<div class="rc-link"><code>' + esc(url) + '</code><button type="button" id="rc-copy">Copy the link</button><a href="' + esc(url) + '?me" target="_blank" rel="noopener">Open it</a><button type="button" id="rc-again">Refresh</button></div>';
+      $('rc-copy').onclick = function(){ var b = this; try { navigator.clipboard.writeText(url).then(function(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy the link'; }, 1500); }); } catch(e){} };
+      $('rc-again').onclick = loadCircle;
+    }).catch(function(e){ body.innerHTML = '<p class="rd-tip">Could not load: ' + esc(e.message || 'error') + '</p>'; });
+  }
+  (function(){ var cb = document.querySelector('.vm-tabs [data-v="circle"]'); if (cb) cb.addEventListener('click', loadCircle); })();
   document.querySelectorAll('.vm-tabs [data-v]').forEach(function(b){ b.onclick = function(){
     view = b.getAttribute('data-v'); document.querySelectorAll('.vm-tabs [data-v]').forEach(function(x){ x.classList.toggle('on', x === b); });
     document.querySelectorAll('#vm .vm-view').forEach(function(x){ x.hidden = x.id !== 'vm-' + view; }); if (window.NG_RADAR_TAB) NG_RADAR_TAB(view); if (view === 'where') setTimeout(openGlobe, 30);
