@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>NeshamaGazine | The Editors' Desk</title>
+<title>For The Circle Editors | NeshamaGazine</title>
 <meta name="description" content="A private look at NeshamaGazine, made for the editors of The Circle.">
 <link rel="icon" href="../icons-normal/icon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,8 +25,8 @@ img{ max-width:100%; display:block; }
 /* ---------- top bar ---------- */
 .top{ position:sticky; top:0; z-index:20; background:var(--navy); color:var(--beige); border-bottom:2px solid rgba(245,228,204,.18); }
 .top .wrap{ display:flex; align-items:center; gap:18px; min-height:62px; }
-.mark{ font:800 1.02rem/.9 "Bricolage Grotesque",Figtree,sans-serif; letter-spacing:.03em; text-transform:uppercase; text-decoration:none; flex:0 0 auto; }
-.mark span{ display:block; }
+.mark{ flex:0 0 auto; display:block; background:#f5e4cc; border-radius:8px; padding:4px 9px; }
+.mark img{ height:36px; width:auto; display:block; }
 .tagline{ font-size:.74rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; opacity:.75; flex:0 0 auto; border-left:2px solid rgba(245,228,204,.3); padding-left:14px; }
 .nav{ margin-left:auto; display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }
 .nav a{ text-decoration:none; font-weight:700; font-size:.95rem; padding:8px 12px; border-radius:999px; }
@@ -178,8 +178,8 @@ img{ max-width:100%; display:block; }
 <body>
 <header class="top">
   <div class="wrap">
-    <a class="mark" href="#desk" aria-label="NeshamaGazine, back to the desk"><span>Neshama</span><span>Gazine</span></a>
-    <span class="tagline">The Editors' Desk</span>
+    <a class="mark" href="#desk" aria-label="NeshamaGazine, back to the desk"><img src="logo.png" alt="NeshamaGazine" width="424" height="144"></a>
+    <span class="tagline">For The Circle editors</span>
     <nav class="nav" aria-label="Sections">
       <a href="#desk" data-s="desk">The Desk</a>
       <a href="#issues" data-s="issues">Issues</a>
@@ -196,13 +196,13 @@ img{ max-width:100%; display:block; }
 <section id="desk">
   <div class="wrap">
     <div class="hello">
-      <span class="kicker">Made for the editors of The Circle</span>
-      <h1>Welcome to my desk.</h1>
-      <p>I'm Levi Chekroun. I'm twelve, and I publish a magazine called NeshamaGazine. Everything on this desk is real. Pick up whatever looks interesting.</p>
+      <span class="kicker">A private page, made only for the editors of The Circle</span>
+      <h1>Hi, Circle editors.</h1>
+      <p>Welcome to my desk. I'm Levi Chekroun. I'm twelve, and I publish a magazine called NeshamaGazine. I set this desk up for you. Everything on it is real, so pick up whatever looks interesting.</p>
     </div>
     <div class="pad">
       <span class="pencil" aria-hidden="true"></span>
-      <span class="sticky" aria-hidden="true">Next up:<br>the Chanukah issue</span>
+      <span class="sticky" aria-hidden="true">Hi, Circle editors!<br>Thanks for coming.</span>
 
       <a class="thing t-issues" href="#issues">
         <img src="covers/issue-10-beha-alotcha.jpg" alt="">
@@ -252,7 +252,7 @@ img{ max-width:100%; display:block; }
     <div class="head">
       <span class="kicker">The Issues</span>
       <h1>From 12 pages to 68.</h1>
-      <p>NeshamaGazine is a free Jewish kids' magazine with true stories, comics, news, riddles and Torah. I started it by myself. Now there is a team, and every page has a credit. Here are ten issues you can open and read in full.</p>
+      <p>NeshamaGazine is a free Jewish kids' magazine with true stories, comics, news, riddles and Torah. I started it by myself. Now there is a team, and every page has a credit. I picked out ten issues for you to open and read in full.</p>
     </div>
     <ul class="facts">
       <li><b>July 2025</b><span>Issue 1, Escape to Shanghai</span></li>
@@ -378,7 +378,7 @@ img{ max-width:100%; display:block; }
 </section>
 </main>
 
-<footer class="foot"><div class="wrap"><span>NeshamaGazine. Read to grow. Spark the glow.</span><span>Made for the editors of The Circle. This page is not listed anywhere.</span></div></footer>
+<footer class="foot"><div class="wrap"><span><img src="logo.png" alt="NeshamaGazine" style="height:30px;width:auto;border-radius:6px;display:inline-block;vertical-align:middle;margin-right:10px">Read to grow. Spark the glow.</span><span>Made for the editors of The Circle. This page is not listed anywhere.</span></div></footer>
 
 <script>
 (function(){
@@ -391,12 +391,12 @@ img{ max-width:100%; display:block; }
   var i12 = ISSUES.filter(function(o){ return /Issue 12/.test(o.t); })[0]; if (i12 && i12.link) document.getElementById('open12').href = i12.link;
 
   // ---------- one section at a time ----------
-  var NAMES = ['desk', 'issues', 'interviews', 'games', 'story', 'note'], TITLES = { desk: "The Editors' Desk", issues: 'The Issues', interviews: 'Interviews', games: 'The Games', story: 'My Story', note: 'A Note for You' };
+  var NAMES = ['desk', 'issues', 'interviews', 'games', 'story', 'note'], TITLES = { desk: 'For The Circle Editors', issues: 'The Issues', interviews: 'Interviews', games: 'The Games', story: 'My Story', note: 'A Note for You' };
   function show(){
     var s = (location.hash || '#desk').slice(1); if (NAMES.indexOf(s) < 0) s = 'desk';
     NAMES.forEach(function(n){ document.getElementById(n).hidden = n !== s; });
     [].forEach.call(document.querySelectorAll('.nav a'), function(a){ var on = a.getAttribute('data-s') === s; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-    document.title = 'NeshamaGazine | ' + TITLES[s]; window.scrollTo(0, 0); setTimeout(function(){ window.scrollTo(0, 0); }, 0); seen(s);
+    document.title = (s === 'desk' ? TITLES[s] : TITLES[s] + ' | For The Circle Editors') + ' | NeshamaGazine'; window.scrollTo(0, 0); setTimeout(function(){ window.scrollTo(0, 0); }, 0); seen(s);
   }
   addEventListener('hashchange', show);
 
