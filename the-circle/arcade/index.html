@@ -23,7 +23,7 @@ html.ng-deskplay, html.ng-deskplay body{background:#12294a!important}
 </style>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795301820';
+window.NG_BUILD = '1795302456';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -41,11 +41,11 @@ window.NG_BUILD = '1795301820';
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NeshamaGazine</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="/neshamagazine/favicon.ico?v=6" sizes="any">
-<link rel="icon" type="image/png" sizes="192x192" href="/neshamagazine/icon-192.png?v=6">
-<link rel="icon" type="image/png" sizes="48x48" href="/neshamagazine/icon-48.png?v=6">
-<link rel="icon" type="image/png" sizes="32x32" href="/neshamagazine/icon-32.png?v=6">
-<link rel="icon" type="image/png" sizes="16x16" href="/neshamagazine/icon-16.png?v=6">
+<link rel="icon" href="/neshamagazine/favicon.ico?v=7" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="/neshamagazine/icon-192.png?v=7">
+<link rel="icon" type="image/png" sizes="48x48" href="/neshamagazine/icon-48.png?v=7">
+<link rel="icon" type="image/png" sizes="32x32" href="/neshamagazine/icon-32.png?v=7">
+<link rel="icon" type="image/png" sizes="16x16" href="/neshamagazine/icon-16.png?v=7">
 <meta name="description" content="A magazine made by kids for kids, packed with true stories, comics, and things to puzzle over.">
 <!-- Link preview (WhatsApp, iMessage, etc). Keep preview.png next to index.html. -->
 <meta property="og:url" content="https://neshamagazine.netlify.app/">
@@ -11863,6 +11863,33 @@ window.NG_BOOM = function(){
       document.querySelectorAll('link[rel~="icon"]').forEach(function(l){ if (on){ if (!l.dataset.h0) l.dataset.h0 = l.getAttribute('href'); l.setAttribute('href', icon()); } else if (l.dataset.h0) l.setAttribute('href', l.dataset.h0); });
       if (on){ if (document.title.indexOf("We're fixing") < 0) T0 = document.title; document.title = "We're fixing something | NeshamaGazine"; } else document.title = T0; }
     setInterval(tick, 700); tick(); })();
+</script>
+<script>
+// ---- The Circle editors' desk: "Visit my website" brings them in already signed in as guests ----
+(function(){
+  if (!/[?&]from=circle\b/.test(location.search)) return;
+  var EM = 'circleeditors@gmail.com', CODE = '23469', tries = 0, busy = false;
+  function $(id){ return document.getElementById(id); }
+  function clean(){ try { history.replaceState(null, '', location.pathname + location.hash); } catch(e){} }
+  function type(el, txt, done){ var i = 0; el.value = ''; (function step(){ if (i >= txt.length) return setTimeout(done, 260); el.value += txt.charAt(i++); setTimeout(step, 55); })(); }
+  function go(){
+    var w = $('ng-wall');
+    if (!window.NG || !NG.setUser || !window.NG_WALL || !w){ if (++tries < 120) setTimeout(go, 250); return; }
+    if (NG.getUser && NG.getUser()){ clean(); return; }
+    if (w.hidden){ if (++tries < 120) setTimeout(go, 250); else clean(); return; }   // owner, or the fixing screen is up: nothing to do
+    if (busy) return; busy = true;
+    var tab = w.querySelector('.ngw-tabs [data-m="login"]'); if (tab) tab.click();
+    var em = $('ngw-email'), pw = $('ngw-pass'), msg = $('ngw-msg');
+    if (msg) msg.textContent = 'Signing you in, Circle editors...';
+    type(em, EM, function(){ type(pw, CODE, function(){
+      NG.setUser({ name: 'Circle editors', email: EM, uid: 'circle-guest', via: 'circle' });
+      pw.value = ''; em.value = ''; if (msg) msg.textContent = '';
+      NG_WALL(); clean();
+      if (NG.toast) NG.toast('Welcome, Circle editors!');
+    }); });
+  }
+  if (document.readyState === 'complete') setTimeout(go, 600); else window.addEventListener('load', function(){ setTimeout(go, 600); });
+})();
 </script>
 <script>
 // ----- Circle desk arcade: walk straight into the games -----

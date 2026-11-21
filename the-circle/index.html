@@ -6,7 +6,8 @@
 <meta name="robots" content="noindex, nofollow">
 <title>For The Circle Editors | NeshamaGazine</title>
 <meta name="description" content="A private look at NeshamaGazine, made for the editors of The Circle.">
-<link rel="icon" href="../icons-normal/icon-32.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons-normal/icon-32.png?v=7">
+<link rel="icon" type="image/png" sizes="192x192" href="../icons-normal/icon-192.png?v=7">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700;800&display=swap">
@@ -25,7 +26,7 @@ img{ max-width:100%; display:block; }
 .top{ position:sticky; top:0; z-index:20; background:var(--beige); color:var(--navy); border-bottom:3px solid var(--navy); }
 .top .wrap{ display:flex; align-items:center; gap:18px; min-height:62px; }
 .mark{ flex:0 0 auto; display:block; }
-.mark img{ height:44px; width:auto; display:block; mix-blend-mode:multiply; }
+.mark img{ height:44px; width:auto; display:block; }
 .tagline{ font-size:.74rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; flex:0 0 auto; border-left:2px solid var(--line); padding-left:14px; }
 .nav{ margin-left:auto; display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }
 .nav a{ text-decoration:none; font-weight:700; font-size:.95rem; padding:8px 12px; border-radius:999px; }
@@ -74,11 +75,11 @@ img{ max-width:100%; display:block; }
 /* 3 the press pass */
 .t-story{ right:5%; top:9%; width:21%; aspect-ratio:1/1.38; --tilt:-2deg; transform:rotate(-4deg); }
 .t-story:hover, .t-story:focus-visible{ transform:translateY(-8px) rotate(-6deg); }
-.pass{ position:absolute; inset:9% 0 9% 0; background:var(--navy); color:var(--beige); border-radius:12px; padding:16% 9% 8%; display:flex; flex-direction:column; gap:.35em; font-size:clamp(.56rem, 1.25vw, .98rem); line-height:1.25; }
-.pass::before{ content:""; position:absolute; left:50%; top:5%; width:26%; height:5%; margin-left:-13%; background:var(--beige); border-radius:99px; }
+.pass{ position:absolute; inset:9% 0 9% 0; background:var(--navy); color:var(--beige); border-radius:12px; padding:14% 9% 8% 16%; display:flex; flex-direction:column; gap:.35em; font-size:clamp(.56rem, 1.25vw, .98rem); line-height:1.25; }
+.pass::before{ content:""; position:absolute; left:6%; top:0; bottom:0; width:3px; background:var(--beige); opacity:.45; }
 .strap{ position:absolute; left:50%; top:-6%; width:9%; height:18%; margin-left:-4.5%; background:var(--navy2); border-radius:4px; }
 .pass .pp{ font:800 .78em/1 Figtree,sans-serif; letter-spacing:.2em; opacity:.8; }
-.pass b{ font:800 1.55em/1 "Bricolage Grotesque",Figtree,sans-serif; }
+.pass b{ font:800 2em/1 "Bricolage Grotesque",Figtree,sans-serif; }
 .pass .role{ font-weight:700; }
 .pass .age{ margin-top:auto; align-self:flex-start; background:var(--beige); color:var(--navy); border-radius:6px; padding:.25em .6em; font-weight:800; }
 /* 4 the arcade box */
@@ -145,7 +146,17 @@ button.btn{ cursor:pointer; font-family:inherit; }
 .issue ul{ margin:0 0 10px; padding-left:1.05em; font-size:.88rem; line-height:1.4; }
 .issue button{ cursor:pointer; font:800 .92rem/1 Figtree,sans-serif; background:var(--navy); color:var(--beige); border:0; border-radius:999px; padding:9px 15px; display:inline-flex; align-items:center; gap:8px; }
 .issue button:hover{ background:var(--navy2); }
-.issue img{ cursor:pointer; }
+.issue .cv{ position:relative; display:block; cursor:pointer; }
+.issue .cv img{ display:block; }
+.issue .cv i{ position:absolute; left:-6px; bottom:10px; font:800 .66rem/1 Figtree,sans-serif; font-style:normal; letter-spacing:.1em; text-transform:uppercase; background:var(--navy); color:var(--beige); padding:5px 8px; border-radius:4px; }
+.flipnote{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; background:var(--navy); color:var(--beige); border-radius:18px; padding:18px 22px; margin:0 0 22px; }
+.flipnote > div{ flex:1 1 260px; min-width:0; display:grid; gap:4px; }
+.flipnote b{ font:800 1.3rem/1.15 "Bricolage Grotesque",Figtree,sans-serif; }
+.flipnote span{ font-weight:600; line-height:1.4; }
+.flipnote .btn{ background:var(--beige); color:var(--navy); border-color:var(--beige); }
+.bk{ flex:0 0 auto; display:flex; width:64px; height:46px; }
+.bk i{ flex:1; border:3px solid var(--beige); background:linear-gradient(var(--beige),var(--beige)) 50% 32%/60% 3px no-repeat, linear-gradient(var(--beige),var(--beige)) 50% 54%/60% 3px no-repeat, linear-gradient(var(--beige),var(--beige)) 50% 76%/60% 3px no-repeat; }
+.bk i:first-child{ border-radius:8px 2px 2px 8px; transform:skewY(8deg); border-right-width:2px; } .bk i:last-child{ border-radius:2px 8px 8px 2px; transform:skewY(-8deg); border-left-width:2px; }
 @media (max-width:420px){ .issue{ grid-template-columns:92px 1fr; } .issue img{ width:92px; } }
 
 .cards{ display:grid; gap:18px; }
@@ -261,7 +272,7 @@ button.btn{ cursor:pointer; font-family:inherit; }
   <div class="wrap">
     <a class="mark" href="#desk" aria-label="NeshamaGazine, back to the desk"><img src="logo.png" alt="NeshamaGazine" width="424" height="144"></a>
     <span class="tagline">For The Circle editors</span>
-    <a class="site2" href="../" target="_blank" rel="noopener">My website <span class="arr"></span></a>
+    <a class="site2" href="../?from=circle" target="_blank" rel="noopener">My website <span class="arr"></span></a>
     <nav class="nav" aria-label="Sections">
       <a href="#desk" data-s="desk">The Desk</a>
       <a href="#issues" data-s="issues">Issues</a>
@@ -269,7 +280,7 @@ button.btn{ cursor:pointer; font-family:inherit; }
       <a href="#games" data-s="games">Games</a>
       <a href="#story" data-s="story">My Story</a>
       <a href="#note" data-s="note">A Note</a>
-      <a class="site" href="../" target="_blank" rel="noopener">Visit my website <span class="arr"></span></a>
+      <a class="site" href="../?from=circle" target="_blank" rel="noopener">Visit my website <span class="arr"></span></a>
     </nav>
   </div>
 </header>
@@ -284,7 +295,6 @@ button.btn{ cursor:pointer; font-family:inherit; }
       <p>Welcome to my desk. I'm Levi Chekroun. I'm twelve, and I publish a magazine called NeshamaGazine. I set this desk up for you. Everything on it is real, so pick up whatever looks interesting.</p>
     </div>
     <div class="pad">
-      <span class="start" aria-hidden="true">Start here <span class="arr"></span></span>
       <span class="pencil" aria-hidden="true"></span>
       <span class="sticky" aria-hidden="true">Hi, Circle editors!<br>Thanks for coming.</span>
 
@@ -292,7 +302,7 @@ button.btn{ cursor:pointer; font-family:inherit; }
         <img src="covers/issue-10-beha-alotcha.jpg" alt="">
         <img src="covers/issue-12-rosh-hashana.jpg" alt="">
         <img src="covers/issue-13-bereishis.jpg" alt="">
-        <span class="label"><em>1</em>The Issues <i></i></span>
+        <span class="label"><em>1</em>Flip through the Issues <i></i></span>
       </a>
 
       <a class="thing t-talk" href="#interviews">
@@ -301,8 +311,7 @@ button.btn{ cursor:pointer; font-family:inherit; }
       </a>
 
       <a class="thing t-story" href="#story">
-        <span class="strap" aria-hidden="true"></span>
-        <span class="pass"><span class="pp">PRESS</span><b>Levi Chekroun</b><span class="role">Publisher and Editor in Chief</span><span class="age">Age 12</span></span>
+        <span class="pass"><span class="pp">The true story</span><b>My Story</b><span class="role">How I started NeshamaGazine with a frying pan and twelve pages.</span><span class="age">By Levi Chekroun, age 12</span></span>
         <span class="label"><em>4</em>My Story <i></i></span>
       </a>
 
@@ -325,7 +334,7 @@ button.btn{ cursor:pointer; font-family:inherit; }
         <span class="label"><em>5</em>A Note for You <i></i></span>
       </a>
     </div>
-    <p class="hint">Click anything on the desk. Number 1 is a good place to start, and every page has an arrow to the next one.</p>
+    <p class="hint">Click anything on the desk. Number 1 is a good place to start.</p>
   </div>
 </section>
 
@@ -336,7 +345,12 @@ button.btn{ cursor:pointer; font-family:inherit; }
     <div class="head">
       <span class="kicker">The Issues</span>
       <h1>From 12 pages to 68.</h1>
-      <p>NeshamaGazine is a free Jewish kids' magazine with true stories, comics, news, riddles and Torah. I started it by myself. Now there is a team, and every page has a credit. I picked out ten issues for you. Press Read it, and the whole issue opens right here as a flipbook.</p>
+      <p>NeshamaGazine is a free Jewish kids' magazine with true stories, comics, news, riddles and Torah. I started it by myself. Now there is a team, and every page has a credit. I picked out ten issues for you.</p>
+    </div>
+    <div class="flipnote">
+      <span class="bk" aria-hidden="true"><i></i><i></i></span>
+      <div><b>Every issue here is a real flipbook.</b><span>Press any cover and the whole magazine opens on this page. Turn the pages like the printed one.</span></div>
+      <button class="btn" type="button" data-read="issue-13-bereishis">Open the newest flipbook</button>
     </div>
     <ul class="facts">
       <li><b>July 2025</b><span>Issue 1, Escape to Shanghai</span></li>
@@ -456,7 +470,7 @@ button.btn{ cursor:pointer; font-family:inherit; }
       <code id="mail">levichekroun@ulyop.com</code>
       <button class="btn" id="copy" type="button">Copy the address</button>
     </div>
-    <div class="next"><span>Want to see more?</span><a href="../" target="_blank" rel="noopener">Visit the NeshamaGazine website <span class="arr"></span></a></div>
+    <div class="next"><span>Want to see more?</span><a href="../?from=circle" target="_blank" rel="noopener">Visit the NeshamaGazine website <span class="arr"></span></a></div>
   </div>
 </section>
 </main>
@@ -471,7 +485,7 @@ button.btn{ cursor:pointer; font-family:inherit; }
   <iframe id="pl-frame" title="NeshamaGazine games" allow="autoplay; fullscreen"></iframe>
 </div>
 
-<footer class="foot"><div class="wrap"><span><img src="logo.png" alt="NeshamaGazine" style="height:30px;width:auto;border-radius:6px;display:inline-block;vertical-align:middle;margin-right:10px">Read to grow. Spark the glow.</span><span>Made for the editors of The Circle. <a href="../" target="_blank" rel="noopener">Visit the NeshamaGazine website</a></span></div></footer>
+<footer class="foot"><div class="wrap"><span><img src="logo.png" alt="NeshamaGazine" style="height:30px;width:auto;border-radius:6px;display:inline-block;vertical-align:middle;margin-right:10px">Read to grow. Spark the glow.</span><span>Made for the editors of The Circle. <a href="../?from=circle" target="_blank" rel="noopener">Visit the NeshamaGazine website</a></span></div></footer>
 
 <script src="reader.js"></script>
 <script>
@@ -479,9 +493,9 @@ button.btn{ cursor:pointer; font-family:inherit; }
   var ISSUES = [{"t": "Issue 13 Bereishis", "p": 40, "n": "The newest issue. All the regular sections are now set.", "c": ["How can a farmer be a double agent? The true story of the farmer who fooled Hitler", "Suspense in the Lion's Den", "Hunt for Mengele 3", "Escape"], "img": "covers/issue-13-bereishis.jpg", "b": "issue-13-bereishis"}, {"t": "Issue 12 Rosh Hashana", "p": 68, "n": "Our biggest ever, with the Boruch Perlowitz interview.", "c": ["Mega Rosh Hashana issue: 68 pages!", "What can a plate hide? Discover Behind the Plate", "Exclusive interview with Boruch Perlowitz", "The weekly illusion"], "img": "covers/issue-12-rosh-hashana.jpg", "b": "issue-12-rosh-hashana"}, {"t": "Issue 10 Beha'alotcha", "p": 32, "n": "Our own characters, Shimmy and Mimmy, appear on the cover.", "c": ["How can a painting be saved? The true story of the attack on Danë", "Jokes & Riddles", "News", "New Comic!"], "img": "covers/issue-10-beha-alotcha.jpg", "b": "issue-10-behaalotcha"}, {"t": "Issue 09 Shavuos", "p": 48, "n": "The first mega issue: a real news section and two comics at once.", "c": ["Mega Shavuos issue: 48 pages!", "How can a machine save the world? The true story of Bletchley Park", "Jokes & Riddles", "News"], "img": "covers/issue-09-shavuos.jpg", "b": "issue-09-shavuos"}, {"t": "Issue 08 Tazria Metzora", "p": 20, "n": "The new arch cover design and our first sponsor.", "c": ["How can Eretz Yisrael overcome the unthinkable? Through lasers!", "The youngest partisan", "Jokes & Riddles", "New Comic!"], "img": "covers/issue-08-tazria-metzora.jpg", "b": "issue-08-tazria-metzora"}, {"t": "Parsha Food Season", "p": 16, "n": "The first ad space, plus a cookie recipe.", "c": ["The Parsha Food Season issue (October 2025)", "News report: Mossad's secret mission to rescue Ethiopian captives", "The hunt for Josef Mengele", "Why don't skeletons fight each other?"], "img": "covers/parsha-food-season.jpg", "b": "parsha-food-season"}, {"t": "Sukkos Edition", "p": 16, "n": "Our first comic in full color, and recipes.", "c": ["Sukkos recipes: 10 delights you can make on chol hamoed", "Rosh Hashanah comic, part 2", "News: what was hidden in Germany?", "Riddles & Jokes"], "img": "covers/sukkos-edition.jpg", "b": "sukkos-edition"}, {"t": "The Double Life of Eli Cohen", "p": 16, "n": "The issue that changed everything: 14 copies in my shul.", "c": ["The Double Life of Eli Cohen", "Exclusive Rosh Hashanah edition"], "img": "covers/the-double-life-of-eli-cohen.jpg", "b": "the-double-life-of-eli-cohen"}, {"t": "Issue 5", "p": 16, "n": "The Third Trapdoor comic finally appears.", "c": ["Rosh Hashana comic: the final part!", "Coming next: the hunt for Mengele 2"], "img": "covers/issue-5.jpg", "b": "issue-5"}, {"t": "Escape to Shanghai", "p": 12, "n": "Our first numbered issue. Where it all started.", "c": ["Escape to Shanghai", "Year 1, Issue 1: where it all started! (Tammuz 5785 / July 2025)"], "img": "covers/escape-to-shanghai.jpg", "b": "escape-to-shanghai"}], BOOKS = {"issue-10-behaalotcha": {"ratio": 1.2947, "n": 32, "ext": "webp"}, "escape-to-shanghai": {"ratio": 1.2947, "n": 12, "ext": "webp"}, "issue-08-tazria-metzora": {"ratio": 1.2947, "n": 20, "ext": "webp"}, "issue-09-shavuos": {"ratio": 1.2789, "n": 48, "ext": "webp"}, "issue-12-rosh-hashana": {"ratio": 1.2724, "n": 68, "ext": "webp"}, "issue-13-bereishis": {"ratio": 1.2789, "n": 40, "ext": "webp"}, "issue-5": {"ratio": 1.2684, "n": 16, "ext": "webp"}, "parsha-food-season": {"ratio": 1.2947, "n": 16, "ext": "webp"}, "sukkos-edition": {"ratio": 1.2947, "n": 16, "ext": "webp"}, "the-double-life-of-eli-cohen": {"ratio": 1.2947, "n": 16, "ext": "webp"}};
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
   document.getElementById('issue-grid').innerHTML = ISSUES.map(function(o){
-    return '<article class="issue"><img src="' + esc(o.img) + '" alt="Cover of ' + esc(o.t) + '" loading="lazy"' + (o.b ? ' data-read="' + esc(o.b) + '"' : '') + '><div><h3>' + esc(o.t) + '</h3>' + (o.p ? '<span class="pg">' + o.p + ' pages</span>' : '') +
+    return '<article class="issue"><span class="cv"' + (o.b ? ' data-read="' + esc(o.b) + '"' : '') + '><img src="' + esc(o.img) + '" alt="Cover of ' + esc(o.t) + '" loading="lazy"><i>Flipbook</i></span><div><h3>' + esc(o.t) + '</h3>' + (o.p ? '<span class="pg">' + o.p + ' pages</span>' : '') +
       '<p>' + esc(o.n) + '</p><ul>' + o.c.slice(0, 3).map(function(c){ return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' +
-      (o.b ? '<button type="button" data-read="' + esc(o.b) + '">Read it <span class="arr"></span></button>' : '') + '</div></article>'; }).join('');
+      (o.b ? '<button type="button" data-read="' + esc(o.b) + '">Open the flipbook</button>' : '') + '</div></article>'; }).join('');
 
   // ---------- the flipbook reader: the real issue, right here ----------
   var rd = document.getElementById('reader'), rdHost = document.getElementById('rd-host'), book = null, lastFocus = null;
