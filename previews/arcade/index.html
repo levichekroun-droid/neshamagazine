@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795307246';
+window.NG_BUILD = '1795307387';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -6573,7 +6573,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     wMode = m === 'login' ? 'login' : 'signup'; var su = wMode === 'signup';
     document.querySelectorAll('.ngw-tabs button').forEach(function(t){ t.classList.toggle('on', t.getAttribute('data-m') === wMode); });
     $('ngw-h').textContent = su ? 'Read NeshamaGazine for FREE' : 'Log in to NeshamaGazine';
-    $('ngw-sub').textContent = su ? 'You just need an account to read all the issues.' : 'Welcome back.';
+    $('ngw-sub').textContent = su ? 'You just need an account to read all the magazines.' : 'Welcome back.';
     $('ngw-name').hidden = !su; $('ngw-pass2').hidden = !su; $('ngw-pw2').hidden = !su;
     $('ngw-pass').placeholder = su ? 'Make a password (8 or more characters)' : 'Your password';
     $('ngw-pass').autocomplete = su ? 'new-password' : 'current-password';
