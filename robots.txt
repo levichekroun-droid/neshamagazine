@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /previews/
+Disallow: /the-circle/
+Disallow: /moved/
+
+Sitemap: https://neshamagazine.com/sitemap.xml
