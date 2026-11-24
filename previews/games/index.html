@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795477376';
+window.NG_BUILD = '1795524473';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -1432,6 +1432,7 @@ html.ng-owner .arch:hover img{box-shadow:0 0 0 2px #f2c230,0 0 26px rgba(242,194
 .st-flash.out{opacity:0}
 #ng-sec{position:fixed;inset:0;pointer-events:none;z-index:2147483600}
 #ng-sec .sx-wm{position:absolute;inset:0;opacity:.11;background-repeat:repeat}
+html.ng-own-free #ng-sec .sx-wm,html.ng-own-free #ng-sec .sx-dots{display:none!important}
 #ng-sec .sx-dots{position:absolute;inset:0;opacity:.06;background-repeat:repeat}
 #ng-sec .sx-black,#ng-sec .sx-away{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;pointer-events:auto;font-family:inherit}
 #ng-sec .sx-black{background:#000;color:#fff;animation:sxFlash .5s steps(2) infinite}
@@ -8349,8 +8350,12 @@ document.getElementById('cp').addEventListener('click',function(){
   function blackout(ms){ var end = Date.now() + (ms || 1800); if (end <= blackEnd) return; blackEnd = end; root.classList.add('ng-black'); clearTimeout(blackT); blackT = setTimeout(function(){ if (!root.classList.contains('ng-soft')) root.classList.remove('ng-black'); blackEnd = 0; }, ms || 1800); }
   function wipeClip(){ try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(' ').catch(function(){}); } catch(e){} }
   function inField(t){ return t && t.closest && t.closest('input, textarea, select, [contenteditable="true"], #owner-panel, .owner-panel'); }
+  function ownFree(){ var o = owner(); root.classList.toggle('ng-own-free', o); if (o) root.classList.remove('ng-away', 'ng-black', 'ng-soft'); return o; }
+  document.addEventListener('ng:owner', function(){ setTimeout(ownFree, 0); }); setTimeout(ownFree, 800); setInterval(ownFree, 4000);
+  function shotKey(e){ var k = e.key || ''; return k === 'PrintScreen' || e.keyCode === 44 || (e.altKey && e.shiftKey && /Digit[3456]/.test(e.code || '')) || (e.ctrlKey && e.shiftKey && /^[sS]$/.test(k)) || (e.metaKey && e.shiftKey) || k === 'Meta' || k === 'OS' || k === 'Shift'; }
   document.addEventListener('keydown', function(e){
     var k = e.key || '', mod = e.ctrlKey || e.metaKey;
+    if (shotKey(e) && ownFree()) return;   // the owner may take a screenshot
     if (k === 'PrintScreen' || e.keyCode === 44){ blackout(1900); wipeClip(); strike('screenshot'); e.preventDefault(); return; }
     if ((e.altKey && e.shiftKey && /Digit[3456]/.test(e.code || '')) || (e.ctrlKey && e.shiftKey && /^[sS]$/.test(k))){ blackout(2500); e.preventDefault(); wipeClip(); strike('screenshot'); return; }
     if (e.metaKey && e.shiftKey){ blackout(2500); if (/^[3456sS]$/.test(k) || /Digit[3456]|KeyS/.test(e.code || '')){ e.preventDefault(); strike('screenshot'); } return; }
@@ -8361,12 +8366,13 @@ document.getElementById('cp').addEventListener('click',function(){
     if (mod && /^[cCxXaA]$/.test(k) && !inField(e.target)){ e.preventDefault(); warn(); return; }
   }, true);
   document.addEventListener('keyup', function(e){
+    if (shotKey(e) && ownFree()) return;
     if (e.key === 'PrintScreen' || e.keyCode === 44){ blackout(1900); wipeClip(); strike('screenshot'); }
     if (((e.key === 'Meta' || e.key === 'OS') && !MAC) || (e.key === 'Shift' && root.classList.contains('ng-black'))) blackout(700);
   }, true);
 
   // ---------- leaving the window blurs everything ----------
-  function away(on){ root.classList.toggle('ng-away', on); }
+  function away(on){ if (on && ownFree()) return; root.classList.toggle('ng-away', on); }
   window.addEventListener('blur', function(){ var a = document.activeElement; if (!(a && a.tagName === 'IFRAME')) away(true); setTimeout(function(){ var b = document.activeElement; if (b && b.tagName === 'IFRAME' && document.hasFocus()) away(false); }, 60); });
   document.addEventListener('mouseleave', function(e){ if (!e.relatedTarget && e.clientY >= innerHeight - 2 && !owner()) away(true); });
   document.addEventListener('mouseenter', function(){ if (document.hasFocus()) away(false); });
