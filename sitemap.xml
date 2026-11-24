@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://neshamagazine.com/</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url><loc>https://neshamagazine.com/</loc>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-13-bereishis-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-12-rosh-hashana-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-10-behaalotcha-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-09-shavuos-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-08-tazria-metzora-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-parsha-food-season-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-sukkos-edition-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-the-double-life-of-eli-cohen-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-5-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-escape-to-shanghai-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-logo.png</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/share.jpg</image:loc></image:image>
+  </url>
+  <url><loc>https://neshamagazine.com/covers/</loc>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-13-bereishis-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-12-rosh-hashana-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-10-behaalotcha-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-09-shavuos-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-08-tazria-metzora-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-parsha-food-season-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-sukkos-edition-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-the-double-life-of-eli-cohen-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-5-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-escape-to-shanghai-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-logo.png</image:loc></image:image>
+  </url>
 </urlset>
