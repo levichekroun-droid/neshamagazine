@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795611317';
+window.NG_BUILD = '1795611988';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -2184,7 +2184,6 @@ body.focus main > #sponsor,body.focus main > #contact{padding-top:44px}
 @media (max-width:700px){.cd-card{flex-direction:column;align-items:flex-start!important;gap:22px!important}.cd-thumb{width:150px!important}.finder-box{flex-direction:column;align-items:stretch}.finder-row{flex-wrap:wrap}}
 
 /* newsletter ads (the old "New issues by email" box is replaced by these) */
-#notify-banner{display:none!important}
 .nl-big{position:fixed;inset:0;z-index:2600;background:rgba(14,20,32,.6);display:flex;align-items:center;justify-content:center;padding:16px}
 .nl-big[hidden],.nl-small[hidden]{display:none!important}
 .nl-card{position:relative;width:75vw;height:75vh;max-width:1150px;max-height:760px;min-height:430px;display:flex;background:#fffaf2;border-radius:8px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:nlIn .35s ease-out}
@@ -3157,7 +3156,7 @@ html body #finder.fx2 .finder-msg:empty,html body #finder.fx2 .finder-chips:empt
 <style id="ng-sec-quiet">#ng-sec .sx-black > div{display:none!important}#ng-sec .sx-black{animation:none!important;background:#000!important}</style>
 </head>
 <body>
-<script type="application/json" id="ng-config">{"emailjsService": "service_bxqaqrf", "emailjsTemplate": "template_l7jrme1", "emailjsMsgTemplate": "template_i8llobo", "emailjsKey": "Rx0eirUCwTvkK7CWd", "nextIssueDate": "2026-10-16T00:00", "nextIssueTitle": "The next issue drops in…", "teamProgress": 60, "announcement": "", "offers": [{"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "Want the next issue first?", "p": "Get an email the day a new issue is out.", "yes": "Notify me"}, {"t": "Don't miss an issue", "p": "We'll send you a short email when the next one is ready.", "yes": "Notify me"}, {"t": "New comics and stories", "p": "Get an email when we post something new.", "yes": "Notify me"}, {"t": "New issues by email", "p": "One short email when a new issue comes out. That's it.", "yes": "Notify me"}, {"t": "Stay in the loop", "p": "Get an email when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}], "videosLive": false, "videos": [], "tzedakaLive": true, "stripeLink": "https://www.paypal.com/donate/?hosted_button_id=JWML6XVRCWSJL", "teamDone": false, "teamMessage": "Neshama Robo 2.5 is still building this page. Soon you'll meet the kids who write, draw and make NeshamaGazine!", "teamMembers": [], "nextIssueCover": "", "announceSize": "normal", "announceColor": "sunset", "announceCustom": "#e4493c"}</script>
+<script type="application/json" id="ng-config">{"emailjsService": "service_bxqaqrf", "emailjsTemplate": "template_l7jrme1", "emailjsMsgTemplate": "template_i8llobo", "emailjsKey": "Rx0eirUCwTvkK7CWd", "nextIssueDate": "2026-10-16T00:00", "nextIssueTitle": "The next issue drops in…", "teamProgress": 60, "announcement": "", "offers": [{"t": "Want to be on the notification list?", "p": "We'll tell you the moment a new issue is out.", "yes": "Yes"}, {"t": "Okay, how about this: be the first to know", "p": "The day a new issue lands, you hear about it. Before your friends do.", "yes": "Okay, yes"}, {"t": "Spies. Comics. Riddles. Sent to you.", "p": "One short email when a new issue is ready. That's the whole deal.", "yes": "Count me in"}, {"t": "Still here? You clearly like it.", "p": "Join the list and you will never miss an issue again.", "yes": "Fine, yes!"}, {"t": "Last time we ask. Promise.", "p": "Say yes now and the next issue comes straight to you.", "yes": "Yes, add me"}, {"t": "Stay in the loop", "p": "Get an email when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}, {"t": "New issues by email", "p": "We'll email you when a new issue comes out.", "yes": "Notify me"}], "videosLive": false, "videos": [], "tzedakaLive": true, "stripeLink": "https://www.paypal.com/donate/?hosted_button_id=JWML6XVRCWSJL", "teamDone": false, "teamMessage": "Neshama Robo 2.5 is still building this page. Soon you'll meet the kids who write, draw and make NeshamaGazine!", "teamMembers": [], "nextIssueCover": "", "announceSize": "normal", "announceColor": "sunset", "announceCustom": "#e4493c"}</script>
 <script>try { var ngfx = +localStorage.getItem('ng_fixing') || 0; if (ngfx > 1 && Date.now() - ngfx < 3600000 && sessionStorage.getItem('ng_work_pass') !== '1'){ document.documentElement.classList.add('ng-working'); setTimeout(function(){ if (!window.NG_WORK_ON){ document.documentElement.classList.remove('ng-working'); try { localStorage.removeItem('ng_fixing'); } catch(e){} } }, 10000); } else if (ngfx) localStorage.removeItem('ng_fixing'); } catch(e){}</script>
 <script>window.NG_CFG = JSON.parse(document.getElementById('ng-config').textContent);
 window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.dataset.sure === '1'){ delete b.dataset.sure; clearTimeout(b._sureT); if (b.dataset.t0 != null) b.textContent = b.dataset.t0; return true; }
@@ -7890,11 +7889,11 @@ document.getElementById('cp').addEventListener('click',function(){
 
   // Shows when you arrive. Each "Maybe later" brings back a nicer offer a little later.
   var offers = window.NG_CFG.offers;
-  var level = 0, nagTimer = null, GAP = 180000, shown = 0;   // comes back 3 minutes after "Maybe later", at most 2 times a visit
+  var level = 0, nagTimer = null, GAPS = [30000, 30000, 120000, 180000], shown = 0;   // after each "No thanks": 30 seconds, 30 seconds, 2 minutes, 3 minutes, then it stops (5 in all)
   function showBanner(){
     if (isOn()) return;
     var th = document.getElementById('tz-thanks');
-    if (shown >= 2) return;
+    if (shown >= 5) return;
     var B = document.body, H = document.documentElement;
     if ((th && !th.hidden) || window.NG_TZ_BUSY || B.classList.contains('focus') || B.classList.contains('fbv-open') || H.classList.contains('ng-walled') || H.classList.contains('ng-blocked')){ nagTimer = setTimeout(showBanner, 15000); return; }
     shown++;
@@ -7903,7 +7902,7 @@ document.getElementById('cp').addEventListener('click',function(){
     document.getElementById('nb-title').innerHTML = esc(o.t).replace(/^/, '<span class="bell"></span>');
     document.getElementById('nb-text').textContent = o.p;
     yesBtn.textContent = o.yes; noBtn.textContent = 'No thanks';
-    banner.setAttribute('data-level', level % 4); banner.classList.toggle('sparkle', level >= 3);
+    banner.setAttribute('data-level', level % 5); banner.classList.toggle('sparkle', level >= 3); try { if (window.NG_SOUND && NG_SOUND.ding) NG_SOUND.ding(1); } catch(e){}
     banner.style.display = 'none'; void banner.offsetWidth; banner.style.display = 'block';
   }
   function hideBanner(){ banner.style.display = 'none'; clearTimeout(nagTimer); }
@@ -7914,7 +7913,7 @@ document.getElementById('cp').addEventListener('click',function(){
     var o = offers[i];
     document.getElementById('nb-title').innerHTML = esc(o.t).replace(/^/, '<span class="bell"></span>');
     document.getElementById('nb-text').textContent = o.p; yesBtn.textContent = o.yes; noBtn.textContent = 'No thanks';
-    banner.setAttribute('data-level', i % 4); banner.classList.toggle('sparkle', i >= 3);
+    banner.setAttribute('data-level', i % 5); banner.classList.toggle('sparkle', i >= 3);
     banner.style.display = 'none'; void banner.offsetWidth; banner.style.display = 'block';
   };
 
@@ -7937,7 +7936,7 @@ document.getElementById('cp').addEventListener('click',function(){
   });
 
   yesBtn.addEventListener('click', function(){ turnOn(); });
-  noBtn.addEventListener('click', function(){ hideBanner(); level++; nagTimer = setTimeout(showBanner, GAP); });
+  noBtn.addEventListener('click', function(){ hideBanner(); var g = GAPS[level]; level++; if (g) nagTimer = setTimeout(showBanner, g); });
   setTimeout(showBanner, 5000);   // shows a few seconds after you arrive
 })();
 </script>
@@ -11996,6 +11995,42 @@ window.NG_BOOM = function(){
       if (on){ if (document.title.indexOf("We're fixing") < 0) T0 = document.title; document.title = "We're fixing something | NeshamaGazine"; } else document.title = T0; }
     setInterval(tick, 700); tick(); })();
 </script>
+<style id="ng-notify2">
+/* notification pop-ups: navy and beige, no shadow, each one arrives in a bigger way than the last */
+#notify-banner.notify-banner{left:auto!important;right:16px!important;bottom:16px!important;transform:none;max-width:min(360px,calc(100vw - 32px))!important;background:#12294a!important;color:#f5e4cc!important;border:3px solid #f5e4cc!important;border-radius:16px!important;padding:18px 20px 16px!important;text-align:left!important;box-shadow:none!important;animation:nbSlide .55s cubic-bezier(.2,1.4,.4,1) both!important;transform-origin:100% 100%}
+#notify-banner h4{font:800 1.18rem/1.15 "Bricolage Grotesque","Figtree",system-ui,sans-serif!important;margin:0 26px 6px 0!important;color:#f5e4cc!important;display:flex;gap:10px;align-items:flex-start;animation:none!important}
+#notify-banner p{font:500 .95rem/1.4 "Figtree",system-ui,sans-serif!important;margin:0 0 14px!important;color:#f5e4cc!important}
+#notify-banner .bell{display:inline-block!important;flex:none;width:24px;height:24px;margin-top:1px;background:#f5e4cc;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a2 2 0 0 0-2 2v.6A6.5 6.5 0 0 0 5.5 11v4.2L3.6 18a1 1 0 0 0 .8 1.6h15.2a1 1 0 0 0 .8-1.6l-1.9-2.8V11A6.5 6.5 0 0 0 14 4.6V4a2 2 0 0 0-2-2zm-2.4 19a2.5 2.5 0 0 0 4.8 0z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a2 2 0 0 0-2 2v.6A6.5 6.5 0 0 0 5.5 11v4.2L3.6 18a1 1 0 0 0 .8 1.6h15.2a1 1 0 0 0 .8-1.6l-1.9-2.8V11A6.5 6.5 0 0 0 14 4.6V4a2 2 0 0 0-2-2zm-2.4 19a2.5 2.5 0 0 0 4.8 0z'/%3E%3C/svg%3E") center/contain no-repeat;transform-origin:50% 10%;animation:nbRing 1.8s ease-in-out .5s infinite!important}
+#notify-banner .notify-banner-btns{justify-content:flex-start!important;gap:10px!important}
+#notify-banner .btn{background:#f5e4cc!important;color:#12294a!important;border:2px solid #f5e4cc!important;border-radius:999px!important;padding:9px 20px!important;font:800 .95rem "Figtree",system-ui,sans-serif!important;box-shadow:none!important;animation:none!important}
+#notify-banner .btn.ghost{background:transparent!important;color:#f5e4cc!important;font-weight:600!important}
+#notify-banner .btn:hover,#notify-banner .btn:focus-visible{background:#12294a!important;color:#f5e4cc!important;outline:none}
+#notify-banner .btn.ghost:hover,#notify-banner .btn.ghost:focus-visible{background:#f5e4cc!important;color:#12294a!important}
+#notify-banner .nb-x{color:#f5e4cc!important;right:10px!important;top:8px!important}
+#notify-banner[data-level="1"]{animation:nbDrop .8s cubic-bezier(.3,1.5,.5,1) both!important}
+#notify-banner[data-level="2"]{animation:nbSpin .7s cubic-bezier(.2,1.5,.4,1) both!important}
+#notify-banner[data-level="2"] h4{animation:nbWig 2.4s ease-in-out .8s infinite!important}
+#notify-banner[data-level="3"]{animation:nbUp .6s cubic-bezier(.2,1.5,.4,1) both,nbShake 3.2s ease-in-out 1.2s infinite!important}
+#notify-banner[data-level="3"] #notify-yes,#notify-banner[data-level="4"] #notify-yes{animation:nbPulse 1.2s ease-in-out infinite!important}
+#notify-banner[data-level="4"]{background:#f5e4cc!important;color:#12294a!important;border-color:#12294a!important;animation:nbBig .8s cubic-bezier(.2,1.6,.4,1) both!important}
+#notify-banner[data-level="4"] h4,#notify-banner[data-level="4"] p,#notify-banner[data-level="4"] .nb-x{color:#12294a!important}
+#notify-banner[data-level="4"] .bell{background:#12294a}
+#notify-banner[data-level="4"] .btn{background:#12294a!important;color:#f5e4cc!important;border-color:#12294a!important}
+#notify-banner[data-level="4"] .btn.ghost{background:transparent!important;color:#12294a!important}
+#notify-banner[data-level="4"] .btn:hover{background:#f5e4cc!important;color:#12294a!important}
+#notify-banner[data-level="4"] .btn.ghost:hover{background:#12294a!important;color:#f5e4cc!important}
+#notify-banner[data-level="4"]::before{content:"LAST ONE";position:absolute;left:16px;top:-13px;background:#12294a;color:#f5e4cc;font:800 .68rem "Figtree",system-ui,sans-serif;letter-spacing:.16em;padding:5px 10px;border-radius:999px}
+@keyframes nbSlide{from{transform:translateX(130%) rotate(4deg)}to{transform:none}}
+@keyframes nbDrop{from{transform:translateY(-110vh) rotate(-6deg)}to{transform:none}}
+@keyframes nbSpin{from{transform:scale(.2) rotate(-200deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes nbUp{from{transform:translateY(140%)}to{transform:none}}
+@keyframes nbBig{0%{transform:scale(0) rotate(-12deg)}70%{transform:scale(1.12) rotate(2deg)}100%{transform:none}}
+@keyframes nbShake{0%,86%,100%{transform:none}89%{transform:rotate(-2.5deg)}92%{transform:rotate(2.5deg)}95%{transform:rotate(-1.5deg)}98%{transform:rotate(1deg)}}
+@keyframes nbRing{0%,60%,100%{transform:rotate(0)}66%{transform:rotate(16deg)}72%{transform:rotate(-14deg)}78%{transform:rotate(10deg)}84%{transform:rotate(-6deg)}90%{transform:rotate(3deg)}}
+@keyframes nbWig{0%,80%,100%{transform:none}85%{transform:translateX(-3px)}90%{transform:translateX(3px)}95%{transform:translateX(-2px)}}
+@keyframes nbPulse{50%{transform:scale(1.08)}}
+@media (prefers-reduced-motion:reduce){#notify-banner,#notify-banner *{animation:none!important}}
+</style>
 <script id="ng-back">
 /* The Back button works inside the site: opening an issue, the games room or a game adds a step, and Back closes the last thing you opened instead of leaving the site. */
 (function(){
@@ -12004,11 +12039,14 @@ window.NG_BOOM = function(){
   function fv(){ return document.getElementById('flipview'); }
   function room(){ return document.getElementById('ng-arcade'); }
   function stage(){ var r = room(); return r && r.querySelector('.arc-stage'); }
-  var L = [
+  function shown(e){ if (!e || e.hidden) return false; var c = getComputedStyle(e); return c.display !== 'none' && c.visibility !== 'hidden' && +c.opacity > 0.05 && c.pointerEvents !== 'none' && e.getClientRects().length > 0; }
+  function shut(e){ var b = e.querySelector('.sp-x,.auth-close,.nlf-x,[data-nl="close"],[aria-label="Close"],[class*="close"],[id$="-close"],[id$="-x"]'); if (b) b.click(); else document.dispatchEvent(new KeyboardEvent('keydown', { key:'Escape', bubbles:true })); }
+  var POPS = ['nl-big', 'sp-modal', 'ad-modal', 'auth-modal', 'wheel-view', 'issue-view'];
+  var L = POPS.map(function(id){ return { k:id, el:function(){ return document.getElementById(id); }, open:function(){ return shown(document.getElementById(id)); }, close:function(){ var e = document.getElementById(id); if (e) shut(e); } }; }).concat([
     { k:'read',  open:function(){ var e = fv(); return !!e && !e.hidden; }, close:function(){ var b = document.getElementById('flipview-close'); if (b) b.click(); } },
     { k:'games', open:function(){ var e = room(); return !!e && !e.hidden; }, close:function(){ if (window.NG_ARCADE && NG_ARCADE.exit) NG_ARCADE.exit(); } },
     { k:'play',  open:function(){ var e = room(), s = stage(); return !!e && !e.hidden && !!s && !s.hidden; }, close:function(){ if (window.NG_ARCADE && NG_ARCADE.close) NG_ARCADE.close(); } }
-  ];
+   ]);
   function now(){ return L.filter(function(l){ return l.open(); }).map(function(l){ return l.k; }); }
   function cur(){ var st = history.state; return (st && st.ngS) || []; }
   function sync(){
@@ -12028,8 +12066,9 @@ window.NG_BOOM = function(){
   });
   function watch(){
     var f = fv(), r = room(), s = stage(); if (!f || !r || !s){ setTimeout(watch, 500); return; }
-    var mo = new MutationObserver(function(){ setTimeout(sync, 0); });
+    var mo = new MutationObserver(function(){ setTimeout(sync, 0); setTimeout(sync, 450); });
     [f, r, s].forEach(function(e){ mo.observe(e, { attributes:true, attributeFilter:['hidden'] }); });
+    POPS.forEach(function(id){ var e = document.getElementById(id); if (e) mo.observe(e, { attributes:true, attributeFilter:['hidden', 'class', 'style'] }); });
     was = now();
   }
   watch();
