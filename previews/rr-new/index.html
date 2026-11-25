@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795612276';
+window.NG_BUILD = '1795612526';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -11997,25 +11997,30 @@ window.NG_BOOM = function(){
     setInterval(tick, 700); tick(); })();
 </script>
 <style id="ng-navbtns-css">
-#ng-navbtns{position:fixed;left:14px;bottom:14px;z-index:1190;display:flex;gap:6px;padding:5px;background:#12294a;border:2px solid #f5e4cc;border-radius:999px}
-#ng-navbtns button{width:36px;height:36px;border-radius:50%;border:0;background:#f5e4cc;color:#12294a;display:flex;align-items:center;justify-content:center;padding:0;cursor:var(--ng-cur-p,pointer)}
-#ng-navbtns button:hover,#ng-navbtns button:focus-visible{background:#12294a;color:#f5e4cc;outline:2px solid #f5e4cc;outline-offset:-2px}
-#ng-navbtns button[disabled]{opacity:.35;cursor:default;background:#f5e4cc;color:#12294a;outline:none}
-#ng-navbtns svg{width:18px;height:18px}
+/* Back, Forward and Refresh: plain arrows like a browser's, in the site's beige and dark azure */
+#ng-navbtns{position:static;flex:none;display:flex;align-items:center;gap:2px;margin-right:14px;color:var(--ngn-c,#f5e4cc)}
+#ng-navbtns.on-light{--ngn-c:#12294a;--ngn-h:rgba(18,41,74,.14)}
+#ng-navbtns.float{position:fixed;left:8px;top:8px;z-index:1190;margin:0;padding:3px;border-radius:999px;background:#12294a}
+#ng-navbtns button{width:34px;height:34px;border-radius:50%;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;padding:0;cursor:var(--ng-cur-p,pointer)}
+#ng-navbtns button:hover,#ng-navbtns button:focus-visible{background:var(--ngn-h,rgba(245,228,204,.2));outline:none}
+#ng-navbtns button:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
+#ng-navbtns button[disabled]{opacity:.38;cursor:default;background:transparent}
+#ng-navbtns svg{width:20px;height:20px}
 #ng-navbtns .spin svg{animation:ngNavSpin .6s linear}
 @keyframes ngNavSpin{to{transform:rotate(360deg)}}
 html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-navbtns{display:none}
-@media (max-width:520px){#ng-navbtns{left:8px;bottom:8px}#ng-navbtns button{width:32px;height:32px}}
+@media (max-width:520px){#ng-navbtns{margin-right:6px;gap:0}#ng-navbtns button{width:28px;height:28px}#ng-navbtns svg{width:17px;height:17px}}
 </style>
 <div id="ng-navbtns" role="group" aria-label="Move around the site">
-<button type="button" id="ngn-back" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-<button type="button" id="ngn-fwd" aria-label="Forward" title="Forward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
-<button type="button" id="ngn-re" aria-label="Refresh" title="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
+<button type="button" id="ngn-back" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H5M11 5.5 4.5 12l6.500 6.500"/></svg></button>
+<button type="button" id="ngn-fwd" aria-label="Forward" title="Forward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 5.5l6.500 6.500-6.500 6.500"/></svg></button>
+<button type="button" id="ngn-re" aria-label="Refresh" title="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.500 12a7.500 7.500 0 1 1-2.300-5.400"/><path d="M19.800 3.800v5h-5"/></svg></button>
 </div>
 <script id="ng-navbtns-js">
 /* The site's own Back, Forward and Refresh buttons. Back and Forward only move inside NeshamaGazine. */
 (function(){
   var b = document.getElementById('ngn-back'), f = document.getElementById('ngn-fwd'), r = document.getElementById('ngn-re'), nav = window.navigation;
+  (function(){ var box = document.getElementById('ng-navbtns'), h = document.querySelector('body > header') || document.querySelector('header'); if (h){ h.insertBefore(box, h.firstChild); try { var m = (getComputedStyle(h).backgroundColor.match(/[\d.]+/g) || []).map(Number); if (m.length >= 3 && (m.length < 4 || m[3] > 0.5) && (m[0] * .3 + m[1] * .59 + m[2] * .11) > 150) box.classList.add('on-light'); } catch(e){} } else box.classList.add('float'); })();   // at the top, at the start of the menu bar
   function upd(){ if (!nav || !nav.entries || !nav.currentEntry) return; try { var i = nav.currentEntry.index, n = nav.entries().length; b.disabled = i <= 0; f.disabled = i >= n - 1; } catch(e){} }
   b.addEventListener('click', function(){ if (!b.disabled) history.back(); });
   f.addEventListener('click', function(){ if (!f.disabled) history.forward(); });
