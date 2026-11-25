@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795610720';
+window.NG_BUILD = '1795611317';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -7046,7 +7046,6 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <button type="button" data-v="dev">Phones vs computers</button>
     <button type="button" data-v="alert">Alerts</button>
     <button type="button" data-v="ban">Block</button>
-    <button type="button" data-v="circle">The Circle desk</button>
     <button type="button" data-v="fb">Feedback</button>
     <button type="button" data-v="qr">QR codes</button>
     <span class="vm-sp"></span>
@@ -7066,7 +7065,6 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   <section class="vm-view" id="vm-dev" hidden><div class="rd-pad"><h3>Phones vs computers</h3><p class="rd-tip">What readers used this month.</p><div id="rd-dev"></div></div></section>
   <section class="vm-view" id="vm-qr" hidden><div class="rd-pad"><h3>QR codes</h3><p class="rd-tip">How many people scanned the QR codes in the printed magazine, and how many of them became readers.</p><div id="rd-qr"></div></div></section>
   <section class="vm-view" id="vm-fb" hidden><div class="rd-pad"><h3>Feedback</h3><p class="rd-tip">What readers wrote on the feedback page (the QR code in the printed magazine). Newest first.</p><div id="rd-fb"></div></div></section>
-  <section class="vm-view" id="vm-circle" hidden><div class="rd-pad"><h3>The Circle desk</h3><p class="rd-tip">Your private page for the editors of The Circle. This shows how many times it was opened, and what they looked at. Numbers only, no names. Your own visits from this device are not counted.</p><div id="rc-body"><p class="rd-tip">Loading…</p></div></div></section>
   <section class="vm-view" id="vm-ban" hidden><div class="rd-pad"><h3>Block someone</h3><p class="rd-tip">A blocked reader hears a siren, the gate rolls down and they see "You are blocked". It happens within a few seconds, even if they are in the middle of a game.</p><form id="rd-banf" class="rd-banf" novalidate><input id="rd-bane" type="search" placeholder="Type a name or an email" autocomplete="off"><button type="submit">Block this email</button></form><label class="rd-notel" for="rd-bannote">Message they will see (you can leave it empty)</label><textarea id="rd-bannote" class="rd-bannote" maxlength="500" placeholder="Hello, I see that you are doing something you should not. You have been blocked."></textarea><div id="rd-banpick"></div><h4 class="rd-h4">Everyone at once</h4><p class="rd-tip" id="rd-allst">Blocks every reader on the website (not you), with the message above.</p><div class="rd-when"><button type="button" id="rd-allon">Block everyone</button><button type="button" id="rd-alloff">Unblock everyone</button></div><h4 class="rd-h4">Blocked now</h4><div id="rd-banlist"></div><h4 class="rd-h4">Everyone who came on</h4><div class="rd-when" id="rd-when"><button type="button" data-w="1" class="on">Today</button><button type="button" data-w="7">Past week</button><button type="button" data-w="30">Past month</button><button type="button" data-w="0">Forever</button></div><div id="rd-everyone"></div></div></section>
   <section class="vm-view" id="vm-alert" hidden><div class="rd-pad"><h3>Alerts</h3><p class="rd-tip">Every screenshot, recording or print try, newest first.</p><div id="rd-alert"></div></div></section>
   <p class="vm-msg" id="vm-msg"></p>
@@ -7194,39 +7192,6 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   $('vm-back').addEventListener('click', function(){ close(); setTimeout(function(){ var p = $('owner-panel'), b = $('owner-btn'); if (p && !p.classList.contains('open') && b) b.click(); }, 30); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !vm.hidden) close(); });
   document.addEventListener('ng:owner', function(e){ if (!e.detail) close(); });
-  // ---------- The Circle desk: visits to the private editors' page ----------
-  function loadCircle(){
-    var body = $('rc-body'); if (!body) return; body.innerHTML = '<p class="rd-tip">Loading…</p>';
-    var days = []; for (var i = 29; i >= 0; i--){ var d = new Date(); d.setDate(d.getDate() - i); days.push(day(d)); }
-    var base = 'projects/' + PROJ + '/databases/(default)/documents/visits/', docs = days.map(function(x){ return base + 'circle-' + x; }).concat(days.map(function(x){ return base + x; }));
-    get('https://firestore.googleapis.com/v1/projects/' + PROJ + '/databases/(default)/documents:batchGet', { documents: docs }).then(function(list){
-      var by = {}; days.forEach(function(x){ by[x] = { v: 0, u: 0, phone: 0, computer: 0 }; }); var secs = {}, places = {};
-      function map(f, k){ return f[k] && f[k].mapValue && f[k].mapValue.fields || {}; }
-      (list || []).forEach(function(it){ if (!it.found) return; var id = it.found.name.split('/').pop(), f = it.found.fields || {}, own = /^circle-/.test(id), x = id.replace(/^circle-/, ''), o = by[x]; if (!o) return; var pl = map(f, 'places'), dv = map(f, 'devices');
-        if (own){ o.v += num(f.total); o.u += num(f.unique); o.phone += num(dv.phone); o.computer += num(dv.computer);
-          Object.keys(pl).forEach(function(k){ if (/^SEC__/.test(k)) secs[k.slice(5)] = (secs[k.slice(5)] || 0) + num(pl[k]); else places[k] = (places[k] || 0) + num(pl[k]); }); }
-        else Object.keys(pl).forEach(function(k){ if (!/^CIRCLE__/.test(k)) return; var w = k.slice(8), n = num(pl[k]);
-          if (w === 'visit') o.v += n; else if (w === 'new') o.u += n; else if (w === 'dev_phone') o.phone += n; else if (w === 'dev_computer') o.computer += n;
-          else if (/^sec_/.test(w)) secs[w.slice(4)] = (secs[w.slice(4)] || 0) + n; else if (/^at_/.test(w)) places[w.slice(3)] = (places[w.slice(3)] || 0) + n; }); });
-      function sum(n, k){ var t = 0; days.slice(-n).forEach(function(x){ t += by[x][k]; }); return t; }
-      var SN = { desk: 'The desk (first page)', issues: 'The Issues', interviews: 'Interviews', games: 'The Games', story: 'My Story', note: 'A Note for You', read: 'Opened a flipbook', play: 'Played a game' };
-      var secHtml = Object.keys(SN).map(function(k){ return '<li><span>' + SN[k] + '</span><b>' + (secs[k] || 0) + '</b></li>'; }).join('');
-      var plHtml = Object.keys(places).sort(function(a, b){ return places[b] - places[a]; }).slice(0, 8).map(function(k){ var cc = k.split('__')[0], rg = (k.split('__')[1] || '').replace(/_/g, ' ').trim(), nm = cc; try { nm = cc === 'XX' ? 'Unknown place' : new Intl.DisplayNames(['en'], { type: 'region' }).of(cc); } catch(e){}
-        return '<li><span>' + esc(nm + (rg ? ', ' + rg : '')) + '</span><b>' + places[k] + '</b></li>'; }).join('') || '<li><span>Nobody yet</span><b></b></li>';
-      var dayHtml = days.slice(-14).reverse().filter(function(x){ return by[x].v; }).map(function(x){ var d = new Date(x + 'T12:00:00'); return '<li><span>' + d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + '</span><b>' + by[x].v + (by[x].v === 1 ? ' visit' : ' visits') + '</b></li>'; }).join('') || '<li><span>No visits in the last two weeks</span><b></b></li>';
-      var url = location.origin + ((location.pathname.match(/^(.*?\/neshamagazine\/)/) || ['', '/'])[1]) + 'the-circle/';
-      body.innerHTML = '<div class="rc-nums"><div><b>' + sum(1, 'v') + '</b><span>Visits today</span></div><div><b>' + sum(7, 'v') + '</b><span>This week</span></div><div><b>' + sum(30, 'v') + '</b><span>Last 30 days</span></div><div><b>' + sum(30, 'u') + '</b><span>Different visitors</span></div></div>' +
-        (sum(30, 'v') ? '' : '<p class="rd-tip">Nobody has opened it yet. When an editor does, it shows up here.</p>') +
-        '<h4 class="rd-h4">What they opened</h4><ul class="rc-list">' + secHtml + '</ul>' +
-        '<h4 class="rd-h4">Day by day</h4><ul class="rc-list">' + dayHtml + '</ul>' +
-        '<h4 class="rd-h4">Where from</h4><ul class="rc-list">' + plHtml + '</ul>' +
-        '<h4 class="rd-h4">Phone or computer</h4><ul class="rc-list"><li><span>Computer</span><b>' + sum(30, 'computer') + '</b></li><li><span>Phone</span><b>' + sum(30, 'phone') + '</b></li></ul>' +
-        '<div class="rc-link"><code>' + esc(url) + '</code><button type="button" id="rc-copy">Copy the link</button><a href="' + esc(url) + '?me" target="_blank" rel="noopener">Open it</a><button type="button" id="rc-again">Refresh</button></div>';
-      $('rc-copy').onclick = function(){ var b = this; try { navigator.clipboard.writeText(url).then(function(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy the link'; }, 1500); }); } catch(e){} };
-      $('rc-again').onclick = loadCircle;
-    }).catch(function(e){ body.innerHTML = '<p class="rd-tip">Could not load: ' + esc(e.message || 'error') + '</p>'; });
-  }
-  (function(){ var cb = document.querySelector('.vm-tabs [data-v="circle"]'); if (cb) cb.addEventListener('click', loadCircle); })();
   document.querySelectorAll('.vm-tabs [data-v]').forEach(function(b){ b.onclick = function(){
     view = b.getAttribute('data-v'); document.querySelectorAll('.vm-tabs [data-v]').forEach(function(x){ x.classList.toggle('on', x === b); });
     document.querySelectorAll('#vm .vm-view').forEach(function(x){ x.hidden = x.id !== 'vm-' + view; }); if (window.NG_RADAR_TAB) NG_RADAR_TAB(view); if (view === 'where') setTimeout(openGlobe, 30);
@@ -12030,6 +11995,45 @@ window.NG_BOOM = function(){
       document.querySelectorAll('link[rel~="icon"]').forEach(function(l){ if (on){ if (!l.dataset.h0) l.dataset.h0 = l.getAttribute('href'); l.setAttribute('href', icon()); } else if (l.dataset.h0) l.setAttribute('href', l.dataset.h0); });
       if (on){ if (document.title.indexOf("We're fixing") < 0) T0 = document.title; document.title = "We're fixing something | NeshamaGazine"; } else document.title = T0; }
     setInterval(tick, 700); tick(); })();
+</script>
+<script id="ng-back">
+/* The Back button works inside the site: opening an issue, the games room or a game adds a step, and Back closes the last thing you opened instead of leaving the site. */
+(function(){
+  if (!window.history || !history.pushState || !window.MutationObserver) return;
+  var busy = false, was = [];
+  function fv(){ return document.getElementById('flipview'); }
+  function room(){ return document.getElementById('ng-arcade'); }
+  function stage(){ var r = room(); return r && r.querySelector('.arc-stage'); }
+  var L = [
+    { k:'read',  open:function(){ var e = fv(); return !!e && !e.hidden; }, close:function(){ var b = document.getElementById('flipview-close'); if (b) b.click(); } },
+    { k:'games', open:function(){ var e = room(); return !!e && !e.hidden; }, close:function(){ if (window.NG_ARCADE && NG_ARCADE.exit) NG_ARCADE.exit(); } },
+    { k:'play',  open:function(){ var e = room(), s = stage(); return !!e && !e.hidden && !!s && !s.hidden; }, close:function(){ if (window.NG_ARCADE && NG_ARCADE.close) NG_ARCADE.close(); } }
+  ];
+  function now(){ return L.filter(function(l){ return l.open(); }).map(function(l){ return l.k; }); }
+  function cur(){ var st = history.state; return (st && st.ngS) || []; }
+  function sync(){
+    if (busy) return;
+    var n = now(), c = cur();
+    var added = n.filter(function(k){ return was.indexOf(k) < 0; }), gone = was.filter(function(k){ return n.indexOf(k) < 0; });
+    was = n;
+    var back = gone.filter(function(k){ return c.indexOf(k) >= 0; }).length;
+    if (back){ busy = true; try { history.go(-back); } catch(e){} setTimeout(function(){ busy = false; was = now(); }, 400); return; }
+    if (added.length){ var list = c.filter(function(k){ return n.indexOf(k) >= 0; }); added.forEach(function(k){ list = list.concat([k]); try { history.pushState({ ngS: list }, ''); } catch(e){} }); }
+  }
+  window.addEventListener('popstate', function(){
+    if (busy) return;
+    var want = cur(); busy = true;
+    for (var i = L.length - 1; i >= 0; i--){ if (L[i].open() && want.indexOf(L[i].k) < 0){ try { L[i].close(); } catch(e){} } }
+    setTimeout(function(){ busy = false; was = now(); }, 60);
+  });
+  function watch(){
+    var f = fv(), r = room(), s = stage(); if (!f || !r || !s){ setTimeout(watch, 500); return; }
+    var mo = new MutationObserver(function(){ setTimeout(sync, 0); });
+    [f, r, s].forEach(function(e){ mo.observe(e, { attributes:true, attributeFilter:['hidden'] }); });
+    was = now();
+  }
+  watch();
+})();
 </script>
 </body>
 </html>
