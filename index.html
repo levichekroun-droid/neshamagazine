@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795611988';
+window.NG_BUILD = '1795612276';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -6911,6 +6911,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     if (!u && !test && isOwner()) u = { email: 'levichekroun@ulyop.com', name: 'Levi Chekroun' };
     if (!u || !u.email || (!test && isOwner() && !/^levichekroun@ulyop\.com$/i.test(u.email))) return Promise.resolve();   // the owner's own logins are recorded too, with the device
     if (!test){ try { if (sessionStorage.getItem('ng_counted_p')) return beat(); sessionStorage.setItem('ng_counted_p', '1'); } catch(e){} }
+    if (!test && !isOwner() && !ownerDev() && window.NG_ENTER_HOW !== 'signup'){ try { var dk = new Date().toDateString(); if (localStorage.getItem('ng_came') !== dk){ localStorage.setItem('ng_came', dk); if (window.NG && NG.sendEmail) NG.sendEmail('Reader on the site', { name: u.name || '', email: u.email }); } } catch(e){} }   // tells the owner by email that this reader came (once a day)
     return geoPlace().then(function(g){
       var place = g.cc ? ((NAMES.get(g.cc) || g.cc) + (g.region ? ' · ' + g.region : '') + (g.city && g.city !== g.region ? ' · ' + g.city : '')) : '';
       var dev = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'phone' : 'computer';
@@ -8316,7 +8317,7 @@ document.getElementById('cp').addEventListener('click',function(){
   function blackout(ms){ var end = Date.now() + (ms || 1800); if (end <= blackEnd) return; blackEnd = end; root.classList.add('ng-black'); clearTimeout(blackT); blackT = setTimeout(function(){ if (!root.classList.contains('ng-soft')) root.classList.remove('ng-black'); blackEnd = 0; }, ms || 1800); }
   function wipeClip(){ try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(' ').catch(function(){}); } catch(e){} }
   function inField(t){ return t && t.closest && t.closest('input, textarea, select, [contenteditable="true"], #owner-panel, .owner-panel'); }
-  function ownFree(){ var o = owner(); root.classList.toggle('ng-own-free', o); if (o) root.classList.remove('ng-away', 'ng-black', 'ng-soft'); return o; }
+  function ownFree(){ root.classList.remove('ng-own-free'); return false; }   // no one may take a screenshot, the owner included
   document.addEventListener('ng:owner', function(){ setTimeout(ownFree, 0); }); setTimeout(ownFree, 800); setInterval(ownFree, 4000);
   function shotKey(e){ var k = e.key || ''; return k === 'PrintScreen' || e.keyCode === 44 || (e.altKey && e.shiftKey && /Digit[3456]/.test(e.code || '')) || (e.ctrlKey && e.shiftKey && /^[sS]$/.test(k)) || (e.metaKey && e.shiftKey) || k === 'Meta' || k === 'OS' || k === 'Shift'; }
   document.addEventListener('keydown', function(e){
@@ -11994,6 +11995,35 @@ window.NG_BOOM = function(){
       document.querySelectorAll('link[rel~="icon"]').forEach(function(l){ if (on){ if (!l.dataset.h0) l.dataset.h0 = l.getAttribute('href'); l.setAttribute('href', icon()); } else if (l.dataset.h0) l.setAttribute('href', l.dataset.h0); });
       if (on){ if (document.title.indexOf("We're fixing") < 0) T0 = document.title; document.title = "We're fixing something | NeshamaGazine"; } else document.title = T0; }
     setInterval(tick, 700); tick(); })();
+</script>
+<style id="ng-navbtns-css">
+#ng-navbtns{position:fixed;left:14px;bottom:14px;z-index:1190;display:flex;gap:6px;padding:5px;background:#12294a;border:2px solid #f5e4cc;border-radius:999px}
+#ng-navbtns button{width:36px;height:36px;border-radius:50%;border:0;background:#f5e4cc;color:#12294a;display:flex;align-items:center;justify-content:center;padding:0;cursor:var(--ng-cur-p,pointer)}
+#ng-navbtns button:hover,#ng-navbtns button:focus-visible{background:#12294a;color:#f5e4cc;outline:2px solid #f5e4cc;outline-offset:-2px}
+#ng-navbtns button[disabled]{opacity:.35;cursor:default;background:#f5e4cc;color:#12294a;outline:none}
+#ng-navbtns svg{width:18px;height:18px}
+#ng-navbtns .spin svg{animation:ngNavSpin .6s linear}
+@keyframes ngNavSpin{to{transform:rotate(360deg)}}
+html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-navbtns{display:none}
+@media (max-width:520px){#ng-navbtns{left:8px;bottom:8px}#ng-navbtns button{width:32px;height:32px}}
+</style>
+<div id="ng-navbtns" role="group" aria-label="Move around the site">
+<button type="button" id="ngn-back" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+<button type="button" id="ngn-fwd" aria-label="Forward" title="Forward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+<button type="button" id="ngn-re" aria-label="Refresh" title="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
+</div>
+<script id="ng-navbtns-js">
+/* The site's own Back, Forward and Refresh buttons. Back and Forward only move inside NeshamaGazine. */
+(function(){
+  var b = document.getElementById('ngn-back'), f = document.getElementById('ngn-fwd'), r = document.getElementById('ngn-re'), nav = window.navigation;
+  function upd(){ if (!nav || !nav.entries || !nav.currentEntry) return; try { var i = nav.currentEntry.index, n = nav.entries().length; b.disabled = i <= 0; f.disabled = i >= n - 1; } catch(e){} }
+  b.addEventListener('click', function(){ if (!b.disabled) history.back(); });
+  f.addEventListener('click', function(){ if (!f.disabled) history.forward(); });
+  r.addEventListener('click', function(){ r.classList.add('spin'); setTimeout(function(){ location.reload(); }, 250); });
+  window.addEventListener('popstate', function(){ setTimeout(upd, 50); });
+  if (nav && nav.addEventListener) nav.addEventListener('currententrychange', upd);
+  setInterval(upd, 1500); upd();
+})();
 </script>
 <style id="ng-notify2">
 /* notification pop-ups: navy and beige, no shadow, each one arrives in a bigger way than the last */
