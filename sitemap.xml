@@ -1,41 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url><loc>https://neshamagazine.com/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-all-covers.jpg</image:loc></image:image>
     <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-logo.png</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/issue-13-bereishis/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-13-bereishis-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/issue-12-rosh-hashana/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-12-rosh-hashana-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/issue-10-behaalotcha/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-10-behaalotcha-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/issue-09-shavuos/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-09-shavuos-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/issue-08-tazria-metzora/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-08-tazria-metzora-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/parsha-food-season/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-parsha-food-season-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/sukkos-edition/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-sukkos-edition-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/the-double-life-of-eli-cohen/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-the-double-life-of-eli-cohen-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/issue-5/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-5-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/escape-to-shanghai/</loc>
-    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-escape-to-shanghai-cover.jpg</image:loc></image:image>
-  </url>
-  <url><loc>https://neshamagazine.com/covers/ad/</loc>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-all-covers.jpg</image:loc></image:image>
     <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-ad.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-13-bereishis-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-12-rosh-hashana-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-10-behaalotcha-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-09-shavuos-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-08-tazria-metzora-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-parsha-food-season-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-sukkos-edition-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-the-double-life-of-eli-cohen-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-issue-5-cover.jpg</image:loc></image:image>
+    <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-escape-to-shanghai-cover.jpg</image:loc></image:image>
   </url>
   <url><loc>https://neshamagazine.com/video/</loc>
     <video:video>
