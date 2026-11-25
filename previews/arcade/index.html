@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795648163';
+window.NG_BUILD = '1795648650';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -1982,7 +1982,7 @@ body.focus main > #sponsor{min-height:calc(100vh - 220px);display:flex;align-ite
 #sponsor .ng-band-side{display:flex;justify-content:center}
 #sponsor .ng-band-main,#sponsor .ng-band-side{flex:none!important}
 #sponsor .ng-band{height:auto!important;min-height:0!important}
-#sponsor{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:38px!important}
+#sponsor.focus-keep{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:38px!important}
 #sponsor .ng-band{margin:0!important;flex:none!important}
 .ad-drop{display:block;border:2px dashed var(--navy);border-radius:8px;background:#f5e4cc;padding:18px 14px;text-align:center;margin:0 0 12px;cursor:var(--ng-cur-p,pointer)}
 .ad-drop.over{background:#12294a;color:#f5e4cc}
