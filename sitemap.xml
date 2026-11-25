@@ -34,16 +34,7 @@
   <url><loc>https://neshamagazine.com/covers/escape-to-shanghai/</loc>
     <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-escape-to-shanghai-cover.jpg</image:loc></image:image>
   </url>
-  <url><loc>https://neshamagazine.com/video/</loc>
-    <video:video>
-      <video:thumbnail_loc>https://neshamagazine.com/video/neshamagazine-trailer.jpg</video:thumbnail_loc>
-      <video:title>NeshamaGazine: the magazine you can't put down (trailer)</video:title>
-      <video:description>Spies. Heroes. Escapes. Watch the NeshamaGazine trailer: true stories, a flipbook you can flip page by page, and games like Robo Runner. Read every issue free at neshamagazine.com.</video:description>
-      <video:content_loc>https://neshamagazine.com/video/neshamagazine-trailer.mp4</video:content_loc>
-      <video:duration>23</video:duration>
-      <video:publication_date>2026-11-24T21:00:00-05:00</video:publication_date>
-      <video:family_friendly>yes</video:family_friendly>
-    </video:video>
+  <url><loc>https://neshamagazine.com/covers/ad/</loc>
     <image:image><image:loc>https://neshamagazine.com/covers/neshamagazine-ad.jpg</image:loc></image:image>
   </url>
 </urlset>
