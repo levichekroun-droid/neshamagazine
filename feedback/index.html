@@ -158,5 +158,45 @@ select:focus,input:focus,textarea:focus{outline:3px solid var(--navy);outline-of
   });
 })();
 </script>
+<div id="ng-sec" aria-hidden="true"><div class="sx-black"><div><b>Screenshots are turned off</b><span>NeshamaGazine does not allow screenshots or recordings.</span></div></div><div class="sx-away"><div><b>NeshamaGazine is hidden</b><span>Click here to come back.</span></div></div></div>
+<style>
+#ng-sec{position:fixed;inset:0;z-index:2147483600;pointer-events:none}
+#ng-sec .sx-black,#ng-sec .sx-away{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:24px;font-family:"Figtree",system-ui,sans-serif;color:#f5e4cc}
+#ng-sec .sx-black{background:#000}#ng-sec .sx-away{background:rgba(18,41,74,.94)}
+#ng-sec b{display:block;font-size:clamp(22px,4vw,34px);margin-bottom:8px}#ng-sec span{opacity:.85;font-size:15px}
+html.ng-black #ng-sec .sx-black{display:flex}html.ng-away #ng-sec .sx-away{display:flex}
+html.ng-away body>*:not(#ng-sec),html.ng-black body>*:not(#ng-sec){filter:blur(26px)}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,select{-webkit-user-select:text;user-select:text}
+img{-webkit-user-drag:none}
+@media print{body>*{display:none!important}body::before{content:"NeshamaGazine cannot be printed.";display:block;padding:40px;font:700 20px sans-serif}}
+</style>
+<script>
+/* The same screenshot protection as the main site: blackout on screenshot keys, hidden when you leave the window, no printing, saving or copying (typing in the boxes still works). */
+(function(){
+  var root = document.documentElement, blackT = null, MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  function inField(t){ return t && t.closest && t.closest('input, textarea, select'); }
+  function blackout(ms){ root.classList.add('ng-black'); clearTimeout(blackT); blackT = setTimeout(function(){ root.classList.remove('ng-black'); }, ms || 1900); }
+  function wipe(){ try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(' ').catch(function(){}); } catch(e){} }
+  function away(on){ root.classList.toggle('ng-away', on); }
+  document.addEventListener('keydown', function(e){
+    var k = e.key || '', mod = e.ctrlKey || e.metaKey;
+    if (k === 'PrintScreen' || e.keyCode === 44){ blackout(1900); wipe(); e.preventDefault(); return; }
+    if ((e.altKey && e.shiftKey && /Digit[3456]/.test(e.code || '')) || (e.ctrlKey && e.shiftKey && /^[sS]$/.test(k))){ blackout(2500); wipe(); e.preventDefault(); return; }
+    if (e.metaKey && e.shiftKey){ blackout(2500); if (/^[3456sS]$/.test(k) || /Digit[3456]|KeyS/.test(e.code || '')) e.preventDefault(); return; }
+    if ((k === 'Meta' || k === 'OS') && !MAC){ blackout(1200); return; }
+    if (mod && /^[pPsSuU]$/.test(k)){ e.preventDefault(); return; }
+    if (mod && /^[cCxXaA]$/.test(k) && !inField(e.target)){ e.preventDefault(); return; }
+    if (k === 'F12' || (mod && e.shiftKey && /^[iIjJcC]$/.test(k))){ e.preventDefault(); }
+  }, true);
+  document.addEventListener('keyup', function(e){ if (e.key === 'PrintScreen' || e.keyCode === 44){ blackout(1900); wipe(); } }, true);
+  window.addEventListener('blur', function(){ away(true); });
+  window.addEventListener('focus', function(){ away(false); });
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) away(true); else if (document.hasFocus()) away(false); });
+  document.addEventListener('pointerdown', function(){ if (document.hasFocus()) away(false); }, true);
+  ['contextmenu', 'dragstart', 'selectstart'].forEach(function(n){ document.addEventListener(n, function(e){ if (!inField(e.target)) e.preventDefault(); }, true); });
+  ['copy', 'cut'].forEach(function(n){ document.addEventListener(n, function(e){ if (!inField(e.target)) e.preventDefault(); }, true); });
+  window.addEventListener('beforeprint', function(){ blackout(2500); });
+})();
+</script>
 </body>
 </html>
