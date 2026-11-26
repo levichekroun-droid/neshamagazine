@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795656909';
+window.NG_BUILD = '1795658679';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -8338,7 +8338,7 @@ document.getElementById('cp').addEventListener('click',function(){
     if ((e.altKey && e.shiftKey && /Digit[3456]/.test(e.code || '')) || (e.ctrlKey && e.shiftKey && /^[sS]$/.test(k))){ blackout(2500); e.preventDefault(); wipeClip(); strike('screenshot'); return; }
     if (e.metaKey && e.shiftKey){ blackout(2500); if (/^[3456sS]$/.test(k) || /Digit[3456]|KeyS/.test(e.code || '')){ e.preventDefault(); strike('screenshot'); } return; }
     if ((k === 'Meta' || k === 'OS') && !MAC){ root.classList.add('ng-black'); return; }   // on Windows, the Windows key starts the snipping tool shortcut
-    if (mod && /^[pP]$/.test(k)){ e.preventDefault(); var fvp = $('flipview'); if (fvp && !fvp.hidden && window.NG_SHUL_AD) NG_SHUL_AD(); else warn('Printing only works inside a magazine. Open an issue first.'); return; }   // print: show the "bring it to your shul" ad
+    if (mod && /^[pP]$/.test(k)){ e.preventDefault(); var fvp = $('flipview'); if (window.NG_SHUL_AD_ON === true && fvp && !fvp.hidden && window.NG_SHUL_AD) NG_SHUL_AD(); else warn(window.NG_SHUL_AD_ON === true ? 'Printing only works inside a magazine. Open an issue first.' : 'NeshamaGazine cannot be printed.'); return; }   // print: show the "bring it to your shul" ad
     if (mod && /^[sSuU]$/.test(k)){ e.preventDefault(); warn(); return; }
     if (k === 'F12' || (mod && e.shiftKey && /^[iIjJcC]$/.test(k))){ e.preventDefault(); warn(); return; }
     if (mod && /^[cCxXaA]$/.test(k) && !inField(e.target)){ e.preventDefault(); warn(); return; }
@@ -8365,7 +8365,7 @@ document.getElementById('cp').addEventListener('click',function(){
   ['copy', 'cut'].forEach(function(t){ document.addEventListener(t, function(e){ if (inField(e.target)) return; e.preventDefault(); try { e.clipboardData.setData('text/plain', 'NeshamaGazine is for reading here only.'); } catch(x){} warn(); }, true); });
 
   // ---------- no printing ----------
-  window.addEventListener('beforeprint', function(){ if (root.classList.contains('ng-print-ok')) return; var fvp = $('flipview'); if (fvp && !fvp.hidden && window.NG_SHUL_AD) setTimeout(NG_SHUL_AD, 300); });
+  window.addEventListener('beforeprint', function(){ if (root.classList.contains('ng-print-ok')) return; var fvp = $('flipview'); if (window.NG_SHUL_AD_ON === true && fvp && !fvp.hidden && window.NG_SHUL_AD) setTimeout(NG_SHUL_AD, 300); });
 
   // ---------- videos: no download, no picture-in-picture, no full screen without the watermark ----------
   function lockVideos(){ [].forEach.call(document.querySelectorAll('video'), function(v){ if (v.dataset.sx) return; v.dataset.sx = '1'; v.setAttribute('controlsList', 'nodownload nofullscreen noremoteplayback'); v.disablePictureInPicture = true; v.setAttribute('disablePictureInPicture', ''); v.setAttribute('disableRemotePlayback', ''); }); }
@@ -12159,7 +12159,8 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
 html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!important;padding:0!important}#ng-printbox .pp{break-after:page;page-break-after:always;break-inside:avoid;height:252mm;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2mm}#ng-printbox .pp:last-child{break-after:auto;page-break-after:auto}#ng-printbox img{max-width:100%;max-height:242mm;display:block}#ng-printbox small{font:600 8pt Arial,sans-serif;color:#12294a}}
 @media (prefers-reduced-motion:reduce){.shul-box,.shul-stack i{animation:none}}
 </style>
-<script>window.NG_PRINT_ON = false;   // set to true to let readers print after they ask for their shul (the browser print window can also save a PDF)</script>
+<script>window.NG_SHUL_AD_ON = false;   // Ctrl+P is fully blocked for now; set to true to bring back the "bring it to your shul" ad
+window.NG_PRINT_ON = false;   // set to true to let readers print after they ask for their shul (the browser print window can also save a PDF)</script>
 <script id="shul-ad-js">
 /* Pressing Print opens this ad: "Bring NeshamaGazine to your shul or Chabad House". A reply goes to the owner's Radar (Shul requests) and email. */
 (function(){
