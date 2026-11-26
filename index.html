@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795655165';
+window.NG_BUILD = '1795655984';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -3872,7 +3872,8 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
       _subject: what + ' - NeshamaGazine', _template: 'table', _captcha: 'false',
       what: what, name: u.name || '(no name)', email: u.email,
       signed_in_with: u.via || 'email', page: location.href,
-      business: (u.extra || {}).business, how_they_found_us: (u.extra || {}).how_they_found_us, why_sponsor: (u.extra || {}).why_sponsor
+      business: (u.extra || {}).business, how_they_found_us: (u.extra || {}).how_they_found_us, why_sponsor: (u.extra || {}).why_sponsor,
+          shul_or_chabad_house: (u.more || {}).shul, city: (u.more || {}).city, how_to_reach_them: (u.more || {}).contact, their_message: (u.more || {}).msg
     };
   }
   // Last resort: open Gmail with the message already written (the person just presses Send)
@@ -3908,7 +3909,8 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
           access_key: WEB3FORMS_KEY, from_name: 'NeshamaGazine',
           subject: ({ 'Turn on notifications': ' Notification list', 'New sign-up': ' New sign-up', 'Someone logged in': 'Log in', 'Wants to sponsor': ' Wants to sponsor' }[what] || what) + ': ' + (u.name || u.email),
           name: u.name || '(no name)', email: u.email,
-          business: (u.extra || {}).business, how_they_found_us: (u.extra || {}).how_they_found_us, why_sponsor: (u.extra || {}).why_sponsor
+          business: (u.extra || {}).business, how_they_found_us: (u.extra || {}).how_they_found_us, why_sponsor: (u.extra || {}).why_sponsor,
+          shul_or_chabad_house: (u.more || {}).shul, city: (u.more || {}).city, how_to_reach_them: (u.more || {}).contact, their_message: (u.more || {}).msg
         })
       }).then(function(r){
         return r.json().catch(function(){ return {}; }).then(function(d){
@@ -6904,6 +6906,9 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   setInterval(function(){ var now = !!(NG.getUser && NG.getUser()); if (wasIn && !now){ wall(); if (NG.toast) NG.toast('For your safety, please log in again.'); } wasIn = now; }, 30000);
   function pkey(em){ return em.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 120); }
   function commit(w){ return fetch('https://firestore.googleapis.com/v1/projects/' + PROJ + '/databases/(default)/documents:commit?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ writes:[w] }) }); }
+  // a reader asks for NeshamaGazine at their shul: kept on their own Radar record
+  window.NG_SHUL_SAVE = function(d){ var u = window.NG && NG.getUser && NG.getUser(); if (!u || !u.email) return Promise.resolve(false);
+    return commit({ update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/visitors/' + pkey(u.email), fields:{ email:{ stringValue: u.email }, name:{ stringValue: u.name || '' }, shul:{ stringValue: JSON.stringify(d).slice(0, 1800) }, shulAt:{ timestampValue: new Date().toISOString() } } }, updateMask:{ fieldPaths:['email', 'name', 'shul', 'shulAt'] } }).then(function(r){ return r.ok; }).catch(function(){ return false; }); };
   function devId(){ try { var d = localStorage.getItem('ng_did'); if (!d){ d = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); localStorage.setItem('ng_did', d); } return d; } catch(e){ return ''; } }
   function ownerDev(){ try { if (isOwner()) localStorage.setItem('ng_owner_dev', '1'); return localStorage.getItem('ng_owner_dev') === '1'; } catch(e){ return false; } }
   setInterval(ownerDev, 5000); setTimeout(ownerDev, 1500);
@@ -7048,6 +7053,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <button type="button" data-v="alert">Alerts</button>
     <button type="button" data-v="ban">Block</button>
     <button type="button" data-v="fb">Feedback</button>
+    <button type="button" data-v="shul">Shul requests</button>
     <button type="button" data-v="qr">QR codes</button>
     <span class="vm-sp"></span>
     <button type="button" class="vm-small" id="vm-test"> Test visitor</button>
@@ -7065,6 +7071,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   <section class="vm-view" id="vm-read" hidden><div class="rd-pad"><h3>Most read</h3><p class="rd-tip">How many times each issue was opened (counting starts now).</p><div id="rd-read"></div></div></section>
   <section class="vm-view" id="vm-dev" hidden><div class="rd-pad"><h3>Phones vs computers</h3><p class="rd-tip">What readers used this month.</p><div id="rd-dev"></div></div></section>
   <section class="vm-view" id="vm-qr" hidden><div class="rd-pad"><h3>QR codes</h3><p class="rd-tip">How many people scanned the QR codes in the printed magazine, and how many of them became readers.</p><div id="rd-qr"></div></div></section>
+  <section class="vm-view" id="vm-shul" hidden><div class="rd-pad"><h3>Shul requests</h3><p class="rd-tip">Readers who pressed Print, saw the ad and asked for NeshamaGazine at their shul or Chabad House. Newest first.</p><div id="rd-shul"></div></div></section>
   <section class="vm-view" id="vm-fb" hidden><div class="rd-pad"><h3>Feedback</h3><p class="rd-tip">What readers wrote on the feedback page (the QR code in the printed magazine). Newest first.</p><div id="rd-fb"></div></div></section>
   <section class="vm-view" id="vm-ban" hidden><div class="rd-pad"><h3>Block someone</h3><p class="rd-tip">A blocked reader hears a siren, the gate rolls down and they see "You are blocked". It happens within a few seconds, even if they are in the middle of a game.</p><form id="rd-banf" class="rd-banf" novalidate><input id="rd-bane" type="search" placeholder="Type a name or an email" autocomplete="off"><button type="submit">Block this email</button></form><label class="rd-notel" for="rd-bannote">Message they will see (you can leave it empty)</label><textarea id="rd-bannote" class="rd-bannote" maxlength="500" placeholder="Hello, I see that you are doing something you should not. You have been blocked."></textarea><div id="rd-banpick"></div><h4 class="rd-h4">Everyone at once</h4><p class="rd-tip" id="rd-allst">Blocks every reader on the website (not you), with the message above.</p><div class="rd-when"><button type="button" id="rd-allon">Block everyone</button><button type="button" id="rd-alloff">Unblock everyone</button></div><h4 class="rd-h4">Blocked now</h4><div id="rd-banlist"></div><h4 class="rd-h4">Everyone who came on</h4><div class="rd-when" id="rd-when"><button type="button" data-w="1" class="on">Today</button><button type="button" data-w="7">Past week</button><button type="button" data-w="30">Past month</button><button type="button" data-w="0">Forever</button></div><div id="rd-everyone"></div></div></section>
   <section class="vm-view" id="vm-alert" hidden><div class="rd-pad"><h3>Alerts</h3><p class="rd-tip">Every screenshot, recording or print try, newest first.</p><div id="rd-alert"></div></div></section>
@@ -8330,7 +8337,7 @@ document.getElementById('cp').addEventListener('click',function(){
     if ((e.altKey && e.shiftKey && /Digit[3456]/.test(e.code || '')) || (e.ctrlKey && e.shiftKey && /^[sS]$/.test(k))){ blackout(2500); e.preventDefault(); wipeClip(); strike('screenshot'); return; }
     if (e.metaKey && e.shiftKey){ blackout(2500); if (/^[3456sS]$/.test(k) || /Digit[3456]|KeyS/.test(e.code || '')){ e.preventDefault(); strike('screenshot'); } return; }
     if ((k === 'Meta' || k === 'OS') && !MAC){ root.classList.add('ng-black'); return; }   // on Windows, the Windows key starts the snipping tool shortcut
-    if (mod && /^[pP]$/.test(k)){ e.preventDefault(); strike('print attempt'); return; }
+    if (mod && /^[pP]$/.test(k)){ e.preventDefault(); if (window.NG_SHUL_AD) NG_SHUL_AD(); else warn(); return; }   // print: show the "bring it to your shul" ad
     if (mod && /^[sSuU]$/.test(k)){ e.preventDefault(); warn(); return; }
     if (k === 'F12' || (mod && e.shiftKey && /^[iIjJcC]$/.test(k))){ e.preventDefault(); warn(); return; }
     if (mod && /^[cCxXaA]$/.test(k) && !inField(e.target)){ e.preventDefault(); warn(); return; }
@@ -8357,7 +8364,7 @@ document.getElementById('cp').addEventListener('click',function(){
   ['copy', 'cut'].forEach(function(t){ document.addEventListener(t, function(e){ if (inField(e.target)) return; e.preventDefault(); try { e.clipboardData.setData('text/plain', 'NeshamaGazine is for reading here only.'); } catch(x){} warn(); }, true); });
 
   // ---------- no printing ----------
-  window.addEventListener('beforeprint', function(){ strike('print attempt'); });
+  window.addEventListener('beforeprint', function(){ if (window.NG_SHUL_AD) setTimeout(NG_SHUL_AD, 300); });
 
   // ---------- videos: no download, no picture-in-picture, no full screen without the watermark ----------
   function lockVideos(){ [].forEach.call(document.querySelectorAll('video'), function(v){ if (v.dataset.sx) return; v.dataset.sx = '1'; v.setAttribute('controlsList', 'nodownload nofullscreen noremoteplayback'); v.disablePictureInPicture = true; v.setAttribute('disablePictureInPicture', ''); v.setAttribute('disableRemotePlayback', ''); }); }
@@ -9516,7 +9523,7 @@ window.NG_BOOM = function(){
   }
   var prev = window.NG_RADAR_TAB;
   window.NG_RADAR_TAB = function(v, fromLoad){ if (prev) prev(v, fromLoad);
-    if (v === 'read') drawRead(); if (v === 'log') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'qr' && !fromLoad) drawQR(); if (v === 'ban' && !fromLoad) drawBan(); };
+    if (v === 'read') drawRead(); if (v === 'log') drawNew(); if (v === 'dev') drawDev(); if (v === 'alert' && !fromLoad) drawAlerts(); if (v === 'fb' && !fromLoad) drawFeedback(); if (v === 'shul') drawShul(); if (v === 'qr' && !fromLoad) drawQR(); if (v === 'ban' && !fromLoad) drawBan(); };
   function banPut(t, d){
     var body = JSON.stringify({ fields: { data: { stringValue: JSON.stringify(d) }, at: { timestampValue: new Date().toISOString() } } });
     fetch(DB + '/site/bans?key=' + KEY, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: body }).catch(function(){});
@@ -9617,6 +9624,14 @@ window.NG_BOOM = function(){
         html += '<h4 class="rd-h4">Readers who came from the QR code</h4>' + (readers.length ? readers.map(function(p){ return '<div class="rd-logrow"><span><b>' + esc(p.name || (p.email || '').split('@')[0]) + '</b><br><small>' + esc(p.email || '') + '</small></span><small>' + (p.f.srcAt ? ago(new Date(p.f.srcAt.timestampValue).getTime()) : '') + '</small></div>'; }).join('') : '<p class="rd-tip">Nobody yet.</p>');
         el.innerHTML = html;
       });
+  }
+  function drawShul(){
+    var el = $('rd-shul'), rows = people().filter(function(p){ return p.f && p.f.shul && p.f.shul.stringValue; }).map(function(p){ var d = {}; try { d = JSON.parse(p.f.shul.stringValue) || {}; } catch(e){}
+      return { d: d, nm: (p.f.name && p.f.name.stringValue) || '', em: (p.f.email && p.f.email.stringValue) || '', t: p.f.shulAt ? new Date(p.f.shulAt.timestampValue).getTime() : 0 }; }).sort(function(a, b){ return b.t - a.t; });
+    if (!rows.length){ el.innerHTML = '<p class="rd-tip">No requests yet.</p>'; return; }
+    el.innerHTML = '<div class="rd-big"><div><b>' + rows.length + '</b><span>requests</span></div></div>' + rows.map(function(x){
+      return '<div class="rd-fbrow"><p><b>' + esc(x.d.shul || 'No place written') + '</b>' + (x.d.city ? ' &middot; ' + esc(x.d.city) : '') + ' &middot; <small>' + (x.t ? ago(x.t) : '') + '</small></p>' +
+        '<p><b>From:</b> ' + esc(x.d.name || x.nm || '') + ' (' + esc(x.em) + ')</p>' + (x.d.contact ? '<p><b>Reach them at:</b> ' + esc(x.d.contact) + '</p>' : '') + (x.d.msg ? '<p><b>Message:</b> ' + esc(x.d.msg) + '</p>' : '') + '</div>'; }).join('');
   }
   function drawFeedback(){
     var el = $('rd-fb'); el.innerHTML = '<p class="rd-tip">Loading\u2026</p>';
@@ -12072,6 +12087,83 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
 @media (prefers-reduced-motion:reduce){#notify-banner,#notify-banner *{animation:none!important}}
 </style>
 <style id="ng-flipsnd-css">.flipview-snd{right:118px}@media (max-width:759px){.flipview-snd{right:104px;padding:8px 10px;font-size:.85rem}}</style>
+<div id="shul-ad" class="shul-ad" role="dialog" aria-modal="true" aria-labelledby="shul-h" hidden>
+  <div class="shul-box">
+    <button type="button" class="shul-x" id="shul-x" aria-label="Close">&times;</button>
+    <div class="shul-stack" aria-hidden="true"><i></i><i></i><i></i></div>
+    <p class="shul-kick">Want it on paper?</p>
+    <h2 id="shul-h">Bring NeshamaGazine to your shul or Chabad House</h2>
+    <p class="shul-p">You can't print it from here, but we print it for shuls. Tell us where, and we'll get back to you. Spread the glow!</p>
+    <form id="shul-form" novalidate>
+      <label>Your name<input id="shul-name" maxlength="60" autocomplete="name" required></label>
+      <label>Shul or Chabad House<input id="shul-place" maxlength="100" required></label>
+      <label>City<input id="shul-city" maxlength="80" required></label>
+      <label>Email or phone, so we can reach you<input id="shul-contact" maxlength="120" required></label>
+      <label>Anything to add? (you can skip this)<textarea id="shul-msg" maxlength="500" rows="2"></textarea></label>
+      <input id="shul-web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <p class="shul-msg" id="shul-out" aria-live="polite"></p>
+      <div class="shul-btns"><button type="submit" class="shul-go" id="shul-go">Send it</button><button type="button" class="shul-no" id="shul-no">Not now</button></div>
+    </form>
+    <div id="shul-done" hidden><h2>Got it. Thank you!</h2><p class="shul-p">We'll get back to you about bringing NeshamaGazine to your shul.</p><div class="shul-btns"><button type="button" class="shul-go" id="shul-ok">Back to reading</button></div></div>
+  </div>
+</div>
+<style id="shul-ad-css">
+.shul-ad{position:fixed;inset:0;z-index:4200;background:rgba(8,18,36,.82);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.shul-ad[hidden]{display:none!important}
+.shul-box{position:relative;width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#12294a;color:#f5e4cc;border:4px solid #f5e4cc;border-radius:18px;padding:26px 26px 22px;animation:shulIn .5s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes shulIn{from{transform:translateY(60px) rotate(-3deg) scale(.8);opacity:0}to{transform:none;opacity:1}}
+.shul-x{position:absolute;right:12px;top:8px;border:0;background:transparent;color:#f5e4cc;font-size:30px;line-height:1;padding:4px 8px;cursor:var(--ng-cur-p,pointer)}
+.shul-stack{position:relative;width:64px;height:56px;margin:0 0 12px}
+.shul-stack i{position:absolute;left:0;top:0;width:44px;height:56px;background:#f5e4cc;border:2px solid #12294a;border-radius:4px;transform-origin:50% 100%;animation:shulFan 2.6s ease-in-out infinite}
+.shul-stack i:nth-child(1){transform:rotate(-12deg)}.shul-stack i:nth-child(2){left:10px;animation-delay:.12s}.shul-stack i:nth-child(3){left:20px;transform:rotate(12deg);animation-delay:.24s}
+@keyframes shulFan{0%,70%,100%{translate:0 0}80%{translate:0 -7px}}
+.shul-kick{margin:0 0 6px;font:800 .78rem "Figtree",system-ui,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:#f5e4cc}
+.shul-box h2{margin:0 0 8px;font:800 clamp(1.5rem,5vw,2.05rem)/1.05 "Bricolage Grotesque","Figtree",system-ui,sans-serif;color:#f5e4cc;text-wrap:balance}
+.shul-p{margin:0 0 16px;font:500 1rem/1.45 "Figtree",system-ui,sans-serif;color:#f5e4cc}
+#shul-form{display:flex;flex-direction:column;gap:10px;position:relative}
+#shul-form label{display:flex;flex-direction:column;gap:4px;font:700 .88rem "Figtree",system-ui,sans-serif;color:#f5e4cc}
+#shul-form input,#shul-form textarea{font:500 1rem "Figtree",system-ui,sans-serif;padding:10px 12px;border-radius:8px;border:2px solid #f5e4cc;background:#f5e4cc;color:#12294a;width:100%;cursor:text;-webkit-user-select:text;user-select:text}
+#shul-form input:focus-visible,#shul-form textarea:focus-visible{outline:3px solid #fff;outline-offset:1px}
+.shul-msg{margin:0;min-height:1.2em;font:700 .92rem "Figtree",system-ui,sans-serif;color:#f5e4cc}
+.shul-btns{display:flex;gap:10px;flex-wrap:wrap}
+.shul-go,.shul-no{border-radius:999px;padding:11px 24px;font:800 1rem "Figtree",system-ui,sans-serif;border:2px solid #f5e4cc;cursor:var(--ng-cur-p,pointer)}
+.shul-go{background:#f5e4cc;color:#12294a}.shul-no{background:transparent;color:#f5e4cc;font-weight:600}
+.shul-go:hover,.shul-go:focus-visible{background:#12294a;color:#f5e4cc;outline:none}.shul-no:hover,.shul-no:focus-visible{background:#f5e4cc;color:#12294a;outline:none}
+.shul-go[disabled]{opacity:.6}
+@media (prefers-reduced-motion:reduce){.shul-box,.shul-stack i{animation:none}}
+</style>
+<script id="shul-ad-js">
+/* Pressing Print opens this ad: "Bring NeshamaGazine to your shul or Chabad House". A reply goes to the owner's Radar (Shul requests) and email. */
+(function(){
+  var box = document.getElementById('shul-ad'), form = document.getElementById('shul-form'), done = document.getElementById('shul-done'), out = document.getElementById('shul-out'), go = document.getElementById('shul-go');
+  function $(id){ return document.getElementById(id); }
+  function clean(v, n){ return String(v || '').replace(/[<>]/g, '').trim().slice(0, n); }
+  function open(){ if (!box.hidden) return; var u = window.NG && NG.getUser && NG.getUser(); if (u && u.name && !$('shul-name').value) $('shul-name').value = u.name; if (u && u.email && !$('shul-contact').value) $('shul-contact').value = u.email;
+    form.hidden = false; done.hidden = true; out.textContent = ''; box.hidden = false; setTimeout(function(){ try { $('shul-place').focus(); } catch(e){} }, 80); }
+  function close(){ box.hidden = true; }
+  window.NG_SHUL_AD = open;
+  $('shul-x').addEventListener('click', close); $('shul-no').addEventListener('click', close); $('shul-ok').addEventListener('click', close);
+  box.addEventListener('click', function(e){ if (e.target === box) close(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !box.hidden) close(); });
+  form.addEventListener('submit', function(e){
+    e.preventDefault(); if ($('shul-web').value) return;
+    var d = { name: clean($('shul-name').value, 60), shul: clean($('shul-place').value, 100), city: clean($('shul-city').value, 80), contact: clean($('shul-contact').value, 120), msg: clean($('shul-msg').value, 500) };
+    if (!d.name){ out.textContent = 'Please write your name.'; $('shul-name').focus(); return; }
+    if (!d.shul){ out.textContent = 'Please write the name of the shul or Chabad House.'; $('shul-place').focus(); return; }
+    if (!d.city){ out.textContent = 'Please write the city.'; $('shul-city').focus(); return; }
+    if (!d.contact){ out.textContent = 'Please write an email or phone number.'; $('shul-contact').focus(); return; }
+    var last = 0; try { last = +localStorage.getItem('ng_shul_last') || 0; } catch(x){}
+    if (Date.now() - last < 60000){ out.textContent = 'Thanks! Wait one minute before you send another one.'; return; }
+    go.disabled = true; out.textContent = 'Sending…';
+    var u = (window.NG && NG.getUser && NG.getUser()) || {};
+    var saved = window.NG_SHUL_SAVE ? NG_SHUL_SAVE(d) : Promise.resolve(false);
+    var mailed = (window.NG && NG.sendEmail) ? NG.sendEmail('Wants NeshamaGazine at their shul', { name: d.name, email: u.email || '', more: d }).then(function(r){ return !!(r && r.ok); }).catch(function(){ return false; }) : Promise.resolve(false);
+    Promise.all([saved, mailed]).then(function(r){ go.disabled = false;
+      if (r[0] || r[1]){ try { localStorage.setItem('ng_shul_last', String(Date.now())); } catch(x){} form.hidden = true; done.hidden = false; form.reset(); }
+      else out.textContent = 'That did not send. Check the internet and try again.'; });
+  });
+})();
+</script>
 <script id="ng-flipsnd">
 /* Page sound button in the reader: On, Low or Off. The choice is remembered on this device. */
 (function(){
@@ -12093,7 +12185,7 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
   function stage(){ var r = room(); return r && r.querySelector('.arc-stage'); }
   function shown(e){ if (!e || e.hidden) return false; var c = getComputedStyle(e); return c.display !== 'none' && c.visibility !== 'hidden' && +c.opacity > 0.05 && c.pointerEvents !== 'none' && e.getClientRects().length > 0; }
   function shut(e){ var b = e.querySelector('.sp-x,.auth-close,.nlf-x,[data-nl="close"],[aria-label="Close"],[class*="close"],[id$="-close"],[id$="-x"]'); if (b) b.click(); else document.dispatchEvent(new KeyboardEvent('keydown', { key:'Escape', bubbles:true })); }
-  var POPS = ['nl-big', 'sp-modal', 'ad-modal', 'auth-modal', 'wheel-view', 'issue-view'];
+  var POPS = ['nl-big', 'sp-modal', 'ad-modal', 'auth-modal', 'wheel-view', 'issue-view', 'shul-ad'];
   var L = POPS.map(function(id){ return { k:id, el:function(){ return document.getElementById(id); }, open:function(){ return shown(document.getElementById(id)); }, close:function(){ var e = document.getElementById(id); if (e) shut(e); } }; }).concat([
     { k:'read',  open:function(){ var e = fv(); return !!e && !e.hidden; }, close:function(){ var b = document.getElementById('flipview-close'); if (b) b.click(); } },
     { k:'games', open:function(){ var e = room(); return !!e && !e.hidden; }, close:function(){ if (window.NG_ARCADE && NG_ARCADE.exit) NG_ARCADE.exit(); } },
