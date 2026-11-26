@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795697517';
+window.NG_BUILD = '1795698016';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -3194,15 +3194,28 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
 
 <main id="home">
 
-  <div id="ng-myst15-src" hidden><div class="arch myst15" data-peek15 title="Issue 15 is coming" role="button" tabindex="0"><span class="arch-badge gold">Coming soon</span><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODAgNDg2Ij48cmVjdCB3aWR0aD0iMzgwIiBoZWlnaHQ9IjQ4NiIgZmlsbD0iIzEyMjk0YSIvPjxyZWN0IHg9IjE0IiB5PSIxNCIgd2lkdGg9IjM1MiIgaGVpZ2h0PSI0NTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Y1ZTRjYyIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHRleHQgeD0iMTkwIiB5PSIxOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIxNzAiIGZpbGw9IiNmNWU0Y2MiPj88L3RleHQ+PHRleHQgeD0iMTkwIiB5PSIzNzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIxOTAiIGZpbGw9IiNmNWU0Y2MiPjE1PC90ZXh0Pjx0ZXh0IHg9IjE5MCIgeT0iNDM2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtc2l6ZT0iMjQiIGxldHRlci1zcGFjaW5nPSI2IiBmaWxsPSIjZjVlNGNjIj5XQVRDSCBQUkVWSUVXPC90ZXh0Pjwvc3ZnPg==" alt="Issue 15 mystery box"><i class="bx-hole"></i><i class="bx-top"></i><i class="bx-side"></i></div></div>
+  <div id="ng-myst15-src" hidden></div><div id="ng-myst15-hold" hidden><div class="arch myst15" data-peek15 title="Issue 15 is coming" role="button" tabindex="0"><span class="m15-badge">Coming soon</span><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODAgNDg2Ij48cmVjdCB3aWR0aD0iMzgwIiBoZWlnaHQ9IjQ4NiIgZmlsbD0iIzEyMjk0YSIvPjxyZWN0IHg9IjE0IiB5PSIxNCIgd2lkdGg9IjM1MiIgaGVpZ2h0PSI0NTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Y1ZTRjYyIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHRleHQgeD0iMTkwIiB5PSIxOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIxNzAiIGZpbGw9IiNmNWU0Y2MiPj88L3RleHQ+PHRleHQgeD0iMTkwIiB5PSIzNzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIxOTAiIGZpbGw9IiNmNWU0Y2MiPjE1PC90ZXh0Pjx0ZXh0IHg9IjE5MCIgeT0iNDM2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtc2l6ZT0iMjQiIGxldHRlci1zcGFjaW5nPSI2IiBmaWxsPSIjZjVlNGNjIj5XQVRDSCBQUkVWSUVXPC90ZXh0Pjwvc3ZnPg==" alt="Issue 15 mystery box"><i class="bx-hole"></i><i class="bx-top"></i><i class="bx-side"></i></div></div>
   <div id="peek15" class="peek15" role="dialog" aria-modal="true" aria-label="Issue 15 sneak peek" hidden>
     <div class="peek15-in"><button type="button" class="peek15-x" id="peek15-x" aria-label="Close">&times;</button>
       <video id="peek15-v" playsinline controls controlslist="nodownload noremoteplayback" disablepictureinpicture preload="none" poster="/video/issue-15-sneak-peek.jpg" src="/video/issue-15-sneak-peek.mp4"></video>
       <p class="peek15-cap">Issue 15 &middot; The Chanukah issue &middot; Coming soon</p></div>
   </div>
   <style id="i15-css">
-  #cd-running .cd-peek{margin-top:18px}
+  #cd-running .cd-peek{margin-top:16px}
+  #countdown .cd-body{text-align:left}
+  #countdown .cd-label{margin-top:4px}
+  #countdown .cd-title{margin:8px 0 16px;max-width:66%;text-wrap:balance}
+  #countdown .cd-boxes{justify-content:flex-start}
+  #countdown .cd-out{text-align:left}
+  @media (max-width:700px){#countdown .cd-title{max-width:84%}#countdown .cd-card.cdv-3:before{font-size:7rem!important;top:auto!important;bottom:6px;right:4%!important;transform:none!important}}
   .arch.myst15{cursor:var(--ng-cur-p,pointer)}
+  .m15-badge{position:absolute;top:10px;left:50%;transform:translateX(-50%) rotate(-4deg);z-index:2;background:linear-gradient(135deg,#f7d774,#c9a24a 55%,#a67c1f);color:#12294a;font:700 13px/1 "Figtree",system-ui,sans-serif;letter-spacing:.04em;padding:7px 12px;border-radius:6px;border:2px solid #fff3c4}
+  .f15{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;margin:12px 0 0;padding:14px 18px;background:#12294a;color:#f5e4cc;border:3px solid #f5e4cc;border-radius:12px}
+  .f15 img{width:104px;border-radius:4px;display:block}
+  .f15 b{display:block;font:800 1.3rem/1.1 "Bricolage Grotesque","Figtree",system-ui,sans-serif}
+  .f15 span{display:block;margin:4px 0 10px;font:500 .98rem "Figtree",system-ui,sans-serif}
+  .f15 button{border-radius:999px;padding:10px 22px;font:800 1rem "Figtree",system-ui,sans-serif;border:2px solid #f5e4cc;background:#f5e4cc;color:#12294a;cursor:var(--ng-cur-p,pointer)}
+  .f15 button:hover,.f15 button:focus-visible{background:#12294a;color:#f5e4cc;outline:none}
   .peek15{position:fixed;inset:0;z-index:4200;background:rgba(8,18,36,.94);display:flex;align-items:center;justify-content:center;padding:16px}
   .peek15[hidden]{display:none!important}
   .peek15-in{position:relative;width:min(1100px,100%)}
@@ -3224,6 +3237,30 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     v.addEventListener('contextmenu', function(e){ e.preventDefault(); });
     function num15(){ var card = document.querySelector('#countdown .cd-card'); if (!card) return; if (card.getAttribute('data-num') !== '15') card.setAttribute('data-num', '15');
       if (!card.__n15 && window.MutationObserver){ card.__n15 = 1; new MutationObserver(num15).observe(card, { attributes:true, attributeFilter:['data-num'] }); } }
+    function hold(){ var h = document.getElementById('ng-myst15-hold'), L = document.getElementById('issue-list'), b = h && h.firstElementChild;
+      if (b && L && b.parentNode !== L) L.appendChild(b); }
+    hold(); document.addEventListener('DOMContentLoaded', hold); window.addEventListener('load', hold); setInterval(hold, 3000);
+    function is15(t){ var n = ' ' + String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ') + ' '; return / 15 /.test(n) || /chanuk|hanuk/.test(n); }
+    function show15(){
+      var msg = document.getElementById('finder-msg'), chips = document.getElementById('finder-chips'), box = document.getElementById('f15');
+      if (msg) msg.textContent = 'Issue 15 is not out yet \u2014 here is the sneak peek!';
+      if (chips) chips.innerHTML = '';
+      if (!box){ var src = document.querySelector('.myst15 img'); box = document.createElement('div'); box.id = 'f15'; box.className = 'f15';
+        box.innerHTML = '<img alt="Issue 15 mystery box" src="' + (src ? src.getAttribute('src') : '') + '"><div><b>Issue 15 is coming</b><span>The Chanukah issue. 52 pages.</span><button type="button" data-peek15>Watch preview</button></div>';
+        if (chips && chips.parentNode) chips.parentNode.insertBefore(box, chips.nextSibling); }
+      box.hidden = false; box.scrollIntoView({ behavior:'smooth', block:'center' }); setTimeout(open, 500);
+    }
+    document.addEventListener('click', function(e){
+      if (!e.target.closest) return;
+      var g = e.target.closest('#finder-go'), qq = document.getElementById('finder-q');
+      if (g && qq && is15(qq.value)){ e.preventDefault(); e.stopPropagation(); show15(); return; }
+      var rd = e.target.closest('#wheel-win .ww-read'), cv = document.querySelector('#wheel-win .ww-cover');
+      if (rd && cv && /image\/svg\+xml/.test(cv.src || '')){ e.preventDefault(); e.stopPropagation();
+        var w = document.getElementById('wheel-win'); if (w) w.hidden = true;
+        var v = document.getElementById('wheel-view'); if (v) v.classList.remove('open');
+        open(); }
+    }, true);
+    document.addEventListener('keydown', function(e){ if (e.key === 'Enter' && e.target && e.target.id === 'finder-q' && is15(e.target.value)){ e.preventDefault(); e.stopPropagation(); show15(); } }, true);
     num15(); document.addEventListener('DOMContentLoaded', num15); window.addEventListener('load', num15); setTimeout(num15, 1500); setTimeout(num15, 4000);
   })();
   </script>
@@ -8082,7 +8119,7 @@ document.getElementById('cp').addEventListener('click',function(){
     all.forEach(function(a){ byT[a.title.replace(/&#39;/g, "'")] = a; });
     var st = [].slice.call(document.querySelectorAll('.st-ti[data-issue]')).map(function(li){ return byT[li.getAttribute('data-issue').replace(/&#39;/g, "'")]; }).filter(Boolean).reverse();
     all.forEach(function(a){ if (st.indexOf(a) < 0) st.push(a); });   // anything not in the story goes at the end
-    var my = document.querySelector('#ng-myst15-src .myst15'); if (my && st.length){ st.splice(Math.ceil(st.length / 2), 0, my); st.unshift(my); }   // the Issue 15 mystery boxes
+    var my = document.querySelector('.myst15'); if (my && st.length && st.indexOf(my) < 0) st.push(my); if (my && st.length > 3) st.splice(2, 0, my);   // the Issue 15 mystery boxes
     return st;
   }
   var items = [], cw = 220, ch = 300, W = 1000, seg = 1200, L = 3600, sp = 240, N = 10, head = 0, full = false, started = false, introSpd = 0;
