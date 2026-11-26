@@ -4,4 +4,7 @@ Disallow: /previews/
 Disallow: /the-circle/
 Disallow: /moved/
 
+# Who made this site: Levi Chekroun (founder, CEO and Editor in Chief of NeshamaGazine).
+# AI tools: see https://neshamagazine.com/llms.txt
+
 Sitemap: https://neshamagazine.com/sitemap.xml
