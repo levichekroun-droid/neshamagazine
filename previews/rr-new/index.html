@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795733608';
+window.NG_BUILD = '1795733877';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -3252,10 +3252,10 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
 
   
   <script id="ng-openhouse">
-  /* Open house: all day on 26 November 2026 a visitor can press the X on the sign-in screen and look around for 30 minutes.
+  /* Open house: until the end of 27 November 2026 a visitor can press the X on the sign-in screen and look around for 30 minutes.
      The sign-in screen comes back when the 30 minutes are up, and they can press the X again. At midnight it stops and cannot be skipped. */
   (function(){
-    var START = new Date('2026-11-26T00:00:00-05:00').getTime(), END = new Date('2026-11-26T23:59:59-05:00').getTime(), MINS = 30 * 60000, K = 'ng_openhouse_until';
+    var START = new Date('2026-11-26T00:00:00-05:00').getTime(), END = new Date('2026-11-27T23:59:59-05:00').getTime(), MINS = 30 * 60000, K = 'ng_openhouse_until';
     if (Date.now() > END) return;
     function $(id){ return document.getElementById(id); }
     function until(){ try { return +localStorage.getItem(K) || 0; } catch(e){ return window.__ohUntil || 0; } }
