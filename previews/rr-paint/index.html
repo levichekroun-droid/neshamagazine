@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795656457';
+window.NG_BUILD = '1795656725';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -12092,10 +12092,21 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
   <div class="shul-box">
     <button type="button" class="shul-x" id="shul-x" aria-label="Close">&times;</button>
     <div class="shul-stack" aria-hidden="true"><i></i><i></i><i></i></div>
-    <p class="shul-kick">Want it on paper?</p>
-    <h2 id="shul-h">Bring NeshamaGazine to your shul or Chabad House</h2>
-    <p class="shul-p">Tell us which shul or Chabad House it is for, and you can print this issue to bring there. Spread the glow!</p>
-    <div id="shul-again" class="shul-again" hidden><p class="shul-p" style="margin:0 0 10px">You already asked for your shul, so you can print the issue you have open.</p><div class="shul-btns"><button type="button" class="shul-go" data-shul-print>Print this issue</button></div><p class="shul-msg" data-shul-pmsg aria-live="polite"></p></div>
+    <p class="shul-kick" id="shul-kick">Print window</p>
+    <h2 id="shul-h">Print it for your shul or Chabad House</h2>
+    <p class="shul-p"><span id="shul-intro">First tell us which shul or Chabad House it is for. Then you can print. Spread the glow!</span></p>
+    <div id="shul-again" class="shul-again" hidden>
+      <p class="shul-thanks" id="shul-thanks" hidden>Got it. Thank you!</p>
+      <div class="shul-prow"><img id="shul-thumb" alt="" draggable="false"><div class="shul-pinfo"><b id="shul-pt">This issue</b><span id="shul-pn"></span><span id="shul-pfor"></span></div></div>
+      <fieldset class="shul-opts"><legend>What to print</legend>
+        <label><input type="radio" name="shul-what" value="all" checked> The whole issue</label>
+        <label><input type="radio" name="shul-what" value="cur"> Only the pages I have open</label>
+        <label class="shul-range"><input type="radio" name="shul-what" value="range"> Pages <input type="number" id="shul-from" min="1" value="1" inputmode="numeric" aria-label="From page"> to <input type="number" id="shul-to" min="1" value="1" inputmode="numeric" aria-label="To page"></label>
+      </fieldset>
+      <div class="shul-btns"><button type="button" class="shul-go" data-shul-print>Print</button><button type="button" class="shul-no" id="shul-cancel">Cancel</button></div>
+      <p class="shul-msg" data-shul-pmsg aria-live="polite"></p>
+      <p class="shul-fine">After you press Print, your computer's own print window opens so you can pick your printer.</p>
+    </div>
     <form id="shul-form" novalidate>
       <label>Your name<input id="shul-name" maxlength="60" autocomplete="name" required></label>
       <label>Shul or Chabad House<input id="shul-place" maxlength="100" required></label>
@@ -12104,7 +12115,7 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
       <label>Anything to add? (you can skip this)<textarea id="shul-msg" maxlength="500" rows="2"></textarea></label>
       <input id="shul-web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
       <p class="shul-msg" id="shul-out" aria-live="polite"></p>
-      <div class="shul-btns"><button type="submit" class="shul-go" id="shul-go">Send it</button><button type="button" class="shul-no" id="shul-no">Not now</button></div>
+      <div class="shul-btns"><button type="submit" class="shul-go" id="shul-go">Next</button><button type="button" class="shul-no" id="shul-no">Not now</button></div>
     </form>
     <div id="shul-done" hidden><h2>Got it. Thank you!</h2><p class="shul-p">We'll get back to you about bringing NeshamaGazine to your shul.</p><p class="shul-p">You can now print the issue you have open, to bring to your shul.</p><div class="shul-btns"><button type="button" class="shul-go" data-shul-print>Print this issue</button><button type="button" class="shul-no" id="shul-ok">Back to reading</button></div><p class="shul-msg" data-shul-pmsg aria-live="polite"></p></div>
   </div>
@@ -12132,7 +12143,18 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
 .shul-go{background:#f5e4cc;color:#12294a}.shul-no{background:transparent;color:#f5e4cc;font-weight:600}
 .shul-go:hover,.shul-go:focus-visible{background:#12294a;color:#f5e4cc;outline:none}.shul-no:hover,.shul-no:focus-visible{background:#f5e4cc;color:#12294a;outline:none}
 .shul-go[disabled]{opacity:.6}
-.shul-again{border:2px dashed #f5e4cc;border-radius:12px;padding:12px 14px;margin:0 0 16px}
+.shul-again{margin:0}
+.shul-thanks{margin:0 0 12px;font:800 1.1rem "Figtree",system-ui,sans-serif;color:#f5e4cc}
+.shul-prow{display:flex;gap:14px;align-items:center;margin:0 0 14px}
+.shul-prow img{width:74px;height:auto;border:2px solid #f5e4cc;border-radius:4px;background:#f5e4cc}
+.shul-pinfo{display:flex;flex-direction:column;gap:3px;font:500 .95rem "Figtree",system-ui,sans-serif;color:#f5e4cc;min-width:0}
+.shul-pinfo b{font:800 1.15rem "Figtree",system-ui,sans-serif}
+.shul-opts{border:2px solid #f5e4cc;border-radius:12px;padding:10px 14px 12px;margin:0 0 16px;display:flex;flex-direction:column;gap:8px}
+.shul-opts legend{padding:0 6px;font:800 .78rem "Figtree",system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#f5e4cc}
+.shul-opts label{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:600 1rem "Figtree",system-ui,sans-serif;color:#f5e4cc;cursor:var(--ng-cur-p,pointer)}
+.shul-opts input[type=radio]{width:18px;height:18px;accent-color:#f5e4cc;margin:0}
+.shul-opts input[type=number]{width:74px;font:600 1rem "Figtree",system-ui,sans-serif;padding:6px 8px;border-radius:8px;border:2px solid #f5e4cc;background:#f5e4cc;color:#12294a}
+.shul-fine{margin:12px 0 0;font:500 .85rem/1.4 "Figtree",system-ui,sans-serif;color:#f5e4cc;opacity:.85}
 #ng-printbox{display:none}
 @media print{@page{margin:8mm}html.ng-print-ok body>#ng-sec{display:none!important}html.ng-print-ok body>#ng-printbox{display:block!important;filter:none!important;visibility:visible!important}
 html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!important;padding:0!important}#ng-printbox .pp{break-after:page;page-break-after:always;break-inside:avoid;height:252mm;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2mm}#ng-printbox .pp:last-child{break-after:auto;page-break-after:auto}#ng-printbox img{max-width:100%;max-height:242mm;display:block}#ng-printbox small{font:600 8pt Arial,sans-serif;color:#12294a}}
@@ -12145,10 +12167,10 @@ html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!import
   function $(id){ return document.getElementById(id); }
   function clean(v, n){ return String(v || '').replace(/[<>]/g, '').trim().slice(0, n); }
   function open(){ if (!box.hidden) return; var u = window.NG && NG.getUser && NG.getUser(); if (u && u.name && !$('shul-name').value) $('shul-name').value = u.name; if (u && u.email && !$('shul-contact').value) $('shul-contact').value = u.email;
-    form.hidden = false; done.hidden = true; out.textContent = ''; var ok = false; try { ok = localStorage.getItem('ng_shul_ok') === '1'; } catch(e){} $('shul-again').hidden = !ok; [].forEach.call(box.querySelectorAll('[data-shul-pmsg]'), function(m){ m.textContent = ''; }); box.hidden = false; setTimeout(function(){ try { $('shul-place').focus(); } catch(e){} }, 80); }
+    form.hidden = false; done.hidden = true; out.textContent = ''; var ok = false; try { ok = localStorage.getItem('ng_shul_ok') === '1'; } catch(e){} $('shul-again').hidden = !ok; form.hidden = ok; $('shul-intro').hidden = ok; $('shul-thanks').hidden = true; if (window.NG_SHUL_FILL) NG_SHUL_FILL(); [].forEach.call(box.querySelectorAll('[data-shul-pmsg]'), function(m){ m.textContent = ''; }); box.hidden = false; setTimeout(function(){ try { $('shul-place').focus(); } catch(e){} }, 80); }
   function close(){ box.hidden = true; }
   window.NG_SHUL_AD = open;
-  $('shul-x').addEventListener('click', close); $('shul-no').addEventListener('click', close); $('shul-ok').addEventListener('click', close);
+  $('shul-x').addEventListener('click', close); $('shul-no').addEventListener('click', close); $('shul-ok').addEventListener('click', close); $('shul-cancel').addEventListener('click', close);
   box.addEventListener('click', function(e){ if (e.target === box) close(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !box.hidden) close(); });
   form.addEventListener('submit', function(e){
@@ -12165,7 +12187,7 @@ html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!import
     var saved = window.NG_SHUL_SAVE ? NG_SHUL_SAVE(d) : Promise.resolve(false);
     var mailed = (window.NG && NG.sendEmail) ? NG.sendEmail('Wants NeshamaGazine at their shul', { name: d.name, email: u.email || '', more: d }).then(function(r){ return !!(r && r.ok); }).catch(function(){ return false; }) : Promise.resolve(false);
     Promise.all([saved, mailed]).then(function(r){ go.disabled = false;
-      if (r[0] || r[1]){ try { localStorage.setItem('ng_shul_last', String(Date.now())); localStorage.setItem('ng_shul_ok', '1'); localStorage.setItem('ng_shul_name', d.shul); } catch(x){} form.hidden = true; $('shul-again').hidden = true; done.hidden = false; form.reset(); }
+      if (r[0] || r[1]){ try { localStorage.setItem('ng_shul_last', String(Date.now())); localStorage.setItem('ng_shul_ok', '1'); localStorage.setItem('ng_shul_name', d.shul); } catch(x){} form.hidden = true; $('shul-intro').hidden = true; $('shul-thanks').hidden = false; if (window.NG_SHUL_FILL) NG_SHUL_FILL(); $('shul-again').hidden = false; form.reset(); }
       else out.textContent = 'That did not send. Check the internet and try again.'; });
   });
 })();
@@ -12178,6 +12200,12 @@ html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!import
   if (orig){ window.NGFlipbook = function(host, pages, opts){ if (host && host.id === 'flipview-host') cur = { pages: pages }; return orig.apply(this, arguments); }; }
   var box = document.getElementById('ng-printbox'), root = document.documentElement;
   function say(t){ [].forEach.call(document.querySelectorAll('[data-shul-pmsg]'), function(m){ m.textContent = t; }); }
+  function real(){ return cur ? cur.pages.filter(function(p){ return typeof p === 'string' && p; }) : []; }
+  window.NG_SHUL_FILL = function(){ var pg = real(), n = pg.length, shul = ''; try { shul = localStorage.getItem('ng_shul_name') || ''; } catch(e){}
+    var th = document.getElementById('shul-thumb'); if (pg[0]){ th.src = pg[0]; th.hidden = false; } else th.hidden = true;
+    document.getElementById('shul-pn').textContent = n ? n + ' pages' : ''; document.getElementById('shul-pfor').textContent = shul ? 'For ' + shul : '';
+    var f = document.getElementById('shul-from'), t = document.getElementById('shul-to'); f.max = t.max = n || 1; f.value = 1; t.value = n || 1; };
+  ['shul-from', 'shul-to'].forEach(function(id){ document.getElementById(id).addEventListener('focus', function(){ var r = document.querySelector('input[name="shul-what"][value="range"]'); if (r) r.checked = true; }); });
   function clean(){ root.classList.remove('ng-print-ok'); box.innerHTML = ''; }
   function go(){
     var ok = false, shul = ''; try { ok = localStorage.getItem('ng_shul_ok') === '1'; shul = localStorage.getItem('ng_shul_name') || ''; } catch(e){}
@@ -12186,6 +12214,9 @@ html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!import
     if (!cur || !fv || fv.hidden){ say('Open the issue you want first, then press Print again.'); return; }
     var pages = cur.pages.filter(function(p){ return typeof p === 'string' && p; }), loading = pages.some(function(p){ return /^data:image\/svg\+xml/.test(p); });   // the grey "loading" page
     if (!pages.length || loading){ say('The pages are still loading. Wait a moment and press Print again.'); return; }
+    var what = (document.querySelector('input[name="shul-what"]:checked') || {}).value || 'all';
+    if (what === 'cur'){ var open = [].map.call(document.querySelectorAll('#flipview-host .nfb-l img, #flipview-host .nfb-r img'), function(i){ return i.getAttribute('src'); }).filter(Boolean); if (open.length) pages = open; }
+    else if (what === 'range'){ var a = Math.max(1, Math.min(pages.length, +document.getElementById('shul-from').value || 1)), z = Math.max(a, Math.min(pages.length, +document.getElementById('shul-to').value || pages.length)); pages = pages.slice(a - 1, z); }
     var u = (window.NG && NG.getUser && NG.getUser()) || {}, line = 'Printed from neshamagazine.com' + (shul ? ' for ' + shul.replace(/[<>&]/g, '') : '') + (u.email ? ' by ' + String(u.email).replace(/[<>&]/g, '') : '') + '. Please do not copy or sell.';
     box.innerHTML = pages.map(function(p){ return '<div class="pp"><img src="' + p + '" alt=""><small>' + line + '</small></div>'; }).join('');
     root.classList.add('ng-print-ok'); say('Opening the print window\u2026');
