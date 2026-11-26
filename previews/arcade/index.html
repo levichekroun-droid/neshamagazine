@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795656725';
+window.NG_BUILD = '1795656909';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -7072,7 +7072,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   <section class="vm-view" id="vm-read" hidden><div class="rd-pad"><h3>Most read</h3><p class="rd-tip">How many times each issue was opened (counting starts now).</p><div id="rd-read"></div></div></section>
   <section class="vm-view" id="vm-dev" hidden><div class="rd-pad"><h3>Phones vs computers</h3><p class="rd-tip">What readers used this month.</p><div id="rd-dev"></div></div></section>
   <section class="vm-view" id="vm-qr" hidden><div class="rd-pad"><h3>QR codes</h3><p class="rd-tip">How many people scanned the QR codes in the printed magazine, and how many of them became readers.</p><div id="rd-qr"></div></div></section>
-  <section class="vm-view" id="vm-shul" hidden><div class="rd-pad"><h3>Shul requests</h3><p class="rd-tip">Readers who pressed Print, saw the ad and asked for NeshamaGazine at their shul or Chabad House. After asking, they can print the issue they have open. Newest first.</p><div id="rd-shul"></div></div></section>
+  <section class="vm-view" id="vm-shul" hidden><div class="rd-pad"><h3>Shul requests</h3><p class="rd-tip">Readers who pressed Print inside a magazine, saw the ad and asked for NeshamaGazine at their shul or Chabad House. Newest first.</p><div id="rd-shul"></div></div></section>
   <section class="vm-view" id="vm-fb" hidden><div class="rd-pad"><h3>Feedback</h3><p class="rd-tip">What readers wrote on the feedback page (the QR code in the printed magazine). Newest first.</p><div id="rd-fb"></div></div></section>
   <section class="vm-view" id="vm-ban" hidden><div class="rd-pad"><h3>Block someone</h3><p class="rd-tip">A blocked reader hears a siren, the gate rolls down and they see "You are blocked". It happens within a few seconds, even if they are in the middle of a game.</p><form id="rd-banf" class="rd-banf" novalidate><input id="rd-bane" type="search" placeholder="Type a name or an email" autocomplete="off"><button type="submit">Block this email</button></form><label class="rd-notel" for="rd-bannote">Message they will see (you can leave it empty)</label><textarea id="rd-bannote" class="rd-bannote" maxlength="500" placeholder="Hello, I see that you are doing something you should not. You have been blocked."></textarea><div id="rd-banpick"></div><h4 class="rd-h4">Everyone at once</h4><p class="rd-tip" id="rd-allst">Blocks every reader on the website (not you), with the message above.</p><div class="rd-when"><button type="button" id="rd-allon">Block everyone</button><button type="button" id="rd-alloff">Unblock everyone</button></div><h4 class="rd-h4">Blocked now</h4><div id="rd-banlist"></div><h4 class="rd-h4">Everyone who came on</h4><div class="rd-when" id="rd-when"><button type="button" data-w="1" class="on">Today</button><button type="button" data-w="7">Past week</button><button type="button" data-w="30">Past month</button><button type="button" data-w="0">Forever</button></div><div id="rd-everyone"></div></div></section>
   <section class="vm-view" id="vm-alert" hidden><div class="rd-pad"><h3>Alerts</h3><p class="rd-tip">Every screenshot, recording or print try, newest first.</p><div id="rd-alert"></div></div></section>
@@ -12092,9 +12092,9 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
   <div class="shul-box">
     <button type="button" class="shul-x" id="shul-x" aria-label="Close">&times;</button>
     <div class="shul-stack" aria-hidden="true"><i></i><i></i><i></i></div>
-    <p class="shul-kick" id="shul-kick">Print window</p>
-    <h2 id="shul-h">Print it for your shul or Chabad House</h2>
-    <p class="shul-p"><span id="shul-intro">First tell us which shul or Chabad House it is for. Then you can print. Spread the glow!</span></p>
+    <p class="shul-kick" id="shul-kick">Want it on paper?</p>
+    <h2 id="shul-h">Bring NeshamaGazine to your shul or Chabad House</h2>
+    <p class="shul-p"><span id="shul-intro">We print NeshamaGazine for shuls and Chabad Houses. Tell us where yours is, and we'll get back to you. Spread the glow!</span></p>
     <div id="shul-again" class="shul-again" hidden>
       <p class="shul-thanks" id="shul-thanks" hidden>Got it. Thank you!</p>
       <div class="shul-prow"><img id="shul-thumb" alt="" draggable="false"><div class="shul-pinfo"><b id="shul-pt">This issue</b><span id="shul-pn"></span><span id="shul-pfor"></span></div></div>
@@ -12105,7 +12105,6 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
       </fieldset>
       <div class="shul-btns"><button type="button" class="shul-go" data-shul-print>Print</button><button type="button" class="shul-no" id="shul-cancel">Cancel</button></div>
       <p class="shul-msg" data-shul-pmsg aria-live="polite"></p>
-      <p class="shul-fine">After you press Print, your computer's own print window opens so you can pick your printer.</p>
     </div>
     <form id="shul-form" novalidate>
       <label>Your name<input id="shul-name" maxlength="60" autocomplete="name" required></label>
@@ -12115,9 +12114,9 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
       <label>Anything to add? (you can skip this)<textarea id="shul-msg" maxlength="500" rows="2"></textarea></label>
       <input id="shul-web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
       <p class="shul-msg" id="shul-out" aria-live="polite"></p>
-      <div class="shul-btns"><button type="submit" class="shul-go" id="shul-go">Next</button><button type="button" class="shul-no" id="shul-no">Not now</button></div>
+      <div class="shul-btns"><button type="submit" class="shul-go" id="shul-go">Send it</button><button type="button" class="shul-no" id="shul-no">Not now</button></div>
     </form>
-    <div id="shul-done" hidden><h2>Got it. Thank you!</h2><p class="shul-p">We'll get back to you about bringing NeshamaGazine to your shul.</p><p class="shul-p">You can now print the issue you have open, to bring to your shul.</p><div class="shul-btns"><button type="button" class="shul-go" data-shul-print>Print this issue</button><button type="button" class="shul-no" id="shul-ok">Back to reading</button></div><p class="shul-msg" data-shul-pmsg aria-live="polite"></p></div>
+    <div id="shul-done" hidden><h2>Got it. Thank you!</h2><p class="shul-p">We'll get back to you about bringing NeshamaGazine to your shul.</p><div class="shul-btns"><button type="button" class="shul-go" id="shul-ok">Back to reading</button></div></div>
   </div>
 </div>
 <style id="shul-ad-css">
@@ -12160,6 +12159,7 @@ html.ng-walled #ng-navbtns,html.ng-blocked #ng-navbtns,html.ng-soon-lock #ng-nav
 html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!important;padding:0!important}#ng-printbox .pp{break-after:page;page-break-after:always;break-inside:avoid;height:252mm;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2mm}#ng-printbox .pp:last-child{break-after:auto;page-break-after:auto}#ng-printbox img{max-width:100%;max-height:242mm;display:block}#ng-printbox small{font:600 8pt Arial,sans-serif;color:#12294a}}
 @media (prefers-reduced-motion:reduce){.shul-box,.shul-stack i{animation:none}}
 </style>
+<script>window.NG_PRINT_ON = false;   // set to true to let readers print after they ask for their shul (the browser print window can also save a PDF)</script>
 <script id="shul-ad-js">
 /* Pressing Print opens this ad: "Bring NeshamaGazine to your shul or Chabad House". A reply goes to the owner's Radar (Shul requests) and email. */
 (function(){
@@ -12167,7 +12167,7 @@ html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!import
   function $(id){ return document.getElementById(id); }
   function clean(v, n){ return String(v || '').replace(/[<>]/g, '').trim().slice(0, n); }
   function open(){ if (!box.hidden) return; var u = window.NG && NG.getUser && NG.getUser(); if (u && u.name && !$('shul-name').value) $('shul-name').value = u.name; if (u && u.email && !$('shul-contact').value) $('shul-contact').value = u.email;
-    form.hidden = false; done.hidden = true; out.textContent = ''; var ok = false; try { ok = localStorage.getItem('ng_shul_ok') === '1'; } catch(e){} $('shul-again').hidden = !ok; form.hidden = ok; $('shul-intro').hidden = ok; $('shul-thanks').hidden = true; if (window.NG_SHUL_FILL) NG_SHUL_FILL(); [].forEach.call(box.querySelectorAll('[data-shul-pmsg]'), function(m){ m.textContent = ''; }); box.hidden = false; setTimeout(function(){ try { $('shul-place').focus(); } catch(e){} }, 80); }
+    form.hidden = false; done.hidden = true; $('shul-intro').hidden = false; out.textContent = ''; var ok = false; try { ok = window.NG_PRINT_ON === true && localStorage.getItem('ng_shul_ok') === '1'; } catch(e){} $('shul-again').hidden = !ok; form.hidden = ok; $('shul-intro').hidden = ok; $('shul-thanks').hidden = true; if (window.NG_SHUL_FILL) NG_SHUL_FILL(); [].forEach.call(box.querySelectorAll('[data-shul-pmsg]'), function(m){ m.textContent = ''; }); box.hidden = false; setTimeout(function(){ try { $('shul-place').focus(); } catch(e){} }, 80); }
   function close(){ box.hidden = true; }
   window.NG_SHUL_AD = open;
   $('shul-x').addEventListener('click', close); $('shul-no').addEventListener('click', close); $('shul-ok').addEventListener('click', close); $('shul-cancel').addEventListener('click', close);
@@ -12187,7 +12187,7 @@ html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!import
     var saved = window.NG_SHUL_SAVE ? NG_SHUL_SAVE(d) : Promise.resolve(false);
     var mailed = (window.NG && NG.sendEmail) ? NG.sendEmail('Wants NeshamaGazine at their shul', { name: d.name, email: u.email || '', more: d }).then(function(r){ return !!(r && r.ok); }).catch(function(){ return false; }) : Promise.resolve(false);
     Promise.all([saved, mailed]).then(function(r){ go.disabled = false;
-      if (r[0] || r[1]){ try { localStorage.setItem('ng_shul_last', String(Date.now())); localStorage.setItem('ng_shul_ok', '1'); localStorage.setItem('ng_shul_name', d.shul); } catch(x){} form.hidden = true; $('shul-intro').hidden = true; $('shul-thanks').hidden = false; if (window.NG_SHUL_FILL) NG_SHUL_FILL(); $('shul-again').hidden = false; form.reset(); }
+      if (r[0] || r[1]){ try { localStorage.setItem('ng_shul_last', String(Date.now())); localStorage.setItem('ng_shul_ok', '1'); localStorage.setItem('ng_shul_name', d.shul); } catch(x){} form.hidden = true; $('shul-intro').hidden = true; if (window.NG_PRINT_ON === true){ $('shul-thanks').hidden = false; if (window.NG_SHUL_FILL) NG_SHUL_FILL(); $('shul-again').hidden = false; } else done.hidden = false; form.reset(); }
       else out.textContent = 'That did not send. Check the internet and try again.'; });
   });
 })();
@@ -12208,6 +12208,7 @@ html.ng-print-ok,html.ng-print-ok body{background:#fff!important;margin:0!import
   ['shul-from', 'shul-to'].forEach(function(id){ document.getElementById(id).addEventListener('focus', function(){ var r = document.querySelector('input[name="shul-what"][value="range"]'); if (r) r.checked = true; }); });
   function clean(){ root.classList.remove('ng-print-ok'); box.innerHTML = ''; }
   function go(){
+    if (window.NG_PRINT_ON !== true) return;
     var ok = false, shul = ''; try { ok = localStorage.getItem('ng_shul_ok') === '1'; shul = localStorage.getItem('ng_shul_name') || ''; } catch(e){}
     if (!ok){ say('Fill in the boxes first.'); return; }
     var fv = document.getElementById('flipview');
