@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795734892';
+window.NG_BUILD = '1795735923';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -3282,11 +3282,15 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     function clearPass(){ try { localStorage.removeItem(K); } catch(e){} window.__ohUntil = 0; }
     function isOpen(){ return true; }
     function pass(){ return until() > Date.now(); }
-    function grant(){ setUntil(Date.now() + MINS); apply(true); }
+    function known(){ try { return localStorage.getItem('ng_guest_known') === '1'; } catch(e){ return !!window.__gk; } }
+    function remember(){ try { localStorage.setItem('ng_guest_known', '1'); } catch(e){ window.__gk = 1; } }
+    function grant(){ remember(); setUntil(Date.now() + MINS); apply(true); }
     window.NG_OPEN_HOUSE = grant;
+    var welcomed = false;
     function apply(fresh){
       var w = $('ng-wall'); if (!w) return;
       var real = window.NG && NG.getUser && NG.getUser();
+      if (!real && !pass() && known() && !welcomed){ welcomed = true; setUntil(Date.now() + MINS); fresh = true; }   // they have been here before: no sign-in screen, straight in
       if (pass() && !real){
         if (!window.NG_READER || !window.NG_READER.guest){ var c = gcode();
           window.NG_READER = { name: 'Guest-' + c, email: gmail(c), guest: true, code: c };
@@ -8315,7 +8319,7 @@ document.getElementById('cp').addEventListener('click',function(){
   }
   function save(em, rec){
     ls('ng_sec_dev', { strikes: Math.max(devRec().strikes, rec.strikes), until: rec.until, email: em || '' });
-    if (!em) return;
+    if (!em){ em = 'device-' + devId() + '@guest.neshamagazine.com'; }   // nobody signed in: write it down against the device, so it still reaches the Radar
     ls('ng_sec_' + pkey(em), rec);
     var f = { email:{ stringValue: em }, name:{ stringValue: (user() && user().name) || '' }, strikes:{ integerValue: String(rec.strikes) }, until:{ integerValue: String(rec.until) }, last:{ timestampValue: new Date().toISOString() }, what:{ stringValue: rec.what || '' }, code:{ stringValue: code(em) } };
     fetch(DOCS + ':commit?key=' + KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ writes:[{ update:{ name:'projects/' + PROJ + '/databases/(default)/documents/blocks/' + pkey(em), fields: f } }] }) })
@@ -8429,6 +8433,7 @@ document.getElementById('cp').addEventListener('click',function(){
     if ((busyStrike && gateState !== 'up') || Date.now() - lastStrike < 4000) return;   // one at a time: the next one counts after this one is over
     lastStrike = Date.now(); busyStrike = true;
     var me = owner(), who = email(), n, rec;
+    if (!me) tellOwner(what, who);
     var base = me ? null : mailRec(who), d = me ? null : devRec();
     if (me){ n = 1; try { var ol = +sessionStorage.getItem('ng_own_last') || 0, on = Date.now() - ol > HOUR ? 0 : (+sessionStorage.getItem('ng_own_strikes') || 0); n = on + 1; sessionStorage.setItem('ng_own_strikes', String(n)); sessionStorage.setItem('ng_own_last', String(Date.now())); } catch(e){} }
     else { var prev = Math.max(base.last ? base.strikes : 0, d.last ? d.strikes : 0), last = Math.max(base.last || 0, d.last || 0); n = (Date.now() - last > HOUR ? 0 : prev) + 1; }
@@ -8446,6 +8451,14 @@ document.getElementById('cp').addEventListener('click',function(){
       return;
     }
     showBlock(rec, false, true);
+  }
+  // the owner gets an email the moment somebody tries, at most one every two minutes from the same device
+  function tellOwner(what, who){
+    try { var last = +(localStorage.getItem('ng_shot_mail') || 0); if (Date.now() - last < 120000) return; localStorage.setItem('ng_shot_mail', String(Date.now())); } catch(e){}
+    try {
+      var u = user() || {}, g = /^guest-([0-9a-f]{4})@/i.exec(who || ''), nm = g ? 'Guest-' + g[1].toUpperCase() : (u.name || 'Someone not signed in');
+      if (window.NG && NG.sendEmail) NG.sendEmail('Someone tried to take a picture of NeshamaGazine', { name: nm, email: who || 'guest@guest.neshamagazine.com', more: { msg: 'Tried: ' + (what || 'screenshot') + ' \u00b7 ' + nm + ' \u00b7 device ' + devId(), contact: who || 'not signed in', city: (new Date()).toLocaleString() } });
+    } catch(e){}
   }
   function soft(){
     busyStrike = false; clearTimeout(blackT); blackEnd = 0;
