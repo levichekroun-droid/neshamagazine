@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795648650';
+window.NG_BUILD = '1795655165';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -3177,6 +3177,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <a href="#story" id="nav-story">Our Story</a>
     <a class="dl" id="nav-mag" href="https://drive.google.com/drive/folders/1vYJaBebvh1LZad_ZM7D4HN4SnpwEWELZ?usp=drive_link" target="_blank" rel="noopener"><span class="nm-text">Read a Magazine</span><span class="nm-curtain l"></span><span class="nm-curtain r"></span></a>
     <a href="#contact" id="nav-contact">Contact Us</a>
+    <a href="feedback/" id="nav-feedback" target="_blank" rel="noopener">Feedback</a>
     <a href="#" id="nav-login">Log in</a>
     <a href="#" id="nav-signup" class="dl">Sign up</a>
     <a href="#" id="nav-streak" hidden title="Reading streak"></a>
@@ -11999,6 +12000,8 @@ window.NG_BOOM = function(){
     setInterval(tick, 700); tick(); })();
 </script>
 <style id="ng-navbtns-css">
+/* room for the Feedback tab: slightly tighter menu so it stays on one row on a computer */
+@media (min-width:1100px){header nav a{padding-left:9px!important;padding-right:9px!important}}
 /* Back, Forward and Refresh: plain arrows like a browser's, in the site's beige and dark azure */
 #ng-navbtns{position:static;flex:none;display:flex;align-items:center;gap:2px;margin-right:14px;color:var(--ngn-c,#f5e4cc)}
 #ng-navbtns.on-light{--ngn-c:#12294a;--ngn-h:rgba(18,41,74,.14)}
