@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795801197';
+window.NG_BUILD = '1795801957';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -8118,9 +8118,100 @@ window.NGFlipbook = function(host, pages, opts){
   window.NG_SET_ANNOUNCE(window.NG_CFG.announcement);
 })();
 </script>
+<style id="fbv-zoom-css">
+.flipview-zoom{display:inline-flex;align-items:center;gap:7px;right:auto;left:14px;padding:8px 12px;font-size:.85rem}
+@media (max-width:620px){.flipview-zoom span{display:none}.flipview-zoom{padding:8px 10px}}
+.flipview-zoom[aria-pressed="true"]{background:#f5e4cc;color:#12294a}
+.fbv-zbar{position:absolute;z-index:7;background:#12294a;color:#f5e4cc;border:2px solid #f5e4cc;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font:700 .82rem "Figtree",system-ui,sans-serif}
+.fbv-zbar[hidden]{display:none!important}
+.zrow{display:flex;align-items:center;gap:8px}
+.zrow span{min-width:70px;opacity:.9}
+.zbtn{border:2px solid #f5e4cc;background:transparent;color:#f5e4cc;border-radius:8px;min-width:30px;height:28px;font:800 .9rem "Figtree",system-ui,sans-serif;cursor:var(--ng-cur-p,pointer);padding:0 7px}
+.zbtn:hover,.zbtn.on{background:#f5e4cc;color:#12294a}
+#z-val{min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
+.ztip{margin:0;font:600 .72rem/1.3 "Figtree",system-ui,sans-serif;opacity:.75;max-width:190px}
+.fbv-lens{position:fixed;z-index:9;border-radius:50%;border:3px solid #12294a;outline:2px solid #f5e4cc;background-repeat:no-repeat;background-color:#fff;pointer-events:none;box-shadow:none}
+.fbv-lens[hidden]{display:none!important}
+html.ng-zooming #flipview-host{touch-action:none}
+@media (max-width:760px){.fbv-zbar{left:10px;right:10px;bottom:10px;top:auto!important}.zrow span{min-width:62px}}
+</style>
+<script id="fbv-zoom-js">
+/* The magnifying glass: hold it over the page to read the small print. The wheel zooms, and the glass comes in three sizes. */
+(function(){
+  function $(id){ return document.getElementById(id); }
+  var on = false, z = 3, size = 230, btn, bar, lens, host, last = null;
+  function save(){ try { localStorage.setItem('ng_zoom', JSON.stringify({ z: z, s: size })); } catch(e){} }
+  try { var o = JSON.parse(localStorage.getItem('ng_zoom') || '{}'); if (o.z) z = Math.min(8, Math.max(1.5, +o.z)); if (o.s) size = +o.s; } catch(e){}
+  function ready(){
+    btn = $('fbv-zoom'); bar = $('fbv-zbar'); lens = $('fbv-lens'); host = $('flipview-host');
+    if (!btn || btn.__z) return; btn.__z = 1;
+    btn.addEventListener('click', function(){ set(!on); });
+    bar.addEventListener('click', function(e){
+      var b = e.target.closest('.zbtn'); if (!b) return;
+      if (b.hasAttribute('data-z')) step(b.getAttribute('data-z') === '+' ? 0.5 : -0.5);
+      else { size = +b.getAttribute('data-s'); [].forEach.call(bar.querySelectorAll('.zs'), function(x){ x.classList.toggle('on', x === b); }); save(); if (last) draw(last.x, last.y); }
+    });
+    host.addEventListener('pointermove', function(e){ if (on) draw(e.clientX, e.clientY); });
+    host.addEventListener('pointerleave', function(){ if (on) lens.hidden = true; });
+    host.addEventListener('wheel', function(e){ if (!on) return; e.preventDefault(); step(e.deltaY < 0 ? 0.4 : -0.4); if (last) draw(last.x, last.y); }, { passive: false });
+    host.addEventListener('click', function(e){ if (on && e.target.closest('.nfb-page')){ e.stopPropagation(); e.preventDefault(); } }, true);
+    document.addEventListener('keydown', function(e){
+      if (!on) return;
+      if (e.key === 'Escape'){ set(false); return; }
+      if (e.key === '+' || e.key === '='){ step(0.5); if (last) draw(last.x, last.y); }
+      if (e.key === '-' || e.key === '_'){ step(-0.5); if (last) draw(last.x, last.y); }
+    });
+    var fv = $('flipview');
+    if (fv && window.MutationObserver) new MutationObserver(function(){ if (fv.hidden && on) set(false); }).observe(fv, { attributes:true, attributeFilter:['hidden'] });
+  }
+  function step(d){ z = Math.min(8, Math.max(1.5, Math.round((z + d) * 10) / 10)); $('z-val').textContent = z.toFixed(1) + '\u00d7'; save(); }
+  function set(v){
+    on = !!v; btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    $('fbv-zoom-t').textContent = on ? 'Magnifier on' : 'Magnifier';
+    bar.hidden = !on; lens.hidden = true;
+    document.documentElement.classList.toggle('ng-zooming', on);
+    if (on){ $('z-val').textContent = z.toFixed(1) + '\u00d7';
+      [].forEach.call(bar.querySelectorAll('.zs'), function(x){ x.classList.toggle('on', +x.getAttribute('data-s') === size); });
+      var r = btn.getBoundingClientRect(); bar.style.top = (r.bottom + 10) + 'px'; bar.style.left = '14px'; bar.style.right = 'auto'; }
+  }
+  function spot(x, y){
+    var ims = host.querySelectorAll('.nfb-page img'); 
+    for (var i = 0; i < ims.length; i++){
+      var im = ims[i], r = im.getBoundingClientRect();
+      if (!im.naturalWidth || x < r.left || x > r.right || y < r.top || y > r.bottom) continue;
+      var k = Math.min(r.width / im.naturalWidth, r.height / im.naturalHeight);
+      var dw = im.naturalWidth * k, dh = im.naturalHeight * k, dx = r.left + (r.width - dw) / 2, dy = r.top + (r.height - dh) / 2;
+      if (x < dx || x > dx + dw || y < dy || y > dy + dh) continue;
+      return { src: im.currentSrc || im.src, dx: dx, dy: dy, dw: dw, dh: dh };
+    }
+    return null;
+  }
+  function draw(x, y){
+    last = { x: x, y: y };
+    var s = spot(x, y);
+    if (!s){ lens.hidden = true; return; }
+    var w = Math.min(size, Math.round(Math.min(window.innerWidth, window.innerHeight) * 0.6));
+    lens.style.width = w + 'px'; lens.style.height = w + 'px';
+    lens.style.left = (x - w / 2) + 'px'; lens.style.top = (y - w / 2) + 'px';
+    lens.style.backgroundImage = 'url("' + s.src.replace(/"/g, '%22') + '")';
+    lens.style.backgroundSize = (s.dw * z) + 'px ' + (s.dh * z) + 'px';
+    lens.style.backgroundPosition = (-((x - s.dx) * z) + w / 2) + 'px ' + (-((y - s.dy) * z) + w / 2) + 'px';
+    lens.hidden = false;
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();
+  window.addEventListener('load', ready);
+})();
+</script>
 <div id="flipview" class="flipview" hidden>
   <button type="button" id="flipview-close" class="flipview-close">✕ Close</button>
   <button type="button" id="fbv-snd" class="flipview-close flipview-snd" aria-label="Page sound">Page sound: On</button>
+  <button type="button" id="fbv-zoom" class="flipview-close flipview-zoom" aria-pressed="false" aria-label="Magnifying glass"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.4" fill="none" stroke="currentColor" stroke-width="2.1"/><line x1="15.2" y1="15.2" x2="21" y2="21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span id="fbv-zoom-t">Magnifier</span></button>
+  <div id="fbv-zbar" class="fbv-zbar" hidden>
+    <div class="zrow"><span>How big</span><button type="button" class="zbtn" data-z="-">&minus;</button><b id="z-val">3.0&times;</b><button type="button" class="zbtn" data-z="+">+</button></div>
+    <div class="zrow"><span>Glass size</span><button type="button" class="zbtn zs" data-s="150">S</button><button type="button" class="zbtn zs on" data-s="230">M</button><button type="button" class="zbtn zs" data-s="330">L</button></div>
+    <p class="ztip">Roll the mouse wheel to zoom in and out.</p>
+  </div>
+  <i id="fbv-lens" class="fbv-lens" hidden aria-hidden="true"></i>
   <div id="flipview-host"></div>
 </div>
 <script>
