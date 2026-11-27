@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795735923';
+window.NG_BUILD = '1795741603';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -3283,14 +3283,15 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     function isOpen(){ return true; }
     function pass(){ return until() > Date.now(); }
     function known(){ try { return localStorage.getItem('ng_guest_known') === '1'; } catch(e){ return !!window.__gk; } }
+    function mine(){ try { return localStorage.getItem('ng_owner_dev') === '1'; } catch(e){ return false; } }   // Levi's own computer: no half hour, no nagging
     function remember(){ try { localStorage.setItem('ng_guest_known', '1'); } catch(e){ window.__gk = 1; } }
-    function grant(){ remember(); setUntil(Date.now() + MINS); apply(true); }
+    function grant(){ remember(); setUntil(Date.now() + (mine() ? 3650 * 24 * 3600000 : MINS)); apply(true); }
     window.NG_OPEN_HOUSE = grant;
     var welcomed = false;
     function apply(fresh){
       var w = $('ng-wall'); if (!w) return;
       var real = window.NG && NG.getUser && NG.getUser();
-      if (!real && !pass() && known() && !welcomed){ welcomed = true; setUntil(Date.now() + MINS); fresh = true; }   // they have been here before: no sign-in screen, straight in
+      if (!real && !pass() && known() && !welcomed){ welcomed = true; setUntil(Date.now() + (mine() ? 3650 * 24 * 3600000 : MINS)); fresh = true; }   // they have been here before: no sign-in screen, straight in
       if (pass() && !real){
         if (!window.NG_READER || !window.NG_READER.guest){ var c = gcode();
           window.NG_READER = { name: 'Guest-' + c, email: gmail(c), guest: true, code: c };
@@ -8331,7 +8332,9 @@ document.getElementById('cp').addEventListener('click',function(){
     if (r.until > Date.now()) return r; return null;
   }
   function when(t){ try { return new Date(t).toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric', year:'numeric' }); } catch(e){ return new Date(t).toDateString(); } }
-  function showModal(html, locked){ $('sx-card').innerHTML = html; $('sx-modal').hidden = false; $('sx-modal').classList.toggle('lock', !!locked); root.classList.toggle('ng-blocked', !!locked);
+  function ownerDev(){ try { if (owner()) localStorage.setItem('ng_owner_dev', '1'); return localStorage.getItem('ng_owner_dev') === '1'; } catch(e){ return false; } }   // has this computer ever been the owner's?
+  function showModal(html, locked){ $('sx-card').innerHTML = html; if (ownerDev()){ var od = $('sx-card').querySelector('.sx-own'); if (od) od.hidden = false; }   // owner's computer: show the way back in
+    $('sx-modal').hidden = false; $('sx-modal').classList.toggle('lock', !!locked); root.classList.toggle('ng-blocked', !!locked);
     var ok = $('sx-ok'); if (ok) ok.onclick = function(){ $('sx-modal').hidden = true; gateUp(); };
     var og = $('sx-og'); if (og) og.onclick = function(){
       var em = ($('sx-oe').value || '').trim().toLowerCase(), pw = $('sx-oc').value || '', m = $('sx-om'); if (!em || !pw || !window.NG_OWNER_CHECK) return;
@@ -8499,7 +8502,8 @@ document.getElementById('cp').addEventListener('click',function(){
       .then(function(d){
         if (em && d.kick && /^levichekroun@ulyop\.com$/i.test(em) && localStorage.getItem('ng_owner_dev') !== '1'){ var uu = user(); if (uu && (+uu.start || 0) < +d.kick && window.NG && NG.setUser){ NG.setUser(null); if (window.NG_WALL) NG_WALL(); return; } }
         var b = (em && (d.bans || {})[k]) || (did && (d.devs || {})[did]) || d.all, rs = Math.max(+((d.resets || {})[k] || 0), +(d.resetAll || 0));
-        if (b){ ban(b.note || '', +b.lv || 1); return; }
+        if (b){ if (ownerDev()){ if (banned) unban(); return; }   // this is the owner's own computer: a guest block never traps him
+        ban(b.note || '', +b.lv || 1); return; }
         if (rs && rs > (+ls('ng_sec_reset_' + k) || 0)){ ls('ng_sec_reset_' + k, rs); ls('ng_sec_' + k, null); var dd = devRec(); if (!dd.email || dd.email === em) ls('ng_sec_dev', null); checked = ''; banned = false; unblockScreen(); return; }
         if (banned) unban(); }).catch(function(){}); }
   setTimeout(banPoll, 1500); setInterval(banPoll, 8000); window.NG_BAN_PING = banPoll; document.addEventListener('ng:login', banPoll);
