@@ -4,7 +4,7 @@
 <script>if (location.protocol === 'http:' && /(^|\.)neshamagazine\.com$/.test(location.hostname)) location.replace('https://neshamagazine.com' + location.pathname + location.search + location.hash);</script>
 <script>
 /* Newest version first: the browser may hand out a saved copy of this page for up to 10 minutes. This asks the server which version is newest and, if this copy is older, loads the new one straight away. */
-window.NG_BUILD = '1795741603';
+window.NG_BUILD = '1795743349';
 (function(){ if (!/^https?:$/.test(location.protocol)) return;
   var m = location.pathname.match(/^(.*?\/neshamagazine\/)/), base = m ? m[1] : './';
   try { if (/[?&]v=\d+/.test(location.search) && history.replaceState){ var c = new URL(location.href); c.searchParams.delete('v'); history.replaceState(null, '', c.pathname + c.search + c.hash); } } catch(e){}
@@ -3626,7 +3626,65 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   </script>
   
 
-  <section class="sec ng-plain" id="sponsor">
+  <style id="ng-rate-css">
+/* Sponsor & Ads in the carrier-store manner: a magenta hero, white price tiles, one loud colour doing all the work. */
+#sponsor{--m:#e20074;--m-dark:#b4005c;--ink:#1f1f22;--soft:#6a6a72;--line:#e3e3e8;--panel:#f7f7f9;
+  background:#fff!important;border-radius:22px;padding:0 0 42px!important;overflow:hidden;color:var(--ink)}
+#sponsor .ng-band{width:100%!important;max-width:none!important;margin:0!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;
+  text-align:left!important;gap:30px!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:clamp(34px,5vw,58px) clamp(22px,5vw,56px)!important}
+#sponsor #sponsor-band,#sponsor .ng-band:first-of-type{background:var(--m)!important;color:#fff!important}
+#sponsor .ng-band:first-of-type h2,#sponsor .ng-band:first-of-type p{color:#fff!important}
+#sponsor .ng-band+.ng-band{background:#fff!important;border-top:1px solid var(--line)!important}
+#sponsor .ng-band-main{flex:1 1 auto;min-width:0;text-align:left!important}
+#sponsor .ng-band-main h2{margin:0 0 10px!important;text-align:left!important;font:800 clamp(2.1rem,5.4vw,3.6rem)/1 "Bricolage Grotesque","Figtree",system-ui,sans-serif!important;letter-spacing:-.035em!important;color:var(--ink)}
+#sponsor .ng-band-main p{margin:0!important;text-align:left!important;max-width:50ch;font:500 clamp(1rem,1.5vw,1.16rem)/1.5 "Figtree",system-ui,sans-serif!important;color:var(--soft)}
+#sponsor .ng-band:first-of-type .ng-band-main p{color:rgba(255,255,255,.92)!important}
+#sponsor .ng-band-side{flex:0 0 auto!important;justify-content:flex-end!important}
+#sponsor .ng-band-side .btn{border:0!important;border-radius:999px!important;padding:16px 34px!important;box-shadow:none!important;white-space:nowrap;
+  font:800 1.06rem "Figtree",system-ui,sans-serif!important;background:#fff!important;color:var(--m)!important;transition:transform .15s,background .15s}
+#sponsor .ng-band+.ng-band .btn{background:var(--m)!important;color:#fff!important}
+#sponsor .ng-band-side .btn:hover{transform:translateY(-1px)}
+#sponsor .ng-band+.ng-band .btn:hover{background:var(--m-dark)!important}
+@media (max-width:760px){#sponsor .ng-band{flex-direction:column!important;align-items:flex-start!important}#sponsor .ng-band-side{width:100%;justify-content:flex-start!important}#sponsor .ng-band-side .btn{width:100%;text-align:center}}
+
+#ratecard{width:min(1040px,100%);margin:0 auto;padding:clamp(34px,5vw,56px) clamp(22px,5vw,40px) 0;background:#fff;border:0;color:var(--ink)}
+.rc-head{text-align:center;margin:0 0 30px}
+.rc-head h3{margin:0;font:800 clamp(2rem,5vw,3.2rem)/1 "Bricolage Grotesque","Figtree",system-ui,sans-serif;letter-spacing:-.035em}
+.rc-head p{margin:12px auto 0;max-width:46ch;font:500 1.08rem/1.5 "Figtree",system-ui,sans-serif;color:var(--soft)}
+.rc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:20px;align-items:stretch}
+.rc{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:34px 24px 26px;transition:border-color .18s,transform .18s}
+.rc:hover{border-color:var(--m);transform:translateY(-3px)}
+.rc-best{border:2px solid var(--m);box-shadow:none}
+.rc-flag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--m);color:#fff;font:800 .68rem/1 "Figtree",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;padding:9px 16px;border-radius:999px;white-space:nowrap}
+.rc-page{position:relative;width:58px;aspect-ratio:3/4;background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.rc-fill{position:absolute;background:var(--m);transition:inset .22s}
+.rc-f1{inset:0}.rc-f2{inset:50% 0 0 0}.rc-f4{inset:50% 0 0 50%}
+.rc-body{flex:1;display:flex;flex-direction:column;align-items:center}
+.rc-body h4{margin:0;font:800 .82rem/1 "Figtree",system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--soft)}
+.rc-cost{margin:12px 0 10px;font:800 clamp(3.2rem,8vw,4.1rem)/1 "Bricolage Grotesque","Figtree",system-ui,sans-serif;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.rc-cost span{font-size:1.5rem;font-weight:800;vertical-align:.74em;margin-right:4px;letter-spacing:0;color:var(--m)}
+.rc-cost sup{font-size:1.5rem;font-weight:800;top:-.86em;letter-spacing:0;color:var(--m)}
+.rc-say{margin:0;font:500 1rem/1.45 "Figtree",system-ui,sans-serif;color:var(--soft);max-width:26ch}
+.rc-go{margin-top:auto;width:100%;border:2px solid var(--m);background:#fff;color:var(--m);border-radius:999px;padding:14px 18px;font:800 1.02rem "Figtree",system-ui,sans-serif;cursor:var(--ng-cur-p,pointer);transition:background .16s,color .16s}
+.rc-best .rc-go{background:var(--m);color:#fff}
+.rc-go:hover,.rc-go:focus-visible{background:var(--m);color:#fff;outline:none}
+.rc-best .rc-go:hover,.rc-best .rc-go:focus-visible{background:var(--m-dark);border-color:var(--m-dark)}
+.rc-foot{margin:28px auto 0;max-width:62ch;text-align:center;background:var(--panel);border-radius:16px;padding:20px 22px;font:500 1.02rem/1.5 "Figtree",system-ui,sans-serif;color:var(--soft)}
+.rc-foot b,.rc-foot strong{color:var(--ink)}
+
+#spwall{width:min(1040px,100%);margin:0 auto;padding:clamp(34px,5vw,52px) clamp(22px,5vw,40px) 0;background:#fff;border:0;color:var(--ink)}
+#spwall h3{margin:0;text-align:center;font:800 clamp(1.7rem,4vw,2.5rem)/1.05 "Bricolage Grotesque","Figtree",system-ui,sans-serif;letter-spacing:-.03em}
+.spwall-sub{margin:10px auto 24px;text-align:center;max-width:46ch;font:500 1.04rem/1.5 "Figtree",system-ui,sans-serif;color:var(--soft)}
+.spwall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:16px}
+.spw{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:132px;text-align:center;transition:border-color .18s}
+.spw:hover{border-color:var(--m)}
+.spw img{max-width:100%;max-height:70px;object-fit:contain;display:block}
+.spw b{font:800 .98rem/1.2 "Figtree",system-ui,sans-serif;color:var(--ink)}
+.spw span{font:500 .82rem/1.3 "Figtree",system-ui,sans-serif;color:var(--soft);overflow-wrap:anywhere}
+.sp-drop{margin-top:4px}
+@media (prefers-reduced-motion:reduce){.rc,.rc-fill,#sponsor .ng-band-side .btn,.spw{transition:none}}
+</style>
+<section class="sec ng-plain" id="sponsor">
     <div class="ng-band">
       <div class="ng-band-main">
         <h2>Sponsor an issue</h2>
@@ -3644,6 +3702,35 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
       <div class="ng-band-side">
         <a class="btn" id="ad-btn" href="#sponsor">Send your ad</a>
       </div>
+    </div>
+
+    <div class="ratecard" id="ratecard">
+      <div class="rc-head"><h3>What an ad costs</h3><p>One price, one issue. Your ad goes in the next issue after we say yes.</p></div>
+      <div class="rc-grid">
+        <article class="rc" data-size="full">
+          <div class="rc-page" aria-hidden="true"><i class="rc-fill rc-f1"></i></div>
+          <div class="rc-body"><h4>Full page</h4><p class="rc-cost"><span>$</span>17<sup>99</sup></p><p class="rc-say">The whole page is yours. Nothing else on it.</p></div>
+          <button type="button" class="rc-go" data-adsize="Full page">Book a full page</button>
+        </article>
+        <article class="rc rc-best" data-size="half">
+          <span class="rc-flag">Most popular</span>
+          <div class="rc-page" aria-hidden="true"><i class="rc-fill rc-f2"></i></div>
+          <div class="rc-body"><h4>Half page</h4><p class="rc-cost"><span>$</span>9<sup>99</sup></p><p class="rc-say">Half the page, read just as much.</p></div>
+          <button type="button" class="rc-go" data-adsize="Half page">Book a half page</button>
+        </article>
+        <article class="rc" data-size="quarter">
+          <div class="rc-page" aria-hidden="true"><i class="rc-fill rc-f4"></i></div>
+          <div class="rc-body"><h4>Quarter page</h4><p class="rc-cost"><span>$</span>3<sup>99</sup></p><p class="rc-say">Small, cheap, and still in every house.</p></div>
+          <button type="button" class="rc-go" data-adsize="Quarter page">Book a quarter page</button>
+        </article>
+      </div>
+      <p class="rc-foot"><b>Sponsoring a whole issue is its own thing.</b> Your name goes on the issue and your logo goes on this page. Ask us and we'll send you the dates.</p>
+    </div>
+
+    <div class="spwall" id="spwall" hidden>
+      <h3>Our sponsors</h3>
+      <p class="spwall-sub">These people paid for issues of NeshamaGazine so every kid can read it free.</p>
+      <div class="spwall-grid" id="spwall-grid"></div>
     </div>
   </section>
 
@@ -3872,6 +3959,70 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   <button type="button" class="nlb-x" data-nl="close" aria-label="Close">&times;</button>
 </div>
 
+<script id="ng-sp-logo-js">
+/* Picking a logo: the picture is shrunk in the browser to about 420 pixels wide, so it is small enough to keep with the sponsor. */
+(function(){
+  function $(id){ return document.getElementById(id); }
+  var drop = $('sp-drop'), input = $('sp-logo'), prev = $('sp-prev');
+  if (!drop || !input) return;
+  function kb(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round(n / 1024) + ' KB'; }
+  function take(file){
+    if (!file || !/^image\//.test(file.type)){ return; }
+    var fr = new FileReader();
+    fr.onload = function(){
+      var im = new Image();
+      im.onload = function(){
+        var w = im.width, h = im.height, max = 420, c = document.createElement('canvas');
+        if (w > max){ h = Math.round(h * max / w); w = max; }
+        c.width = w; c.height = h;
+        var x = c.getContext('2d'); x.drawImage(im, 0, 0, w, h);
+        var out = c.toDataURL('image/png');
+        if (out.length > 420000) out = c.toDataURL('image/jpeg', 0.84);
+        window.NG_SP_LOGO = out;
+        $('sp-thumb').innerHTML = '<img alt="" src="' + out + '" style="max-width:52px;max-height:52px;object-fit:contain;display:block">';
+        $('sp-lname').textContent = file.name; $('sp-lsize').textContent = kb(file.size);
+        prev.hidden = false;
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  }
+  input.addEventListener('change', function(){ take(input.files && input.files[0]); });
+  ['dragenter', 'dragover'].forEach(function(t){ drop.addEventListener(t, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function(t){ drop.addEventListener(t, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function(e){ var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) take(f); });
+  $('sp-lrm').addEventListener('click', function(){ window.NG_SP_LOGO = null; prev.hidden = true; input.value = ''; });
+})();
+</script>
+<script id="ng-rate-js">
+/* The price cards open the ad form with the size already chosen, and the sponsor wall shows the logos the owner said yes to. */
+(function(){
+  function $(id){ return document.getElementById(id); }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.rc-go'); if (!b) return;
+    e.preventDefault();
+    var want = b.getAttribute('data-adsize');
+    var btn = $('ad-btn'); if (btn) btn.click();
+    setTimeout(function(){ var sel = $('ad-size'); if (sel){ for (var i = 0; i < sel.options.length; i++) if (sel.options[i].text === want) sel.selectedIndex = i; }
+      var n = $('ad-name'); if (n) try { n.focus(); } catch(x){} }, 260);
+  });
+  function wall(){
+    var box = $('spwall'), grid = $('spwall-grid'); if (!box || !grid || !window.NG_SPON_LIST) return;
+    NG_SPON_LIST().then(function(rows){
+      var ok = rows.filter(function(r){ return r.ok && r.logo; }).sort(function(a, b){ return (a.at || 0) - (b.at || 0); });
+      if (!ok.length){ box.hidden = true; return; }
+      grid.innerHTML = ok.map(function(r){
+        var nm = (r.biz || r.name || '').replace(/[<>&]/g, ''), lk = (r.link || '').replace(/[<>&"]/g, '');
+        return '<div class="spw"><img alt="' + nm + '" src="' + r.logo.replace(/"/g, '') + '">' + (nm ? '<b>' + nm + '</b>' : '') + (lk ? '<span>' + lk + '</span>' : '') + '</div>';
+      }).join('');
+      box.hidden = false;
+    });
+  }
+  window.NG_SPON_WALL = wall;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(wall, 1200); });
+  else setTimeout(wall, 1200);
+})();
+</script>
 <div id="sp-modal" class="sp-modal" hidden role="dialog" aria-modal="true" aria-labelledby="sp-h">
   <form class="sp-box" id="sp-form" novalidate>
     <button type="button" class="sp-x" id="sp-x" aria-label="Close">&times;</button>
@@ -3883,6 +4034,9 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     <label>How did you find NeshamaGazine?<select id="sp-how"><option value="">Choose one</option><option>A friend or family member</option><option>In shul</option><option>I saw a printed copy</option><option>Online</option><option>Other</option></select></label>
     <div class="sp-other" id="sp-other-row" hidden><input id="sp-other" placeholder="Type how you found us" maxlength="120" aria-label="How you found us"><button type="button" class="sp-none" id="sp-none" aria-pressed="false">None</button></div>
     <label>Why do you want to sponsor?<textarea id="sp-why" rows="2" maxlength="800"></textarea></label>
+    <label class="ad-drop sp-drop" id="sp-drop" for="sp-logo"><b>Your logo for the sponsor page</b><span>Drop it here, or click to pick a picture. You can skip this.</span><input type="file" id="sp-logo" accept="image/*"></label>
+    <div class="ad-prev" id="sp-prev" hidden><span id="sp-thumb"></span><div><b id="sp-lname"></b><span id="sp-lsize"></span></div><button type="button" id="sp-lrm">Remove</button></div>
+    <label>Website or phone to show with your logo (you can skip this)<input id="sp-link" maxlength="120" placeholder="yourshop.com"></label>
     <button type="submit" class="btn" id="sp-go">Send</button>
     <p class="sp-msg" id="sp-msg" role="status"></p>
   </form>
@@ -4161,9 +4315,13 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     if (how === 'Other'){ var ot = g('sp-other'); if (document.getElementById('sp-none').getAttribute('aria-pressed') === 'true') ot = 'None'; if (!ot){ m.textContent = 'Type how you found us, or press None.'; document.getElementById('sp-other').focus(); return; } how = 'Other: ' + ot; }
     var u = { name: name, email: email, extra: { business: g('sp-biz') || '(none)', how_they_found_us: how, why_sponsor: g('sp-why') || '(not written)' } };
     b.disabled = true; m.textContent = 'Sending...';
+    if (window.NG_SP_LOGO && window.NG_SPON_SAVE){   // the logo waits for the owner to say yes before it goes on the sponsor page
+      try { NG_SPON_SAVE({ name: name, email: email, biz: g('sp-biz'), link: g('sp-link'), why: g('sp-why'), logo: window.NG_SP_LOGO }); } catch(x){}
+      u.extra.why_sponsor = (u.extra.why_sponsor === '(not written)' ? '' : u.extra.why_sponsor + ' ') + '[Sent a logo for the sponsor page: say yes to it in Radar > Sponsors]';
+    }
     sendEmail('Wants to sponsor', u).then(function(res){
       b.disabled = false;
-      if (res.ok){ m.textContent = ''; spClose(); document.getElementById('sp-form').reset(); toast('Thanks! We got it and will email ' + email + ' soon.'); }
+      if (res.ok){ m.textContent = ''; spClose(); document.getElementById('sp-form').reset(); window.NG_SP_LOGO = null; var pv = document.getElementById('sp-prev'); if (pv) pv.hidden = true; toast('Thanks! We got it and will email ' + email + ' soon.'); }
       else { m.innerHTML = 'It did not send. <a href="' + gmailLink('Wants to sponsor', u) + '" target="_blank" rel="noopener">Send it with Gmail instead</a>.'; }
     });
   });
@@ -7059,6 +7217,30 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   // a reader asks for NeshamaGazine at their shul: kept on their own Radar record
   window.NG_SHUL_SAVE = function(d){ var u = window.NG && NG.getUser && NG.getUser(); if (!u || !u.email) return Promise.resolve(false);
     return commit({ update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/visitors/' + pkey(u.email), fields:{ email:{ stringValue: u.email }, name:{ stringValue: u.name || '' }, shul:{ stringValue: JSON.stringify(d).slice(0, 1800) }, shulAt:{ timestampValue: new Date().toISOString() } } }, updateMask:{ fieldPaths:['email', 'name', 'shul', 'shulAt'] } }).then(function(r){ return r.ok; }).catch(function(){ return false; }); };
+  // a sponsor's logo, waiting for the owner to say yes before it goes on the wall
+  window.NG_SPON_SAVE = function(d){
+    var k = pkey((d.email || ('x' + Date.now())) + '_' + (d.biz || d.name || ''));
+    var f = { name:{ stringValue: String(d.name || '').slice(0, 80) }, biz:{ stringValue: String(d.biz || '').slice(0, 120) },
+      email:{ stringValue: String(d.email || '').slice(0, 160) }, link:{ stringValue: String(d.link || '').slice(0, 300) },
+      logo:{ stringValue: String(d.logo || '').slice(0, 700000) }, why:{ stringValue: String(d.why || '').slice(0, 600) },
+      ok:{ booleanValue: false }, at:{ timestampValue: new Date().toISOString() } };
+    return commit({ update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/sponsors/' + k, fields: f } }).then(function(r){ return r.ok; }).catch(function(){ return false; });
+  };
+  window.NG_SPON_LIST = function(){
+    return fetch('https://firestore.googleapis.com/v1/projects/' + PROJ + '/databases/(default)/documents/sponsors?pageSize=120&key=' + KEY, { cache:'no-store' })
+      .then(function(r){ return r.ok ? r.json() : {}; })
+      .then(function(j){ return (j.documents || []).map(function(x){ var f = x.fields || {};
+        function v(n){ return (f[n] && (f[n].stringValue || f[n].booleanValue)) || ''; }
+        return { id: x.name.split('/').pop(), name: v('name'), biz: v('biz'), email: v('email'), link: v('link'), logo: v('logo'), why: v('why'),
+          ok: !!(f.ok && f.ok.booleanValue), at: f.at && f.at.timestampValue ? Date.parse(f.at.timestampValue) : 0 }; }); })
+      .catch(function(){ return []; });
+  };
+  window.NG_SPON_SHOW = function(id, on){
+    return commit({ update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/sponsors/' + id, fields:{ ok:{ booleanValue: !!on } } }, updateMask:{ fieldPaths:['ok'] } }).then(function(r){ return r.ok; }).catch(function(){ return false; });
+  };
+  window.NG_SPON_DROP = function(id){
+    return commit({ delete: 'projects/' + PROJ + '/databases/(default)/documents/sponsors/' + id }).then(function(r){ return r.ok; }).catch(function(){ return false; });
+  };
   window.NG_PRINT_LOG = function(){ var u = window.NG && NG.getUser && NG.getUser(); if (!u || !u.email) return; commit({ update:{ name: 'projects/' + PROJ + '/databases/(default)/documents/visitors/' + pkey(u.email), fields:{ printAt:{ timestampValue: new Date().toISOString() } } }, updateMask:{ fieldPaths:['printAt'] }, updateTransforms:[{ fieldPath:'prints', increment:{ integerValue:'1' } }] }).catch(function(){}); };
   function devId(){ try { var d = localStorage.getItem('ng_did'); if (!d){ d = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); localStorage.setItem('ng_did', d); } return d; } catch(e){ return ''; } }
   function ownerDev(){ try { if (isOwner()) localStorage.setItem('ng_owner_dev', '1'); return localStorage.getItem('ng_owner_dev') === '1'; } catch(e){ return false; } }
@@ -7198,6 +7380,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
   <nav class="vm-tabs">
     <button type="button" class="on" data-v="who">Who’s here</button>
     <button type="button" data-v="guests">Guests</button>
+    <button type="button" data-v="spon">Sponsors</button>
     <button type="button" data-v="flag">Flagged pictures</button>
     <button type="button" data-v="log">Logins</button>
     <button type="button" data-v="read">Most read</button>
@@ -7218,6 +7401,7 @@ window.NG_SURE = function(b, label){ if (!b || !b.style) return true; if (b.data
     </div>
     <div class="vm-list" id="vm-list"></div>
   </section>
+  <section class="vm-view" id="vm-spon" hidden><div class="rd-pad"><h3>Sponsors</h3><p class="rd-tip">Logos people sent with the sponsor form. Nothing shows on the website until you press Show on site.</p><div id="rd-spon"></div></div></section>
   <section class="vm-view" id="vm-guests" hidden><div class="rd-pad"><h3>Guests</h3><p class="rd-tip">People who pressed the X instead of signing in. Each device gets its own number, so you can see them come back — and block them.</p><div id="rd-guests"></div></div></section>
   <section class="vm-view" id="vm-flag" hidden><div class="rd-pad"><h3>Flagged pictures</h3><p class="rd-tip">Everyone who tried to take a screenshot, record or print. You can let them back in.</p><div id="rd-flag-tools"></div></div></section>
   <section class="vm-view" id="vm-log" hidden><div class="rd-pad"><h3>Logins</h3><label class="rd-sw"><input type="checkbox" id="rd-notify"> Tell me when someone logs in (while I’m on the site)</label><div id="rd-mine"></div><h4 class="rd-h4">Logins this week</h4><div class="vm-list" id="rd-log"></div><h4 class="rd-h4">New sign-ups this week</h4><div id="rd-new"></div></div></section>
@@ -9659,7 +9843,27 @@ window.NG_BOOM = function(){
       b.disabled = true; b.textContent = on ? 'Blocking\u2026' : 'Unblocking\u2026';
       banWrite(em, 'Guest-' + c, on, on ? note : '', lv).then(function(){ drawGuests(); }).catch(function(err){ b.disabled = false; b.textContent = 'Try again'; $('rd-guests').insertAdjacentHTML('afterbegin', '<p class="rd-tip">' + esc(err.message) + '</p>'); }); };
   }
-  window.NG_RADAR_TAB = function(v, fromLoad){ if (v === 'log') drawLogins(); if (v === 'guests') drawGuests(); if (v === 'flag' && !fromLoad && $('sec-load')) $('sec-load').click(); };
+  function drawSpon(){
+    var el = $('rd-spon'); if (!el || !window.NG_SPON_LIST) return;
+    el.innerHTML = '<p class="rd-tip">Looking\u2026</p>';
+    NG_SPON_LIST().then(function(rows){
+      if (!rows.length){ el.innerHTML = '<p class="rd-tip">Nobody has sent a logo yet.</p>'; return; }
+      rows.sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
+      el.innerHTML = rows.map(function(r){
+        return '<div class="rd-logrow"><span>' + (r.logo ? '<img alt="" src="' + esc(r.logo) + '" style="max-width:74px;max-height:46px;object-fit:contain;vertical-align:middle;margin-right:10px;background:#f5e4cc;padding:3px">' : '') +
+          '<b>' + esc(r.biz || r.name || 'No name') + (r.ok ? ' \u00b7 on the site' : ' \u00b7 waiting') + '</b><br><small>' + esc(r.email || '') + (r.link ? ' \u00b7 ' + esc(r.link) : '') + '</small></span>' +
+          '<span class="rd-act">' + (r.ok ? '<button type="button" class="sp-hide" data-id="' + esc(r.id) + '">Hide</button>'
+              : '<button type="button" class="sp-show" data-id="' + esc(r.id) + '">Show on site</button>') +
+          '<button type="button" class="sp-drop2" data-id="' + esc(r.id) + '">Delete</button></span></div>'; }).join('');
+    });
+    el.onclick = function(e){
+      var b = e.target.closest('.sp-show, .sp-hide, .sp-drop2'); if (!b) return;
+      var id = b.getAttribute('data-id'); b.disabled = true; b.textContent = 'Working\u2026';
+      var job = b.classList.contains('sp-drop2') ? NG_SPON_DROP(id) : NG_SPON_SHOW(id, b.classList.contains('sp-show'));
+      job.then(function(){ drawSpon(); if (window.NG_SPON_WALL) NG_SPON_WALL(); });
+    };
+  }
+  window.NG_RADAR_TAB = function(v, fromLoad){ if (v === 'log') drawLogins(); if (v === 'guests') drawGuests(); if (v === 'spon') drawSpon(); if (v === 'flag' && !fromLoad && $('sec-load')) $('sec-load').click(); };
   // "Tell me when someone logs in"
   var n = $('rd-notify'), seen = null;
   try { n.checked = localStorage.getItem('ng_radar_notify') === '1'; } catch(e){}
